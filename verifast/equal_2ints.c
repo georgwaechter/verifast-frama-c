@@ -1,10 +1,10 @@
+
+// verifast is not able to conclude on its own that a list with length zero = nil
 /*@
 lemma_auto void length_nil<t>(list<t> xs);
     requires length(xs) == 0;
     ensures xs == nil;
 @*/
-
-
 
 bool equal_ints2(int *a, int *b) 
 //@ requires ints(a, 2, ?al) &*& ints(b, 2, ?bl);
@@ -23,6 +23,10 @@ bool equal_ints2(int *a, int *b)
 	if (a[1] != b[1]) {
 		return false;
 	}
+	
+	// due to the lemma (see above) verifast is able to conclude that
+	// af == bf at this point - and thus al == bl
+	// (without the lemma verifast cant prove that the zero length tais are identical)
 			
 	return true;
 }
