@@ -10,9 +10,44 @@
 }
 @*/
 
+/*@ fixpoint int mismatch_ints(list<int> a, list<int> b) {
+    switch (a) {
+        case cons(a0, ax): return switch (b) {
+            case cons(b0, bx): return a0 == b0 ? 1 + mismatch_ints(ax, bx) : 0;
+            case nil: return 1;
+        };
+        case nil: return switch (b) {
+            case cons(b0, bx): return 1;
+            case nil: return 0;
+        };
+    }
+}
+@*/
+
+/*@ lemma_auto void eq_mismatch_inverse(list<int> a, list<int> b, int n);
+    requires eq_ints(a, b, n) == true;
+    ensures mismatch_ints(a, b) >= n;
+@*/
+
+
+/*@ lemma_auto void eq_mismatch_inverse2(list<int> a, list<int> b, int n);
+    requires nth(n, a) != nth(n, b);
+    ensures mismatch_ints(a, b) <= n;
+@*/
+
+/*@ lemma_auto void eq_mismatch_inverse3(list<int> a, list<int> b, int n);
+    requires eq_ints(a, b, n) != true;
+    ensures mismatch_ints(a, b) < n;
+@*/
+
+/*@ lemma_auto void eq_mismatch_inverse4(list<int> a, list<int> b);
+    requires length(a) == length(b) && eq_ints(a, b, length(a)) == true;
+    ensures mismatch_ints(a, b) == length(a);
+@*/
+
 int mismatch(int *a, int* b, int size) 
 //@ requires ints(a, size, ?al) &*& ints(b, size, ?bl) &*& size >= 0;
-//@ ensures ints(a, size, al) &*& ints(b, size, bl) &*& result >= 0 && result <= size && eq_ints(al, bl, result - 1) == true && ((result < size) ? (nth(result, al) != nth(result, bl)) : true);
+//@ ensures ints(a, size, al) &*& ints(b, size, bl) &*& result == mismatch_ints(al, bl);
 {
     //@ open ints(a, size, al);
     //@ open ints(b, size, bl);
@@ -22,9 +57,12 @@ int mismatch(int *a, int* b, int size)
     {
     	if (a[i] != b[i])
     	{   		
+    		//@ assert mismatch_ints(al, bl) == i;
     		return i;
     	}
     }
+    
+    //@ assert mismatch_ints(al, bl) == size;
 	
     return size;
 }
@@ -37,6 +75,6 @@ void test()
 	int b[2] = {2, 1};
 
 	int ret = mismatch(a, b, 2);
-	assert(ret == 2);
+	assert(ret == 0);
 }
 
