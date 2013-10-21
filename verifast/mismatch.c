@@ -41,8 +41,8 @@
 @*/
 
 int mismatch(int *a, int* b, int size) 
-//@ requires ints(a, size, ?al) &*& ints(b, size, ?bl) &*& size >= 0;
-/*@ ensures ints(a, size, al) &*& ints(b, size, bl) &*& 
+//@ requires a[0..size] |-> ?al &*& b[0..size] |-> ?bl &*& size >= 0;
+/*@ ensures a[0..size] |-> al &*& b[0..size] |-> bl &*& 
             result == mismatch_ints(al, bl); @*/
 {
     //@ open ints(a, size, al);

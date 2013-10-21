@@ -18,8 +18,8 @@
 @*/
 
 bool equal(int *a, int* b, int size) 
-//@ requires ints(a, size, ?al) &*& ints(b, size, ?bl) &*& size >= 0;
-//@ ensures ints(a, size, al) &*& ints(b, size, bl) &*& result == (al == bl);
+//@ requires a[0..size] |-> ?al &*& b[0..size] |-> ?bl &*& size >= 0;
+//@ ensures a[0..size] |-> al &*& b[0..size] |-> bl &*& result == (al == bl);
 {
     //@ open ints(a, size, al);
     //@ open ints(b, size, bl);
