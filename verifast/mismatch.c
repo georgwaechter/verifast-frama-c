@@ -35,19 +35,15 @@
     ensures mismatch_ints(a, b) <= n;
 @*/
 
-/*@ lemma_auto void eq_mismatch_inverse3(list<int> a, list<int> b, int n);
-    requires eq_ints(a, b, n) != true;
-    ensures mismatch_ints(a, b) < n;
-@*/
-
-/*@ lemma_auto void eq_mismatch_inverse4(list<int> a, list<int> b);
+/*@ lemma_auto void eq_mismatch_inverse3(list<int> a, list<int> b);
     requires length(a) == length(b) && eq_ints(a, b, length(a)) == true;
     ensures mismatch_ints(a, b) == length(a);
 @*/
 
 int mismatch(int *a, int* b, int size) 
 //@ requires ints(a, size, ?al) &*& ints(b, size, ?bl) &*& size >= 0;
-//@ ensures ints(a, size, al) &*& ints(b, size, bl) &*& result == mismatch_ints(al, bl);
+/*@ ensures ints(a, size, al) &*& ints(b, size, bl) &*& 
+            result == mismatch_ints(al, bl); @*/
 {
     //@ open ints(a, size, al);
     //@ open ints(b, size, bl);
