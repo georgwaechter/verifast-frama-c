@@ -1,24 +1,3 @@
-/*@ lemma_auto void tail_length(list<int> a);
-    requires length(a) > 0;
-    ensures length(tail(a)) == length(a) - 1;
-@*/
-    
-
-/*@ lemma_auto void inductive_equal_lists(list<int> a, list<int> b, int n)
-    requires take(n, a) == take(n, b) &*& nth(n, a) == nth(n, b) && n >= 0;
-    ensures take(n + 1, a) == take(n + 1, b);
-    {
-    	if (n == 0)
-    	{
-    	    return;
-    	} 
-        else
-        { 
-            inductive_equal_lists(a, b, n - 1); 
-        } 
-        
-    }
-@*/
 
 
 bool equal(int *a, int* b, int size) 
@@ -27,16 +6,18 @@ bool equal(int *a, int* b, int size)
 {
     //@ open ints(a, size, al);
     //@ open ints(b, size, bl);
+    int i = 0;
     
-    for (int i = 0; i < size; i++)
-    //@ invariant i >= 0 && i <= size &*& take(i, al) == take(i, bl) &*& ints(a, size, al) &*& ints(b, size, bl);
+    while (i < size)
+    //@ invariant a[0..i] |-> ?alx &*& b[0..i] |-> ?blx &*& alx == blx && 0 <= i &*& ints(a, size, al) &*& ints(b, size, bl);
     {
     	if (a[i] != b[i])
     	{   		
-    		return false;
+    	    return false;
     	}
+    	
     }
-    
+
     return true;
 }
 
