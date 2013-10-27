@@ -1,7 +1,23 @@
+/*@ lemma_auto void tail_length(list<int> a);
+    requires length(a) > 0;
+    ensures length(tail(a)) == length(a) - 1;
+@*/
+    
 
-/*@ lemma_auto void inductive_equal_lists(list<int> a, list<int> b, int n);
-    requires take(n, a) == take(n, b) && nth(n, a) == nth(n, b);
+/*@ lemma_auto void inductive_equal_lists(list<int> a, list<int> b, int n)
+    requires take(n, a) == take(n, b) &*& nth(n, a) == nth(n, b) && n >= 0;
     ensures take(n + 1, a) == take(n + 1, b);
+    {
+    	if (n == 0)
+    	{
+    	    return;
+    	} 
+        else
+        { 
+            inductive_equal_lists(a, b, n - 1); 
+        } 
+        
+    }
 @*/
 
 
