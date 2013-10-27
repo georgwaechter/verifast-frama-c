@@ -1,6 +1,6 @@
 
 bool equal_int_array(int* a, int* b, int size)
-//@ requires ints(a, size, ?al) &*& ints(b, size, ?bl) &*& size >= 0;
+//@ requires ints(a, size, ?al) &*& ints(b, size, ?bl) &*& size >= 0 &*& a + size <= (int*)INT_MAX &*& b + size <= (int*)INT_MAX;
 //@ ensures result == (al == bl) &*& ints(a, size, al) &*& ints(b, size, bl);
 {
     //@ open ints(a, size, al);
@@ -17,8 +17,6 @@ bool equal_int_array(int* a, int* b, int size)
     	return false;
     }
     
-    bool t = equal_int_array(a + 1, b + 1, size - 1);
-    
-    return t;
+    return equal_int_array(a + 1, b + 1, size - 1);
 }
      
