@@ -1,18 +1,6 @@
-/*@ 
-// copied from listex.h
-lemma void take_plus_one<t>(int i, list<t> xs)
-    requires 0 <= i &*& i < length(xs);
-    ensures take(i + 1, xs) == append(take(i, xs), cons(nth(i, xs), nil));
-{
-    switch (xs) {
-        case nil:
-        case cons(x, xs0):
-            if (i != 0) {
-                take_plus_one(i - 1, xs0);
-            }
-    }
-}
-@*/
+#include "equal.h"
+
+//@ #include "listex.gh"
 
 bool equal(int *a, int* b, int size) 
 //@ requires a[0..size] |-> ?al &*& b[0..size] |-> ?bl &*& size >= 0;
