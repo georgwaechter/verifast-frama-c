@@ -1,15 +1,19 @@
 //@ #include "listex.gh"
+//@ #include "arrays.gh"
+
+// TODO: do we need to ensure pointers dont overlap as in frama-c? idea: create predicate SeperatedLists(int* a, size, int* b, size2);
 
 void copy(int *from, int size, int *to)
-//@ requires from[0..size] |-> ?cont &*& to[0..size] |-> ?cont2 &*& size >= 0;
+//@ requires from[0..size] |-> ?cont &*& to[0..size] |-> ?cont2;
 //@ ensures from[0..size] |-> cont &*& to[0..size] |-> cont;
 {
     for (int i = 0; i < size; i++)
     //@ invariant from[0..size] |-> cont &*& to[0..size] |-> cont2 &*& take(i, cont) == take(i, cont2) &*& i <= size &*& 0 <= i;
     {
+    	//@ ints_split(to, i);
         to[i] = from[i];
-        //@ take_plus_one(i, cont);
-        //@ take_plus_one(i, cont2);
+        
+        //@ ints_unseparate(to, i, append(cont, cont2));
     }
 }
 
