@@ -10,22 +10,32 @@ bool equal(int *a, int* b, int size)
     //@ open ints(a, size, al);
     //@ open ints(b, size, bl);
     int i = 0;
-    while (i < size)
-    //@ requires a[i..size] |-> ?ali &*& b[i..size] |-> ?bli &*& size >= 0;
-    //@ ensures a[old_i..size] |-> ?ali2 &*& b[old_i..size] |-> ?bli2 &*& ali2 == bli2;
+    bool ret = true;
+	
+    while (true)
+    //@ requires a[i..size] |-> drop(i, al) &*& b[i..size] |-> drop(i, bl) &*& size >= 0;
+    //@ ensures a[old_i..size] |-> drop(i, al) &*& b[old_i..size] |-> drop(i, bl) &*& ret == (drop(i, al) == drop(i, bl));
     {
-        //@ open ints(a + i, size - i, ali);
-        //@ open ints(b + i, size - i, bli);
+        ret = true;
+        
+        if (i == size)
+        {
+            break;
+        }
+    	
+        //@ open ints(a + i, size - i, drop(i, al));
+        //@ open ints(b + i, size - i, drop(i, bl));
     	if (a[i] != b[i])
     	{   		
-    	    return false;
+    	    ret = false;
+	    break;
     	}
 
     	i++;
     	//@ recursive_call();
     }
 
-    return true;
+    return ret;
 }
 
 void test() 
