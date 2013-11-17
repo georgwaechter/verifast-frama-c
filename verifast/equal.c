@@ -6,10 +6,12 @@ bool equal(int *a, int* b, int size)
 //@ requires a[0..size] |-> ?al &*& b[0..size] |-> ?bl &*& size >= 0;
 //@ ensures a[0..size] |-> al &*& b[0..size] |-> bl &*& result == (al == bl);
 {
+
     //@ open ints(a, size, al);
     //@ open ints(b, size, bl);
     for (int i = 0; i < size; i++)
     //@ invariant 0 <= i && i <= size &*& ints(a, size, al) &*& ints(b, size, bl) &*& take(i, al) == take(i, bl);
+	//@ decreases size - i;
     {
     	if (a[i] != b[i])
     	{   		
