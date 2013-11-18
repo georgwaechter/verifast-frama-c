@@ -11,7 +11,7 @@ bool equal(int *a, int* b, int size)
     //@ open ints(b, size, bl);
     for (int i = 0; i < size; i++)
     //@ invariant 0 <= i && i <= size &*& ints(a, size, al) &*& ints(b, size, bl) &*& take(i, al) == take(i, bl);
-	//@ decreases size - i;
+    //@ decreases size - i;
     {
     	if (a[i] != b[i])
     	{   		

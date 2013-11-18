@@ -11,6 +11,7 @@ int mismatch(int *a, int* b, int size)
     
     for (int i = 0; i < size; i++)
     //@ invariant i >= 0 && i <= size &*& ints(a, size, al) &*& ints(b, size, bl) &*& take(i, al) == take(i, bl);
+    //@ decreases size - i;
     {
     	if (a[i] != b[i])
     	{   		
