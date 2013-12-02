@@ -1,4 +1,74 @@
-
+﻿
 \chapter{Grundkonzepte}
-(an Hand von mismatch)
-(method contracts, loop invariants, behaviors)
+
+\section{Design by Contract}
+\label{sec:design-by-contract}
+
+spezifikation für methoden 
+
+
+pre und post condition, abstrakte datentypen (siehe 2.)
+  
+  
+pre condition beschreibt annahmen für die ausführung
+  
+  
+post condition beschreibt effekt der methode 
+  (rückgabewert und ggf. seiteneffekte)
+
+  
+partielle korrektheit zeigen (keine funktionale), gültige zeiger und kein speicherleck
+(prädikate, rekursives prädikat für speicherbereich)
+  
+funktionale korrektzeit spezifizieren: einfaches equal beispiel 
+(vorher prädikatenlogik-variante ggf)
+(acls-variante zeigen)
+
+
+assertions in seperation logic oder first order logic
+
+
+\section{Abstrakte Datentypen}
+
+induktive datentypen an hand von liste zeigen
+
+
+keine entsprechung in frama-c (beschränktheit prädikatenlogik erster stufe - bäume?)
+
+
+kombination mit rekursiven prädikaten erläutern
+
+
+mismatch-spezifikation zeigen
+
+
+\section{Behaviors}
+
+
+behaviors drücken pre- und postconditions in frama-c lesbarer aus
+
+
+keine alternative dafür in verifast, dafür kann manches kürzer ausgedrückt werden mit hilfe von induktiven datentypen
+
+
+\section{Verifikation von Implementierungen}
+
+Rekursive Implementierung von mismatch
+in verifast
+
+ghost commands
+(prädikate öffnen)
+(präzise prädikate)
+
+
+produce/consume assertions
+toolunterstützung verifast zeigen und erklären
+
+
+in acsl zeigen
+unterschied erklären
+
+
+schleifeninvarianten
+
+

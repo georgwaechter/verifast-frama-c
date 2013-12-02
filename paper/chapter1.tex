@@ -1,11 +1,67 @@
-\chapter{Einleitung}
+﻿\chapter{Einleitung}
 
 \section{Aufgabenstellung und Durchführung}
-(Bewertungskriterien, begrenzte Aussagekraft, durchgängiges Beispiel,
-Zielgruppe,…)
+\todo{Motivation benötigt - wieso Verifikation?}
+Diese Arbeit vergleicht die Verifikationswerkzeuge Verifast und ACSL in Kombination mit Frama-C. 
+Der Fokus liegt dabei auf einfachen Algorithmen, die mit Arrays arbeiten ohne sie zu verändern.
+Dabei wird die Lesbarkeit, Ausdrucksstärke sowie der notwendige manuelle Aufwand der Verifikation betrachtet.
+Für den praktischen Einsatz wichtige Faktoren werden ebenso untersucht. Das sind insbesondere die verfügbare 
+Dokumentation, die dazugehörigen Tools sowie die Lernkurve beim Einsatz der Werkzeuge.
+
+Als durchgängiges Beispiel dient in dieser Arbeit der standardisierte mismatch-Algorithmus aus
+der C++ Standard-Bibliothek. In leicht vereinfachter Form sieht dessen Signatur wie folgt aus:
+
+\lstinputlisting[language=C]{codes/mismatch_signature.c}
+
+Als Grundlage für folgende Formalisierungen verwenden wir folgende informelle Spezifikation:
+
+\todo{Erwähnen, dass return == size, wenn alles identisch?}
+\emph{Vergleicht die Elemente der beiden Arrays beginnend mit 0 bis einschließlich size - 1 und gibt den
+Index der ersten Elemente zurück, die sich unterscheiden.}
+
+Auf Grund des einfachen Beispiels hat der Vergleich nur eine begrenzte Aussagekraft, denn es werden nicht alle
+Spracheigenschaften von Verifast bzw. ACSL gezeigt und verglichen. Zudem kommt hinzu, dass sich beide Werkzeuge
+kontinuierlich - in ihre jeweils eigene Richtung - weiterentwickeln. Es wird also immer Anwendungsfälle geben,
+in denen ein Werkzeug dem anderen überlegen ist oder sogar alternativlos ist.
+
+
 
 \section{Verifast}
 \label{sec:verifast}
 
+KU Löwen university, by bart jacobs
+
+
+for C and java
+
+
+functional correctness
+
+
+seperation logic - angepasste hoare logic
+
+
+malloc/free - keien speicherlöscher
+
+
+multithreading .. z.B. lock free datenstrukturen
+
+
+industrieeinsatz
+
 \section{ACSL und Frama-C}
-\label{acsl}
+\label{acsl-und-frama-c}
+
+ansi/iso-c specification language
+
+
+zusammen mit verifast teil des STANCE projekts
+
+\section{Zielgruppe}
+\label{sec:zielgruppe}
+
+Für das Verstehen der Arbeit sollte der Leser mindestens die Grundlagen der Programmiersprache C beherrschen.
+Theoretische Kenntnisse zur Aussagen- und Prädikatenlogik sind ebenfalls sehr hilfreich.
+
+Idealerweise hat der Leser bereits Erfahrung im Umgang mit ACSL und Frama-C und kann nach dem Lesen dieser Arbeit
+ebenfalls mit Verifast arbeiten. 
