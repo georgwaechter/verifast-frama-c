@@ -4,10 +4,22 @@
 \section{Design by Contract}
 \label{sec:design-by-contract}
 
-spezifikation für methoden 
+Bei der formalen Verifikation geht es darum sicherzustellen, dass ein entsprechendes Stück Software
+funktional korrekt ist. Das wird erreicht, in dem man die Bausteine der Sprache - in C sind es zum Beispiel die Methoden 
+oder Strukturen -
+Stück für Stück formalisiert und verifiziert. Die Signatur einer Methode stellt bereits einen einfachen Vertrag zwischen
+Aufrufenden und Aufrufer dar - Eingabeparameteranzahl und Typ sind festgelegt, genauso wie der Rückgabewert.
+Um auch die funktionalen Aspekte der Methode zu beschreiben, erweitern wir diesen Vereinbarung um sogenannte Vor- und Nachbedingungen.
+Diese beschreiben das Resultat der Methode sowie notwendige Annahmen, die vor dem Aufrufen der Methode gegeben sein müssen. 
+
+Somit entstehen exakte vollständig formalisierte Bausteine, die keinen Raum für Ungenauigkeiten oder Interpretationen zulassen.
+Diese Herangehensweise nennt sich Design by Contract und ist die Grundidee \todo{aller?} vieler Verifikationswerkzeuge.
 
 
 pre und post condition, abstrakte datentypen (siehe 2.)
+
+
+in frama-c zusätzlich noch: globale invarianten
   
   
 pre condition beschreibt annahmen für die ausführung
