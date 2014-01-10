@@ -3,49 +3,177 @@
 
 \section{Design by Contract}
 \label{sec:design-by-contract}
+\subsection{Grundidee}
 
 Bei der formalen Verifikation geht es darum sicherzustellen, dass ein entsprechendes Stück Software
 funktional korrekt ist. Das wird erreicht, in dem man die Bausteine der Sprache - in C sind es zum Beispiel die Methoden 
 oder Strukturen -
 Stück für Stück formalisiert und verifiziert. Die Signatur einer Methode stellt bereits einen einfachen Vertrag zwischen
-Aufrufenden und Aufrufer dar - Eingabeparameteranzahl und Typ sind festgelegt, genauso wie der Rückgabewert.
-Um auch die funktionalen Aspekte der Methode zu beschreiben, erweitern wir diesen Vereinbarung um sogenannte Vor- und Nachbedingungen.
+Aufrufenden und Aufrufer dar - Parameteranzahl und ihre Typen sind festgelegt, genauso wie der Rückgabewert.
+Um auch die funktionalen Aspekte der Methode zu beschreiben, wird diese Vereinbarung um sogenannte Vor- und Nachbedingungen erweitert.
 Diese beschreiben das Resultat der Methode sowie notwendige Annahmen, die vor dem Aufrufen der Methode gegeben sein müssen. 
 
 Somit entstehen exakte vollständig formalisierte Bausteine, die keinen Raum für Ungenauigkeiten oder Interpretationen zulassen.
-Diese Herangehensweise nennt sich Design by Contract und ist die Grundidee \todo{aller?} vieler Verifikationswerkzeuge.
+Diese Herangehensweise nennt sich Design by Contract und ist die Grundidee der meisten Verifikationswerkzeuge.
 
 
-pre und post condition, abstrakte datentypen (siehe 2.)
+
+\subsection{Einfache ACSL-Spezifikation}
+\label{sec:design-by-contract:acsl-spezifikation}
+
+Nachfolgend ist ein einfaches Beispiel einer ACSL-Funktions-Spezifikation dargestellt.
+Die Funktion equal prüft zwei Ganzzahlen-Arrays auf Gleichheit:
+
+\lstinputlisting[language=C]{codes/equal_contract_acsl.c}
+
+Der spezielle @-Präfix in Zeile 1 signalisiert dem Verifikationswerkzeug, 
+dass der folgende Kommentarblock als Verifikations-Annotation zu interpretieren ist. Normale C-Compiler hingegen
+ignorieren den Kommentar.
+
+\todo{gab es in acsl nicht auch assumes?}
+
+Die Vorbedingungen sind in Zeile 2 und 3 zu finden: \lstinline{IsValidRange} ist ein Prädikat, welches hier sicherstellt,
+dass die Zeiger \lstinline{a} und \lstinline{b} gültig sind und auf den Speicherbereich \lstinline{a[0..n]} 
+(von \lstinline{a[0]} bis \lstinline{a[n-1]}) bzw. \lstinline{b[0..n]} zugegriffen 
+werden darf. Zusätzlich verbietet das Prädikat negative Array-Größen.
+
+Die \lstinline{\assigns}-Klausel beschreibt potenzielle Seiteneffekte. Da es sich bei equal um eine nicht mutierende
+Funktion handelt, wird hier kein Speicher verändert.
+
+Der Rückgabewert, identifiziert durch \lstinline{\result}, wird durch die Nachbedingung in Zeile 7 definiert. Er ist genau dann
+wahr, wenn die Ganzzahlen-Arrays \lstinline{a[0..n]} und \lstinline{b[0..n]} elementweise gleich sind. Ansonsten ist der 
+zurückgegebene Bool-Wert falsch. 
+
+Erreicht wird dies mit Hilfe des Prädikats \lstinline{IsEqual}. Dieses wiederum
+nutzt folgende Aussage in Prädikatenlogik (erster Stufe mit Identifikation), um zu definieren wann genau 
+zwei Arrays \lstinline{a} und \lstinline{b} der Länge \lstinline{n} gleich sind:
+\[IsEqual(a, n, b) \equiv \forall(i) (0 \leq i < n \rightarrow a[i] = b[i])\]
+
+Weitere Details zur allgemeinen Funktionsweise als auch speziell zu diesen Prädikaten siehe
+\ref{sec:design-by-contract:predicates}.
 
 
-in frama-c zusätzlich noch: globale invarianten
-  
-  
-pre condition beschreibt annahmen für die ausführung
-  
-  
-post condition beschreibt effekt der methode 
-  (rückgabewert und ggf. seiteneffekte)
 
-  
-partielle korrektheit zeigen (keine funktionale), gültige zeiger und kein speicherleck
-(prädikate, rekursives prädikat für speicherbereich)
-  
-funktionale korrektzeit spezifizieren: einfaches equal beispiel 
-(vorher prädikatenlogik-variante ggf)
-(acls-variante zeigen)
+\subsection{Variante mit Verifast}
+\label{sec:design-by-contract:verifast-variante}
+
+Als Vergleich nun eine semantisch identische Spezifikation in Verifast:
+
+\lstinputlisting[language=C]{codes/equal_contract_verifast.c}
+
+Als erstes fällt die unterschiedliche Platzierung der Annotation auf: In Verifast werden die 
+Annotations-Kommentare nach der Signatur eingefügt. Außerdem müssen alle Vor- und Nachbedingungen
+in nur einer \lstinline{requires} bzw. \lstinline{ensures}-Anweisung zusammengefasst werden.
+
+Eine \lstinline{assigns}-Klausel gibt es zudem auch nicht. Dennoch ist zu erkennen, dass es sich um einen 
+nicht-mutierenden Algorithmus handelt. Anders als in ACSL wird nicht explizit angegeben ob und auf welche 
+Speicherstellen zugegriffen werden darf. Stattdessen wird eine Aussage über den Speicherinhalt selbst getroffen.
+
+Um Aussagen über den Speicherinhalt mit logischen Aussagen zu verbinden, gibt es in Verifast die spezielle 
+Konjunktion \lstinline{&*&}. In diesem Beispiel wird hier z.B. die Vorbedingung \lstinline{n >= 0} mit Aussagen
+zu den Speicherbereichen \lstinline{a[0..n]} und \lstinline{b[0..n]} verknüpft.
+
+Der \lstinline{x |-> y} Operator bedeutet dabei, dass die Speicherstelle \lstinline{x} den Inhalt \lstinline{y} hat.
+Unbekannte Werte werden dabei über eine Mustererkennung (engl. pattern matching) ergänzt. Die Klausel
+\lstinline{a[0..n] |-> ?al} hat damit zwei Aufgaben: Der erste Teil stellt sicher, dass der Zeiger a und
+der dahinterliegende Speicherbereich \lstinline{a[0..n]} gültig ist; der zweite identifiziert eben diesen 
+Speicherbereich und bindet ihn an die Variable \lstinline{al}.
+Verifast erlaubt es nun im Gegensatz zu ACSL auf diese Variablen auch in den Nachbedingungen zuzugreifen. Damit
+hat man nun ein Mittel, mit dem man Seiteneffekte exakt beschreiben sowie Speicherbereiche vergleichen kann.
+
+Die Klauseln \lstinline{a[0..n] |-> al} und \lstinline{b[0..n] |-> bl} in Zeile 3 stellen nun sicher, dass der
+Speicher unverändert bleibt. Der Rückgabewert wird in Verifast mit \lstinline{result} (ohne vorangestellten 
+Backslash wie in ACSL) bezeichnet. Der Ausdruck \lstinline{result == (al == bl)} bedeutet also, dass der von der Funktion
+zurückgegebene Wert genau dann wahr ist, wenn die Speicherbereiche \lstinline{al} und \lstinline{bl} gleich sind.
+
+Die Verifast-Spezifikation hat also tatsächlich die gleiche Semantik, erreicht diese aber auf eine ganz andere
+Art und Weise.
 
 
-assertions in seperation logic oder first order logic
+
+\subsection{Einfache und rekursive Prädikate}
+\label{sec:design-by-contract:predicates}
+
+Prädikate sind ein grundlegendes Abstraktionsmittel in ACSL und Verifast. Sie ermöglichen die Wiederverwendung
+von Spezifikations-Teilen und nicht zuletzt verbessern sie auch wesentlich die Lesbarkeit.
+
+Weiter oben wurde das Prädikat \lstinline{IsEqual} definiert, hier sei nun exemplarisch die ACSL-Notation
+für diese Aussage dargestellt:
+
+\lstinputlisting[language=C]{codes/equal_predicate_acsl.c}
+
+Die Annotation ist eine direkte Umsetzung der Formel von oben - die Interpretation ist klar verständlich für 
+jeden, der prädikatenlogische Formeln lesen kann. Erwähnenswert ist noch die Verwendung des generischen Typen
+\lstinline{value_type}, der das Prädikat auch für anderen primitive Typen wie \lstinline{long} oder
+\lstinline{short} anwendbar macht.
+
+\todo{in acsl gibt es induktive prädikate, die ähnliches erlauben}
+In Verifast sind neben solch einfachen Prädikaten auch rekursive möglich. Damit ergibt sich die Möglichkeit
+sogar unbegrenzte Datenstrukturen zu beschreiben \todo{referenz auf verifast-tutorial seite 9, chapter 7}. In dieser
+Arbeit sind allerdings nur Arrays mit bekannter Länge Untersuchungsgegenstand. Doch auch für diese sind
+rekursive Prädikate in Verifast die natürliche Art der Beschreibung. Beispielsweise können Ganzzahl-Arrays
+wie folgt definiert werden:
+
+\lstinputlisting[language=C]{codes/int_array_verifast.c}
+ 
+Das Prädikat verweist solange auf sich selbst bis \lstinline{count <= 0}. Dass jede Speicherstelle tatsächlich
+gültig ist, stellt das in Verifast eingebaute Prädikat \lstinline{integer} sicher. In dieser Form ist das Prädikat
+\lstinline{int_array} nun praktisch identisch mit der \lstinline{IsValidRange}-Variante aus der ACSL-Spezifikation, 
+die in \ref{sec:design-by-contract:acsl-spezifikation} zu sehen war.
+
+Auffällig ist an der Stelle noch die Verwendung des \lstinline{_}-Zeichens in Zeile 3. Wie in vielen anderen 
+Sprachen auch bezeichnet es eine anonyme Variable, die an dieser Stelle zwar angegeben werden muss, aber deren 
+Inhalt nicht weiter interessiert. 
+
+Wird das \lstinline{integer} Prädikat ohne anonyme Variable verwendet, bedeutet der Aufruf von 
+\lstinline{integer(start, ?s)} so viel wie \lstinline{*start |-> ?s}. Allerdings erlaubt Verifast
+den Einsatz des \lstinline{|->} Operators nicht zusammen mit der Derefenzierung eines einzelnen
+Ganzzahl-Wertes.
+
+Tatsächlich ist der Einsatz des \lstinline{int_array(a, n)} Prädikats äquivalent mit der Schreibweise 
+von \lstinline{a[0..n] |-> _}, denn Verifast behandelt die Array-Notation intern wie ein rekursives
+Prädikat.
+
+Eine erweiterte Fassung dieses Prädikats wird weiter unten in \todo{referenz detaillierter auflösen}
+\ref{sec:abstrakte-datentypen} beschrieben.
+
+
+
+\subsection{Partielle Spezifikationen}
+\label{sec:design-by-contract:partielle-korrektheit}
+
+Das Ziel der in \ref{sec:design-by-contract:acsl-spezifikation} vorgestellten Spezifikation war die
+vollständige funktionale Definition, damit kein Raum für Interpretationen frei bleibt. Allerdings ist
+das nicht immer gewünscht oder gar nicht das Ziel - für das Aufspüren von Null-Zeiger-Ausnahmen 
+oder Speicherlöchern z.B. reicht ein eingeschränkter Funktionsvertrag. Funktionale Aspekte werden dafür 
+weggelassen oder ggf. vereinfacht:
+
+\lstinputlisting[language=C]{codes/equal_partial_contract_verifast.c}
+ 
+Diese Spezifikation ist immer noch korrekt für eine equal-Implementierung, stellt aber selber nur sicher,
+dass die Zeiger gültig sind und auf den Speicherbereich zugegriffen werden darf. Der Rückgabewert sowie 
+der nicht mutierender Charakter des Algorithmus ist nun nicht mehr formalisiert. 
+
+Denkbar ist es auch nur die mögliche Aufrufreihenfolge (einer gedachten Zustandsmaschine) zu verifizieren,
+ohne alle weiteren Nachbedingungen und Ergebnisse zu formalisieren.
+
 
 
 \section{Abstrakte Datentypen}
+\label{sec:abstrakte-datentypen}
 
 induktive datentypen an hand von liste zeigen
+recursive logic definitions in acsl
+in verifast sind listen aber wichtiger, da es keine quantoren gibt
+zudem ist es einfacher mit abstrakten datentypen zu arbeiten, da für diese viele (bereits bewiesene)
+hilfsfunktionen existieren
+in acsl gibt es auch typen (in verifast wären das prädikate?) .. hier nicht genauer erklärt 
 
+zeigen dass a[0..n] |-> ?al andere schreibweise für rekursives prädikat ints(a, n, ?al) ist
 
-keine entsprechung in frama-c (beschränktheit prädikatenlogik erster stufe - bäume?)
+generics auch hier bei listen in verifast
+
+keine entsprechung in frama-c (beschränktheit prädikatenlogik erster stufe - liste von listen?)
 
 
 kombination mit rekursiven prädikaten erläutern

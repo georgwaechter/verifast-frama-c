@@ -1,1 +1,1 @@
-int mismatch(int *a, int *b, int size);
+int mismatch(const int *a, const int *b, int size);

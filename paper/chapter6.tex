@@ -1,0 +1,18 @@
+\chapter{Anhang}
+\section{Syntax-Unterschiede}
+
+Signaturen folgen den Annotationen  	in acsl andersrum
+Invarianten folgenen den Annotationen	in frama andersrum
+<==>		== (gibt es eine entsprechung? ... bibimplikation)
+\\result		result
+//@ bzw. /*@ .. @*/ 		in frama /*@ .. */
+loop invariant		invariant
+loop variant		decreases
+
+\section{Semantik-Unterschiede}
+
+verifast unterstützt generics, frama?
+
+
+verifast verifiziert speichert-allokationne per malloc/free
+frama-c hingegen verifiziert lediglich gewünschte oder ungewünchte änderungen im speicher
