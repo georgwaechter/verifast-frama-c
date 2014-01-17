@@ -1,9 +1,9 @@
 ﻿
 \chapter{Grundkonzepte}
 
-\section{Design by Contract}
+\section{Spezifikationen und Prädikate}
 \label{sec:design-by-contract}
-\subsection{Grundidee}
+\subsection{Design by Contract}
 
 Bei der formalen Verifikation geht es darum sicherzustellen, dass ein entsprechendes Stück Software
 funktional korrekt ist. Das wird erreicht, in dem man die Bausteine der Sprache - in C sind es zum Beispiel die Methoden 
@@ -18,7 +18,7 @@ Diese Herangehensweise nennt sich Design by Contract und ist die Grundidee der m
 
 
 
-\subsection{Einfache ACSL-Spezifikation}
+\subsection{ACSL-Spezifikation für equal}
 \label{sec:design-by-contract:acsl-spezifikation}
 
 Nachfolgend ist ein einfaches Beispiel einer ACSL-Funktions-Spezifikation dargestellt.
@@ -84,18 +84,19 @@ hat man nun ein Mittel, mit dem man Seiteneffekte exakt beschreiben sowie Speich
 Die Klauseln \lstinline{a[0..n] |-> al} und \lstinline{b[0..n] |-> bl} in Zeile 3 stellen nun sicher, dass der
 Speicher unverändert bleibt. Der Rückgabewert wird in Verifast mit \lstinline{result} (ohne vorangestellten 
 Backslash wie in ACSL) bezeichnet. Der Ausdruck \lstinline{result == (al == bl)} bedeutet also, dass der von der Funktion
-zurückgegebene Wert genau dann wahr ist, wenn die Speicherbereiche \lstinline{al} und \lstinline{bl} gleich sind.
+zurückgegebene Wert genau dann wahr ist, wenn die Inhalte der Speicherbereiche \lstinline{al} und \lstinline{bl} 
+gleich sind.
 
-Die Verifast-Spezifikation hat also tatsächlich die gleiche Semantik, erreicht diese aber auf eine ganz andere
-Art und Weise.
+Die Verifast-Spezifikation hat also tatsächlich die gleiche Semantik, erreicht dies aber wegen der zu Grunde
+liegenden Seperation Logic auf eine andere Art und Weise.
 
 
 
 \subsection{Einfache und rekursive Prädikate}
 \label{sec:design-by-contract:predicates}
 
-Prädikate sind ein grundlegendes Abstraktionsmittel in ACSL und Verifast. Sie ermöglichen die Wiederverwendung
-von Spezifikations-Teilen und nicht zuletzt verbessern sie auch wesentlich die Lesbarkeit.
+Prädikate sind ein grundlegendes Abstraktionsmittel zum Zusammenfassen und Wiederverwenden von logischen 
+Formeln in ACSL und Verifast.
 
 Weiter oben wurde das Prädikat \lstinline{IsEqual} definiert, hier sei nun exemplarisch die ACSL-Notation
 für diese Aussage dargestellt:
@@ -103,9 +104,7 @@ für diese Aussage dargestellt:
 \lstinputlisting[language=C]{codes/equal_predicate_acsl.c}
 
 Die Annotation ist eine direkte Umsetzung der Formel von oben - die Interpretation ist klar verständlich für 
-jeden, der prädikatenlogische Formeln lesen kann. Erwähnenswert ist noch die Verwendung des generischen Typen
-\lstinline{value_type}, der das Prädikat auch für anderen primitive Typen wie \lstinline{long} oder
-\lstinline{short} anwendbar macht.
+jeden, der prädikatenlogische Formeln lesen kann.
 
 \todo{in acsl gibt es induktive prädikate, die ähnliches erlauben}
 In Verifast sind neben solch einfachen Prädikaten auch rekursive möglich. Damit ergibt sich die Möglichkeit
@@ -139,28 +138,64 @@ Eine erweiterte Fassung dieses Prädikats wird weiter unten in \todo{referenz de
 
 
 
-\subsection{Partielle Spezifikationen}
+\subsection{Reduzierte Spezifikationen: Robustheit als Ziel}
 \label{sec:design-by-contract:partielle-korrektheit}
 
 Das Ziel der in \ref{sec:design-by-contract:acsl-spezifikation} vorgestellten Spezifikation war die
 vollständige funktionale Definition, damit kein Raum für Interpretationen frei bleibt. Allerdings ist
-das nicht immer gewünscht oder gar nicht das Ziel - für das Aufspüren von Null-Zeiger-Ausnahmen 
-oder Speicherlöchern z.B. reicht ein eingeschränkter Funktionsvertrag. Funktionale Aspekte werden dafür 
+das nicht immer gewünscht: Soll die Robustheit der Software sichergestellt werden, so ist das Aufspüren 
+von potenziellen Null-Zeiger-Ausnahmen oder Speicherlöchern das Ziel und nicht die funktionale
+Korrektheit. Für ersteres reicht eine reduzierte Spezifikation - funktionale Aspekte werden dabei 
 weggelassen oder ggf. vereinfacht:
 
 \lstinputlisting[language=C]{codes/equal_partial_contract_verifast.c}
  
 Diese Spezifikation ist immer noch korrekt für eine equal-Implementierung, stellt aber selber nur sicher,
 dass die Zeiger gültig sind und auf den Speicherbereich zugegriffen werden darf. Der Rückgabewert sowie 
-der nicht mutierender Charakter des Algorithmus ist nun nicht mehr formalisiert. 
+der nicht mutierender Charakter des Algorithmus ist nun nicht mehr formalisiert.
 
-Denkbar ist es auch nur die mögliche Aufrufreihenfolge (einer gedachten Zustandsmaschine) zu verifizieren,
-ohne alle weiteren Nachbedingungen und Ergebnisse zu formalisieren.
+Denkbar ist auch die Verifizierung der gültigen Aufrufreihenfolge (einer gedachten Zustandsmaschine),
+ohne alle weiteren Nachbedingungen und Ergebnisse zu formalisieren. Somit kann sichergestellt werden,
+dass sich die Zustandsmaschine niemals in einem ungültigen Zustand befindet. Ansonsten erforderliche
+Laufzeit-Überprüfungen können wegfallen.
+
+
+
+\subsection{Lesbarkeit von Spezifikationen}
+\label{sec:design-by-contract:behaviors}
+
+In ACSL gibt es die Möglichkeit mehrere (meist disjunkte) Fälle innerhalb einer Spezifikation getrennt
+aufzuschreiben. Das erleichtert die Lesbarkeit erheblich, da man für jeden Fall die Vor- und Nachbedingungen
+einzeln lesen kann.
+
+Folgende Spezifikation von equal ist eine Variante in ACSL ohne \lstinline{IsEqual}-Prädikat:
+
+\lstinputlisting[language=C]{codes/equal_behavior_acsl.c}
+
+Die Fall \lstinline{all_equal} in Zeile 7 tritt dann ein, wenn beide Ganzzahl-Arrays gleich sind. Das Gegenteil
+\lstinline{some_not_equal} ist in Zeile 11 definiert, die jeweiligen Vorbedingungen in Form von
+prädikatenlogischen Formeln finden sich als \lstinline{assumes}-Anweisungen wieder. Besonders anzumerken ist,
+dass die Anweisungen \lstinline{complete behaviors} bzw. \lstinline{disjoint behaviors} dafür sorgen, dass
+alle Fälle abgedeckt sowie disjunkt sind.
+
+In Verifast ist das nur manuell zu erreichen, allerdings mit vergleichsweise wesentlich längeren logischen Formeln.
+Reicht es in ACSL die Fälle \lstinline{a, b, c} als \lstinline{behavior} aufzulisten und per \lstinline{disjoint behaviors}
+zu verknüpfen, so muss in Verifast die folgende Formel geschrieben werden:
+\[(a \land \neg b \land \neg c) \lor (\neg a \land b \land \neg c) \lor (\neg a \land \neg b \land c)\]
+
+Das wichtigste Abstraktionsmittel sind jedoch die Prädikate. Für die \lstinline{equal}-Spezifikation ist 
+z.B. bei Verwendung des \lstinline{IsEqual}-Prädikats gar kein Behavior mehr notwendig,
+siehe \ref{sec:design-by-contract:acsl-spezifikation}. Außerdem ist die Spezifikation nun besser verständlich,
+nicht nur weil sie kürzer ist, auch weil die Prädikatenformel verschwunden ist. Damit kann sie nun mindestens
+oberflächlich auch dann verstanden werden, wenn man keine prädikatenlogischen Formeln lesen kann oder möchte.
 
 
 
 \section{Abstrakte Datentypen}
 \label{sec:abstrakte-datentypen}
+
+
+Wenn man sich die Typen der Verifast-Spezifikation für equal nochmal 
 
 induktive datentypen an hand von liste zeigen
 recursive logic definitions in acsl
@@ -197,6 +232,7 @@ Rekursive Implementierung von mismatch
 in verifast
 
 ghost commands
+prädikate sind in verifast auch typen
 (prädikate öffnen)
 (präzise prädikate)
 
