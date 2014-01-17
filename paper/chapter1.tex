@@ -1,7 +1,8 @@
 ﻿\chapter{Einleitung}
 
 \section{Aufgabenstellung und Durchführung}
-Diese Arbeit vergleicht die Verifikationswerkzeuge Verifast und ACSL in Kombination mit Frama-C. 
+\label{sec:aufgabenstellung}
+Diese Arbeit vergleicht die statischen Verifikationswerkzeuge Verifast und ACSL in Kombination mit Frama-C. 
 Der Fokus liegt dabei auf einfachen Algorithmen, die mit Arrays arbeiten ohne sie zu verändern.
 Dabei wird die Lesbarkeit, Ausdrucksstärke sowie der notwendige manuelle Aufwand der Verifikation betrachtet.
 Für den praktischen Einsatz wichtige Faktoren werden ebenso untersucht. Das sind insbesondere die verfügbare 
@@ -9,6 +10,7 @@ Dokumentation, die dazugehörigen Tools sowie die Lernkurve beim Einsatz der Wer
 
 Als durchgängiges Beispiel dient in dieser Arbeit der standardisierte mismatch-Algorithmus aus
 der C++ Standard-Bibliothek. In leicht vereinfachter Form sieht dessen Signatur wie folgt aus:
+
 
 \lstinputlisting[language=C]{codes/mismatch_signature.c}
 
