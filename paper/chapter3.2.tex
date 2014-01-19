@@ -1,6 +1,6 @@
 ﻿\section{Spezifikationen und induktive Datentypen für mismatch}
-\label{sec:induktive-datentypen}
 \subsection{Induktive Listen mit Verifast}
+\label{sec:induktive-listen}
 
 Schaut man sich die Verifast-Spezifikation von \lstinline{equal} genauer an, fällt auf, dass es 
 möglich ist die Inhalte der zwei Speicherbereiche mit \lstinline{==} (siehe Zeile 3) zu vergleichen. 
@@ -22,12 +22,12 @@ Induktive Typen können wie folgt definiert werden - hier die \lstinline{list}-D
 
 Um zu verstehen wie diese eingesetzt werden, wird das offizielle Verifast \lstinline{ints}-Prädikat genauer
 erläutert. Dieses wurde oben bereits verwendet, denn es ist tatsächlich nur eine andere Schreibweise für die 
-lesbarere Array-Notation. Das Binden der Inhalte aus dem Array \lstinline{a} ist darum auch via 
+lesbarere Array-Notation. Das Binden der Inhalte aus dem Array \lstinline{a} ist darum auch alternativ via 
 \lstinline{ints(a, n, ?al)} möglich.
 
 Nachfolgend ist das rekursive \lstinline{ints}-Prädikat abgebildet. Gut zu erkennen ist dabei
-wie die \lstinline{intlist} Stück für Stück rekursiv aufgebaut wird mit Hilfe der Konstruktoren
-\lstinline{cons} bzw. \lstinline{nil}.
+wie die \lstinline{intlist} Stück für Stück rekursiv mit Hilfe der Konstruktoren
+\lstinline{cons} bzw. \lstinline{nil} erzeugt wird.
 
 \lstinputlisting[language=C]{codes/ints_predicate_verifast.c}
 
@@ -55,8 +55,8 @@ nicht unterstützt (siehe \ref{sec:design-by-contract:behaviors}). Die Zeile 3 k
 in einem, was die Lesbarkeit etwas beeinträchtigt - das Resultat ist dafür sehr kompakt.
 
 Da Verifast keine Prädikatenlogik kennt, gibt es weder Quantoren noch Implikation. Am Ende der
-Nachbedingung beispielsweise möchte man \((result < n) \rightarrow al[result] \neq  bl[result]\)
-schreiben, kann es dann aber nur wie folgt ausdrücken: 
+Nachbedingung beispielsweise möchte man intuitiv \((result < n) \rightarrow al[result] \neq  bl[result]\)
+schreiben, kann es aber nur wie folgt ausdrücken: 
 \lstinline{result < n ? nth(result, al) != nth(result, bl) : true}.
 
 Die ACSL-Umsetzung hingegen ist wesentlich länger und verwendet Behaviors:
@@ -86,19 +86,17 @@ weiter zu verwenden - die Sprachmittel von Verifast (wie die Array-Notation in K
 \lstinline{|->} Operator) drängen einen also mehr als ACSL dazu induktive 
 Datentypen zu nutzen.
 
-Der Vorteil ist eine höherer Grad der Abstraktion, denn Aussagen über Listen wie z.B.
+Der Vorteil ist ein höherer Grad der Abstraktion, denn Aussagen über Listen wie z.B.
 \lstinline{result < n ? nth(result, al) != nth(result, bl)} haben keine Abhängigkeit mehr zu
 dem Eingabeparameter \lstinline{const int a*}. Damit hätte ein Wechsel der Datenstruktur von Arrays
 hin zu verketteten Listen nur einen kleinen Einfluss auf die Spezifikation. Es wäre tatsächlich ausreichend
 die Bindung der Arrays in die induktive Liste zu ändern. Statt \lstinline{a[0..n] |-> ?al} würde man also
-z.B. ein Prädikat \lstinline{linked_list} verwenden: \lstinline{linked_list(a, n, ?al)}.
-Der Rest der Spezifikation kann unverändert bleiben.
+z.B. ein Prädikat \lstinline{linked_list} verwenden: \lstinline{linked_list(a, n, ?al)}. Der Rest der 
+Spezifikation kann unverändert bleiben.
 
 \todo{recursive logic definitions in acsl zeigen?}
 Andersrum sieht es ähnlich aus - auch in ACSL wäre es möglich induktive Datentypen zu verwenden, doch
-ist das an der Stelle unnötig, da die Quantoren der Prädikatenlogik zur Beschreibung genügen. Der Umstieg
-von ACSL auf Verifast erfordert daher ein Umdenken, damit die Verifizierung nicht durch einen ineffizenten
-Einsatz der Sprachmittel unnötig erschwert wird.
+ist das an der Stelle unnötig, da die Quantoren der Prädikatenlogik zur Beschreibung genügen. 
+Der Umstieg von ACSL auf Verifast oder andersrum erfordert daher ein Umdenken, damit die Verifizierung 
+nicht durch einen ineffizenten Einsatz der Sprachmittel unnötig erschwert wird.
 
-\todo{seiteneffekte werden unterschiedlich beschrieben, manchmal ist assigns einfacher, z.B. bei der definition von max?}
-\todo{ob es seiteneffekte gibt ist bei assigns auch einfacher rauszulesen!}

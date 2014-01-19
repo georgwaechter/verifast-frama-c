@@ -145,12 +145,11 @@ Tatsächlich ist der Einsatz des \lstinline{int_array(a, n)} Prädikats äquival
 von \lstinline{a[0..n] |-> _}, denn Verifast behandelt die Array-Notation intern wie ein rekursives
 Prädikat.
 
-Eine erweiterte Fassung dieses Prädikats wird weiter unten in \todo{referenz detaillierter auflösen}
-\ref{sec:abstrakte-datentypen} beschrieben.
+Die vollständige Fassung dieses Prädikats wird weiter unten in \ref{sec:induktive-listen} beschrieben.
 
 
 
-\subsection{Reduzierte Spezifikationen: Robustheit als Ziel}
+\subsection{Unvollständige Spezifikationen: Robustheit als Ziel}
 \label{sec:design-by-contract:partielle-korrektheit}
 
 Das Ziel der in \ref{sec:design-by-contract:acsl-spezifikation} vorgestellten Spezifikation war die
@@ -162,7 +161,7 @@ weggelassen oder ggf. vereinfacht:
 
 \lstinputlisting[language=C]{codes/equal_partial_contract_verifast.c}
  
-Diese Spezifikation ist immer noch korrekt für eine equal-Implementierung, stellt aber selber nur sicher,
+Diese Spezifikation ge ist immer noch korrekt für eine equal-Implementierung, stellt aber selber nur sicher,
 dass die Zeiger gültig sind und auf den Speicherbereich zugegriffen werden darf. Der Rückgabewert sowie 
 der nicht mutierender Charakter des Algorithmus ist nun nicht mehr formalisiert.
 
@@ -184,19 +183,26 @@ Folgende Spezifikation von equal ist eine Variante in ACSL ohne \lstinline{IsEqu
 
 \lstinputlisting[language=C]{codes/equal_behavior_acsl.c}
 
-Die Fall \lstinline{all_equal} in Zeile 7 tritt dann ein, wenn beide Ganzzahl-Arrays gleich sind. Das Gegenteil
-\lstinline{some_not_equal} ist in Zeile 11 definiert, die jeweiligen Vorbedingungen in Form von
+Der Fall \lstinline{all_equal} in Zeile 7 tritt dann ein, wenn beide Ganzzahl-Arrays gleich sind. Das 
+Gegenteil \lstinline{some_not_equal} ist in Zeile 11 definiert, die jeweiligen Bedingungen in Form von
 prädikatenlogischen Formeln finden sich als \lstinline{assumes}-Anweisungen wieder. Besonders anzumerken ist,
 dass die Anweisungen \lstinline{complete behaviors} bzw. \lstinline{disjoint behaviors} dafür sorgen, dass
 alle Fälle abgedeckt sowie disjunkt sind.
 
-In Verifast ist das nur manuell zu erreichen, allerdings mit vergleichsweise wesentlich längeren logischen Formeln.
-Reicht es in ACSL die Fälle \lstinline{a, b, c} als \lstinline{behavior} aufzulisten und per \lstinline{disjoint behaviors}
-zu verknüpfen, so muss in Verifast die folgende Formel geschrieben werden:
+In Verifast ist das nur manuell zu erreichen, allerdings mit vergleichsweise längeren Ausdrücken. Reicht 
+es in ACSL die \lstinline{assumes}-Fälle \lstinline{a, b, c} als \lstinline{behavior} 
+aufzulisten und per \lstinline{disjoint behaviors} zu verknüpfen, so muss in Verifast die folgende
+Formel geschrieben werden:
 \[(a \land \neg b \land \neg c) \lor (\neg a \land b \land \neg c) \lor (\neg a \land \neg b \land c)\]
 
-Das wichtigste Abstraktionsmittel sind jedoch die Prädikate. Für die \lstinline{equal}-Spezifikation ist 
-z.B. bei Verwendung des \lstinline{IsEqual}-Prädikats gar kein Behavior mehr notwendig,
-siehe \ref{sec:design-by-contract:acsl-spezifikation}. Außerdem ist die Spezifikation nun besser verständlich,
-nicht nur weil sie kürzer ist, auch weil die Prädikatenformel verschwunden ist. Damit kann sie nun mindestens
-oberflächlich auch dann verstanden werden, wenn man keine prädikatenlogischen Formeln lesen kann oder möchte.
+Die wichtigsten Abstraktionsmittel sind jedoch in Verifast als auch ACSL die Prädikate. 
+Für die \lstinline{equal}-Spezifikation ist z.B. bei Verwendung des \lstinline{IsEqual}-Prädikats gar kein Behavior mehr notwendig,
+siehe \ref{sec:design-by-contract:acsl-spezifikation}. Solch eine Spezifikation ist besser 
+verständlich, nicht nur weil sie kürzer ist, auch weil die Prädikatenformel verschwunden ist. 
+Damit kann sie nun mindestens oberflächlich auch dann verstanden werden, wenn kein 
+prädikatenlogisches Wissen vorhanden ist.
+
+Die Definition der möglichen Seiteneffekte ist in den Sprachen unterschiedlich gelöst. In ACSL
+ist an Hand der \lstinline{assigns \nothing} Klausel sofort ersichtlich, dass keine Speichermanipulation
+erfolgt. Dieser Aspekt ist in Verifast nicht so schnell zu erfassen.
+
