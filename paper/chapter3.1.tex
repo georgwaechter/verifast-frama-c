@@ -30,8 +30,6 @@ Der spezielle @-Präfix in Zeile 1 signalisiert dem Verifikationswerkzeug,
 dass der folgende Kommentarblock als Verifikations-Annotation zu interpretieren ist. Normale C-Compiler hingegen
 ignorieren den Kommentar.
 
-\todo{gab es in acsl nicht auch assumes?}
-
 Die Vorbedingungen sind in Zeile 2 und 3 zu finden: \lstinline{IsValidRange} ist ein Prädikat, welches hier sicherstellt,
 dass die Zeiger \lstinline{a} und \lstinline{b} gültig sind und auf den Speicherbereich \lstinline{a[0..n]} 
 (von \lstinline{a[0]} bis \lstinline{a[n-1]}) bzw. \lstinline{b[0..n]} zugegriffen 
@@ -61,6 +59,7 @@ Als Vergleich nun eine semantisch identische Spezifikation in Verifast:
 
 \lstinputlisting[language=C]{codes/equal_contract_verifast.c}
 
+\todo{vergleich mit valid aus acsl einbringen, speziell mit valid array notation}
 Als erstes fällt die unterschiedliche Platzierung der Annotation auf: In Verifast werden die 
 Annotations-Kommentare nach der Signatur eingefügt. Außerdem müssen alle Vor- und Nachbedingungen
 in nur einer \lstinline{requires} bzw. \lstinline{ensures}-Anweisung zusammengefasst werden.
@@ -90,8 +89,10 @@ gleich sind.
 Die Verifast-Spezifikation hat also tatsächlich die gleiche Semantik, erreicht dies aber wegen der zu Grunde
 liegenden Seperation Logic auf eine andere Art und Weise.
 
+\todo{erklären, dass speicher so grundlegend ist in verifast, dass der eingehende speicher immer explizit in der nachbedingung auftauchen muss - oder geleakt werden muss}
 
-
+\todo{erklären, dass verwendung von acsl old nicht notwendig ist, da durch mustererkennung alte werte in variablen gecshrieben werden können, die auch in nachbedingung gültig sind}
+ 
 \subsection{Einfache und rekursive Prädikate}
 \label{sec:design-by-contract:predicates}
 
