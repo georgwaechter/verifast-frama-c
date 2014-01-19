@@ -36,7 +36,7 @@ dass die Zeiger \lstinline{a} und \lstinline{b} gültig sind und auf den Speiche
 werden darf. Zusätzlich verbietet das Prädikat negative Array-Größen.
 
 Die \lstinline{\assigns}-Klausel beschreibt potenzielle Seiteneffekte. Da es sich bei equal um eine nicht mutierende
-Funktion handelt, wird hier kein Speicher verändert.
+Funktion handelt, wird kein Speicherinhalt (\lstinline{\nothing}) verändert.
 
 Der Rückgabewert, identifiziert durch \lstinline{\result}, wird durch die Nachbedingung in Zeile 7 definiert. Er ist genau dann
 wahr, wenn die Ganzzahlen-Arrays \lstinline{a[0..n]} und \lstinline{b[0..n]} elementweise gleich sind. Ansonsten ist der 
@@ -52,47 +52,57 @@ Weitere Details zur allgemeinen Funktionsweise als auch speziell zu diesen Präd
 
 
 
-\subsection{Variante mit Verifast}
+\subsection{Vergleich mit Verifast-Spezifikation}
 \label{sec:design-by-contract:verifast-variante}
 
 Als Vergleich nun eine semantisch identische Spezifikation in Verifast:
 
 \lstinputlisting[language=C]{codes/equal_contract_verifast.c}
 
-\todo{vergleich mit valid aus acsl einbringen, speziell mit valid array notation}
 Als erstes fällt die unterschiedliche Platzierung der Annotation auf: In Verifast werden die 
-Annotations-Kommentare nach der Signatur eingefügt. Außerdem müssen alle Vor- und Nachbedingungen
-in nur einer \lstinline{requires} bzw. \lstinline{ensures}-Anweisung zusammengefasst werden.
+Annotations-Kommentare nach der Signatur augeführt und nicht davor. Außerdem müssen alle Vor- und 
+Nachbedingungen in nur einer einzigen \lstinline{requires} bzw. \lstinline{ensures}-Anweisung 
+zusammengefasst werden.
 
-Eine \lstinline{assigns}-Klausel gibt es zudem auch nicht. Dennoch ist zu erkennen, dass es sich um einen 
+Eine \lstinline{assigns}-Klausel taucht auch nicht auf. Dennoch ist erkennbar, dass es sich um einen 
 nicht-mutierenden Algorithmus handelt. Anders als in ACSL wird nicht explizit angegeben ob und auf welche 
-Speicherstellen zugegriffen werden darf. Stattdessen wird eine Aussage über den Speicherinhalt selbst getroffen.
+Speicherstellen zugegriffen werden darf. Stattdessen wird eine Aussage über den Speicherinhalt selbst 
+getroffen. Der \lstinline{x |-> y} Operator (engl. points-to) spielt dabei eine wichtige Rolle. Er gibt an, 
+dass die Speicherstelle \lstinline{x} den Inhalt \lstinline{y} hat. Gleichzeitig stellt Verifast sicher, 
+dass der Zeiger \lstinline{x} gültig ist - analog zur \lstinline{\valid(x)} Anweisung aus ACSL.
 
-Um Aussagen über den Speicherinhalt mit logischen Aussagen zu verbinden, gibt es in Verifast die spezielle 
-Konjunktion \lstinline{&*&}. In diesem Beispiel wird hier z.B. die Vorbedingung \lstinline{n >= 0} mit Aussagen
-zu den Speicherbereichen \lstinline{a[0..n]} und \lstinline{b[0..n]} verknüpft.
-
-Der \lstinline{x |-> y} Operator bedeutet dabei, dass die Speicherstelle \lstinline{x} den Inhalt \lstinline{y} hat.
 Unbekannte Werte werden per Mustererkennung (engl. pattern matching) ergänzt. Die Klausel
-\lstinline{a[0..n] |-> ?al} hat damit zwei Aufgaben: Der erste Teil stellt sicher, dass der Zeiger a und
-der dahinterliegende Speicherbereich \lstinline{a[0..n]} gültig ist; der zweite identifiziert eben diesen 
-Speicherbereich und bindet ihn an die Variable \lstinline{al}.
-Verifast erlaubt es nun im Gegensatz zu ACSL auf diese Variablen auch in den Nachbedingungen zuzugreifen. Damit
-hat man nun ein Mittel, mit dem man Seiteneffekte exakt beschreiben sowie Speicherbereiche vergleichen kann.
+\lstinline{a[0..n] |-> ?al} hat damit zwei Aufgaben: Sicherstellen, dass die Zeiger \lstinline{a[0..n]}
+gültig sind; sowie den dahinterliegenden Speicherinhalt identifizieren und an die Variable \lstinline{al}
+binden. Verifast erlaubt die Verwendung dieser Variablen sogar in den Nachbedingungen. Damit hat man ein 
+adäquates Mittel, um alte Werte (aus der Zeit des Methodenaufrufes) zu verwenden, um Seiteneffekte zu
+beschreiben sowie Speicherinhalte zu vergleichen. In ACSL wäre für eine ähnliche Herangehensweise
+die Verwendung von \lstinline{\old} notwendig.
 
-Die Klauseln \lstinline{a[0..n] |-> al} und \lstinline{b[0..n] |-> bl} in Zeile 3 stellen nun sicher, dass der
-Speicher unverändert bleibt. Der Rückgabewert wird in Verifast mit \lstinline{result} (ohne vorangestellten 
-Backslash wie in ACSL) bezeichnet. Der Ausdruck \lstinline{result == (al == bl)} bedeutet also, dass der von der Funktion
-zurückgegebene Wert genau dann wahr ist, wenn die Inhalte der Speicherbereiche \lstinline{al} und \lstinline{bl} 
-gleich sind.
+Aussagen über den Speicherinhalt werden in Verifast mit der speziellen Konjunktion \lstinline{&*&} 
+verbunden. In diesem Beispiel wird hier z.B. die Vorbedingung \lstinline{n >= 0} mit Aussagen zu den 
+Speicherbereichen \lstinline{a[0..n]} und \lstinline{b[0..n]} verknüpft. Der \lstinline{&&} Operator 
+existiert zusätzlich für logische Verknüpfungen.
 
-Die Verifast-Spezifikation hat also tatsächlich die gleiche Semantik, erreicht dies aber wegen der zu Grunde
-liegenden Seperation Logic auf eine andere Art und Weise.
+Die Klauseln \lstinline{a[0..n] |-> al} und \lstinline{b[0..n] |-> bl} in Zeile 3 stellen nun also sicher, 
+dass der Speicherinhalt unverändert bleibt. Der Rückgabewert wird in Verifast mit \lstinline{result} 
+(ohne vorangestellten Backslash wie in ACSL) bezeichnet. Der Ausdruck \lstinline{result == (al == bl)} 
+bewirkt, dass der von der Funktion zurückgegebene Wert genau dann wahr ist, wenn die Inhalte der 
+Speicherbereiche \lstinline{al} und \lstinline{bl} gleich sind.
 
-\todo{erklären, dass speicher so grundlegend ist in verifast, dass der eingehende speicher immer explizit in der nachbedingung auftauchen muss - oder geleakt werden muss}
+\todo{das nochmal mit acsl testen}
+Ein wichtiger semantischer Unterschied zur \lstinline{\assigns nothing}-Klausel besteht noch darin, 
+dass ACSL jede Manipulation des Speichers (außer im aktuellen Aufrufrahmen des Stacks) verbietet. 
+Verifast jedoch garantiert nur, dass der Inhalt des Speichers nach dem Aufruf gleich ist. Damit wäre 
+das Verändern und anschließende Zurück-verändern erlaubt - eine Feinheit, die im Kontext der
+Parallelprogrammierung wichtig ist.
 
-\todo{erklären, dass verwendung von acsl old nicht notwendig ist, da durch mustererkennung alte werte in variablen gecshrieben werden können, die auch in nachbedingung gültig sind}
- 
+Verifast hat eigens für diesen Zweck sogenannte Fractional Permissions, mit denen sich Gleiches
+erreichen lässt. Darauf wird in dieser Arbeit aber nicht weiter eingegangen.
+
+Die Verifast-Spezifikation hat also tatsächlich (fast) die gleiche Semantik, erreicht dies aber wegen der 
+zu Grunde liegenden \todo{referenz auf theorie-teil} Seperation Logic auf eine andere ganz andere Art und Weise.
+
 \subsection{Einfache und rekursive Prädikate}
 \label{sec:design-by-contract:predicates}
 
