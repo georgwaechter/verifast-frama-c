@@ -78,13 +78,15 @@ mit Hilfe der induktiven Listen \lstinline{al} und \lstinline{bl} beschreibt.
 In gewissen Grenzen wäre es zwar auch möglich die Annotationen eins zu eins zu übersetzen, aber damit
 würden die Vorteile der jeweiligen Sprache verloren gehen. Ein \lstinline{IsEqual}-Prädikat wäre z.B.
 auch mit Verifast möglich, macht die Spezifikation aber nicht verständlicher, sondern nur die Verifizierung
-der Implementierung schwieriger. 
+der Implementierung schwieriger. \todo{Referenz auf stelle in 3.3}
 
-Das Einführen der Variablen  \lstinline{al} und \lstinline{bl} ist außerdem
-ohnehin notwendig, um auszudrücken, dass der Speicher nicht verändert wird. Es liegt also nahe diese auch
-weiter zu verwenden - die Sprachmittel von Verifast (wie die Array-Notation in Kombination mit dem
-\lstinline{|->} Operator) drängen einen also mehr als ACSL dazu induktive 
-Datentypen zu nutzen.
+Das Angeben der Speicherinhalte und Einführen der Variablen  \lstinline{al} und \lstinline{bl} ist außerdem
+ohnehin notwendig, um auszudrücken, dass der Speicher nicht verändert und nicht von der Funktion selber
+gelöscht wird. Denn Verifast wertet auch \lstinline{malloc}- und \lstinline{free}-Aufrufe aus, um 
+den Zugriff auf gelöschten Speicher zu verhindern als auch das doppelte Entfernen von diesem.
+
+Es liegt also nahe diese Varaiblen auch weiter zu verwenden - die Sprachmittel von Verifast (wie die Array-Notation in Kombination mit dem
+\lstinline{|->} Operator) drängen einen mehr als ACSL dazu induktive Datentypen zu nutzen.
 
 Der Vorteil ist ein höherer Grad der Abstraktion, denn Aussagen über Listen wie z.B.
 \lstinline{result < n ? nth(result, al) != nth(result, bl)} haben keine Abhängigkeit mehr zu
