@@ -240,6 +240,7 @@ zu definieren (für das Verstehen der folgenden Erklärungen ist die informelle 
 
 \lstinputlisting[language=C]{codes/mismatch_specification_verifast.c}
 
+\todo{noch genauer erklären?}
 Es gibt in der Nachbedingung zwei mögliche Fälle: Entweder sind die Arrays ungleich
 (\lstinline{result < n}) oder sie sind gleich (\lstinline{result == n}). Das ist leider nicht direkt
 in der Spezifikation wiederzufinden, denn das separate Definieren disjunkter Fällen wird in Verifast 
@@ -283,26 +284,15 @@ Der Vorteil ist eine höherer Grad der Abstraktion, denn Aussagen über Listen w
 dem Eingabeparameter \lstinline{const int a*}. Damit hätte ein Wechsel der Datenstruktur von Arrays
 hin zu verketteten Listen nur einen kleinen Einfluss auf die Spezifikation. Es wäre tatsächlich ausreichend
 die Bindung der Arrays in die induktive Liste zu ändern. Statt \lstinline{a[0..n] |-> ?al} würde man also
-z.B. das gedachte Prädikat \lstinline{linked_list} verwenden: \lstinline{linked_list(a, n, ?al)}.
-Der Rest der Spezifikation würde unverändert bleiben.
+z.B. ein Prädikat \lstinline{linked_list} verwenden: \lstinline{linked_list(a, n, ?al)}.
+Der Rest der Spezifikation kann unverändert bleiben.
 
-Andersrum sieht es ähnlich aus - auch in Verifast wäre es möglich induktive Datentypen zu verwenden, doch
+\todo{recursive logic definitions in acsl zeigen?}
+Andersrum sieht es ähnlich aus - auch in ACSL wäre es möglich induktive Datentypen zu verwenden, doch
 ist das an der Stelle unnötig, da die Quantoren der Prädikatenlogik zur Beschreibung genügen. Der Umstieg
 von ACSL auf Verifast erfordert daher ein Umdenken, damit die Verifizierung nicht durch einen ineffizenten
 Einsatz der Sprachmittel unnötig erschwert wird.
 
-
-
-\subsection{Fixpoint-Funktionen}
-
-diskussion zum thema fixpoint
-in verifast wird im gegensatz zu acsl schneller auf induktive datentypen zurückgegriffen
-liegt an fehlenden quantoren
-vorteil: flexibilität hinsichtlich datenstruktur (linked list vs array)
-(großer teil der spezifikation ist array-unabhängig, nur geringe änderung notwendig)
-(zumindest in spezifikation, in der implementierung wird es wesentlich aufwendiger)
-
-recursive logic definitions in acsl
 
 
 \section{Verifikation von Implementierungen}
