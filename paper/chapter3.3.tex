@@ -1,24 +1,68 @@
 ﻿\section{Verifikation von Implementierungen}
 
+\subsection{Symbolische Ausführung in Verifast}
+
+symbolische ausführung
+
 consume/produce
-ghost commands
-prädikate sind typen (heap chunks)
-präzise prädikate
-Rekursive Implementierung von mismatch zeigen
+
+code-beispiel zeigen (ggf. max)
+
+screenshot zeigen
+
+prädikate sind typen auf dem symbol heap
+
+ghost commands zum öffnen und schließen
+
+\subsection{Rekursive equal-Implementierung}
+
+funktion muss heap chunks die reingehen auch wieder zurückgeben
+
+\todo{in acsl werden vor- und nachbedingung separat ausgewertet, auf grund der rückwärtsverifikation}
+
+
+präzise prädikate sparent schreibaufwand
+
+code zeigen
+
+rekursion meist einfacher zu beweisen
+
+\subsection{ACSL-Implementierung im Vergleich}
 
 rekursive implementierung mit acsl zeigen
 
-toolunterstützung verifast zeigen und erklären
-mit frama-c vergleichen
+toolunterstützung frama-c zeigen und erklären
 
-malloc/free - chunks, zeigen an hand von main-funktion
+\subsection{Schleifeninvarianten}
 
-schleifeninvarianten
+schleifeninvarianten in acsl
+
+alle angefassten variablen müssen per assigns erlaubt werden
+
+dann in verifast zeigen
+
+ähnlich, alles muss in invariante defniiert sein, was man benutzen will
+
+\subsection{Lemmata und Axiome}
+
+fixpoint nochmal zeigen (take)
+
+erwähnen dass verifast terminierung von fixpount und lemmas prüft
+
+\lstinline{take_one_plus} lemma zeigen
+
+ggf. screenshot hier erst zeigen
+
+erklären wieso es notwendig ist
+
+\subsection{Speicherprobleme aufdecken}
+
+malloc/free - chunks
+
+zeigen an hand von main-funktion (unit-test)
+
+verifast hilft klar zu dokumentieren wer für speicher verantwortlich ist (rufer oder gerufener)
+
+\subsection{Überläufe erkennen}
 
 overflow checken
-
-lemmas/fixpoint
-
-\todo{in acsl werden vor- und nachbedingung separat ausgewertet, auf grund des hoare prinzips? .. in verifast nicht so, wegen symbolischer ausführung mit "heap" von symbolen arbeitet}
-
-\todo{erklären, dass speicher so grundlegend ist in verifast, dass der eingehende speicher immer explizit in der nachbedingung auftauchen muss - oder geleakt werden muss}
