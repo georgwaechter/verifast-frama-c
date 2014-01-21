@@ -20,9 +20,9 @@ einer \lstinline{mismatch}-Implementierung bis zum gesetzten Haltepunkt (gelb he
 \end{center}
 
 Gut zu erkennen ist, dass logische Ausdrücke wie \(n >= 0\) in die Liste der Annahmen 
-(im Bild als "Assumptions" betitelt) aufgenommen wurden. Die \lstinline{ints}-Prädikate hingegen
+(im Bild als \glqq Assumptions\grqq betitelt) aufgenommen wurden. Die \lstinline{ints}-Prädikate hingegen
 wurden zum Heap hinzugefügt. Diesen Prozess nennt Verifast \glqq Producing assertion\grqq, wobei sich das Verb
-\glqq Producing\grqq hier auf das Hinzufügen von Elementen zum aktuellen Zustand der symbolischen Ausführung
+\glqq Producing\grqq auf das Hinzufügen von Elementen zum aktuellen Zustand der symbolischen Ausführung
 bezieht.
 
 Das Gegenteil - \glqq Consuming assertion\grqq - findet z.B. beim Verifizieren der Nachbedingungen statt.
@@ -43,8 +43,6 @@ prädikate sind typen auf dem symbol heap
 ghost commands zum öffnen und schließen
 
 \subsection{Rekursive equal-Implementierung}
-
-funktion muss heap chunks die reingehen auch wieder zurückgeben
 
 \todo{in acsl werden vor- und nachbedingung separat ausgewertet, auf grund der rückwärtsverifikation}
 
