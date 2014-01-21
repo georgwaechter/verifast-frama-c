@@ -2,13 +2,41 @@
 
 \subsection{Symbolische Ausführung in Verifast}
 
-symbolische ausführung
+Die Verifizierung von Implementierungs-Code findet in Verifast über eine symbolische Ausführung statt.
+Dabei wird mit den Vorbedingungen des Methodenvertrags gestartet und versucht daraus die
+Nachbedingungen abzuleiten.
 
-consume/produce
+Der aktuelle Zustand der Ausführung wird dabei durch zwei verschiedene Strukturen charakterisiert: 
+Den Heap, der alle Elemente (engl. heap chunks) des Speichers beinhaltet sowie eine Liste
+der geschlussfolgerten Annahmen (engl. assumptions). Bei der Ausführung der Vorbedingungen werden
+diese Aussagen nun untersucht und entweder zum Heap hinzugefügt oder zu den Annahmen.
 
-code-beispiel zeigen (ggf. max)
+Beim Verstehen dieser Schritte ist die Verifast-Oberfläche sehr hilfreich, da sie den aktuellen
+Zustand für einen beliebigen Haltepunkt anzeigen kann. Die folgende Situation zeigt die Ausführung
+einer \lstinline{mismatch}-Implementierung bis zum gesetzten Haltepunkt (gelb hervorgehoben).
 
-screenshot zeigen
+\begin{center}
+\includegraphics[width=1.0\textwidth]{images/verifast-state-after-precondition.png}
+\end{center}
+
+Gut zu erkennen ist, dass logische Ausdrücke wie \(n >= 0\) in die Liste der Annahmen 
+(im Bild als "Assumptions" betitelt) aufgenommen wurden. Die \lstinline{ints}-Prädikate hingegen
+wurden zum Heap hinzugefügt. Diesen Prozess nennt Verifast \glqq Producing assertion\grqq, wobei sich das Verb
+\glqq Producing\grqq hier auf das Hinzufügen von Elementen zum aktuellen Zustand der symbolischen Ausführung
+bezieht.
+
+Das Gegenteil - \glqq Consuming assertion\grqq - findet z.B. beim Verifizieren der Nachbedingungen statt.
+Verifast versucht dann alle erforderlichen Aussagen in der Liste der Annahmen bzw. im Heap zu finden
+und diese, wenn sie denn passen, zu entfernen. Zusätzlich dazu wird am Ende einer Funktion - beim 
+\glqq Leak check\grqq - auch überprüft, dass der Heap (der aktuellen Funktion) leer ist. Ist das nicht 
+der Fall so wurde der entsprechende Speicher nicht korrekt bereinigt oder zumindest war Verifast nicht 
+in der Lage das Gegenteil zu beweisen.
+
+In dem Fall von mismatch würde Verifast die Heap chunks \lstinline{ints(a, n, al)} sowie
+\lstinline{ints(b, n, bl)} beim Konsumieren der Nachbedingung auf dem Heap finden, entfernen und
+somit erfolgreich verifizieren können, dass der Speicher so wie vor dem Aufruf vorhanden ist.
+
+
 
 prädikate sind typen auf dem symbol heap
 
