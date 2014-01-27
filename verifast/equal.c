@@ -2,7 +2,7 @@
 
 //@ #include "listex.gh"
 
-bool equal(int *a, int* b, int size) 
+bool equal(const int *a, int size, const int* b) 
 //@ requires a[0..size] |-> ?al &*& b[0..size] |-> ?bl &*& size >= 0;
 //@ ensures a[0..size] |-> al &*& b[0..size] |-> bl &*& result == (al == bl);
 {
@@ -32,12 +32,12 @@ void test()
 	int a[2] = {1, 2};
 	int b[2] = {1, 2};
 
-	bool ret = equal(a, b, 2);
+	bool ret = equal(a, 2, b);
 	assert(ret == true);
 	
 	b[1] = 3;
 	
-	ret = equal(a, b, 2);
+	ret = equal(a, 2, b);
 	assert(ret == false);
 }
 
