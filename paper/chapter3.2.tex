@@ -1,5 +1,4 @@
-﻿\section{Spezifikationen und induktive Datentypen für mismatch}
-\subsection{Induktive Listen mit Verifast}
+﻿\section{Induktive Listen mit Verifast}
 \label{sec:induktive-listen}
 
 Schaut man sich die Verifast-Spezifikation von \lstinline{equal} genauer an, fällt auf, dass es 
@@ -39,7 +38,7 @@ Listen-Utensilien bringt Verifast aber gleich mit, z.B. Implementierungen für \
 
 
 
-\subsection{Mismatch-Spezifikation}
+\section{Mismatch-Spezifikation}
 
 Mit diesem Wissen ist es nun möglich eine formale Spezifikation für \lstinline{mismatch} mit Verifast
 zu definieren (für das Verstehen der folgenden Erklärungen ist die informelle Spezifikation aus 
@@ -73,7 +72,7 @@ mit Hilfe der induktiven Listen \lstinline{al} und \lstinline{bl} beschreibt.
 
 
 
-\subsection{Unterschiede in der Umsetzung}
+\section{Unterschiede in der Umsetzung}
 
 In gewissen Grenzen wäre es zwar auch möglich die Annotationen eins zu eins zu übersetzen, aber damit
 würden die Vorteile der jeweiligen Sprache verloren gehen. Ein \lstinline{IsEqual}-Prädikat wäre z.B.
@@ -97,7 +96,7 @@ z.B. ein Prädikat \lstinline{linked_list} verwenden: \lstinline{linked_list(a, 
 Spezifikation kann unverändert bleiben.
 
 \todo{recursive logic definitions in acsl zeigen?}
-Andersrum sieht es ähnlich aus - auch in ACSL wäre es möglich induktive Datentypen zu verwenden, doch
+Andersherrum sieht es ähnlich aus - auch in ACSL wäre es möglich induktive Datentypen zu verwenden, doch
 ist das an der Stelle unnötig, da die Quantoren der Prädikatenlogik zur Beschreibung genügen. 
 Der Umstieg von ACSL auf Verifast oder andersrum erfordert daher ein Umdenken, damit die Verifizierung 
 nicht durch einen ineffizenten Einsatz der Sprachmittel unnötig erschwert wird.

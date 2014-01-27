@@ -1,9 +1,5 @@
-﻿
-\chapter{Vergleich grundlegender Konzepte}
-
-\section{Spezifikationen und Prädikate für equal}
+﻿\chapter{Vergleich von Spezifikationen und Prädikaten}
 \label{sec:design-by-contract}
-\subsection{Design by Contract}
 
 Bei der formalen Verifikation geht es darum sicherzustellen, dass ein entsprechendes Stück Software
 funktional korrekt ist. Das wird erreicht, in dem man die Bausteine der Sprache - in C sind es zum Beispiel die Methoden 
@@ -18,7 +14,7 @@ Diese Herangehensweise nennt sich Design by Contract und ist die Grundidee der m
 
 
 
-\subsection{ACSL-Spezifikation für equal}
+\section{ACSL-Spezifikation für equal}
 \label{sec:design-by-contract:acsl-spezifikation}
 
 Nachfolgend ist ein einfaches Beispiel einer ACSL-Funktions-Spezifikation dargestellt.
@@ -52,7 +48,7 @@ Weitere Details zur allgemeinen Funktionsweise als auch speziell zu diesen Präd
 
 
 
-\subsection{Vergleich mit Verifast-Spezifikation}
+\section{Vergleich mit Verifast-Spezifikation}
 \label{sec:design-by-contract:verifast-variante}
 
 Als Vergleich nun eine semantisch identische Spezifikation in Verifast:
@@ -104,7 +100,7 @@ Die Verifast-Spezifikation hat also tatsächlich (fast) die gleiche Semantik, er
 zu Grunde liegenden Seperation Logic (siehe \ref{sec:theorie:seperation-logic}) auf eine andere ganz 
 andere Art und Weise.
 
-\subsection{Einfache und rekursive Prädikate}
+\section{Einfache und rekursive Prädikate}
 \label{sec:design-by-contract:predicates}
 
 Prädikate sind ein grundlegendes Abstraktionsmittel zum Zusammenfassen und Wiederverwenden von logischen 
@@ -149,7 +145,7 @@ Die vollständige Fassung dieses Prädikats wird weiter unten in \ref{sec:indukt
 
 
 
-\subsection{Unvollständige Spezifikationen: Robustheit als Ziel}
+\section{Unvollständige Spezifikationen: Robustheit als Ziel}
 \label{sec:design-by-contract:partielle-korrektheit}
 
 Das Ziel der in \ref{sec:design-by-contract:acsl-spezifikation} vorgestellten Spezifikation war die
@@ -172,7 +168,7 @@ Laufzeit-Überprüfungen können wegfallen.
 
 
 
-\subsection{Lesbarkeit von Spezifikationen}
+\section{Lesbarkeit von Spezifikationen}
 \label{sec:design-by-contract:behaviors}
 
 In ACSL gibt es die Möglichkeit mehrere (meist disjunkte) Fälle innerhalb einer Spezifikation getrennt

@@ -1,10 +1,28 @@
-﻿\section{Verifikation von Implementierungen}
+﻿\chapter{Vergleich der Verifizierung von Implementierungen}
 
-\subsection{Symbolische Ausführung in Verifast}
+Nachdem im vorigen Kapitel die Spezifikationen und darin verwendete Sprachmittel verglichen wurden,
+geht es nun darum zu verifizieren, dass die Implementierungen diese tatsächlich erfüllen.
+Die Werkzeuge Verifast bzw. ACSL führen dazu eigene Berechnungen durch, benötigen aber dennoch
+zusätzliche Annotationen im Quellcode, damit die korrekten logische Schlüsse gezogen 
+werden können. Beispielsweise müssen Schleifeninvarianten ergänzt werden oder sogenannte
+Ghost-Commands, die Prädikate oder weitere logische Beweise mit einbeziehen.
 
-Die Verifizierung von Implementierungs-Code findet in Verifast über eine symbolische Ausführung statt.
-Dabei wird mit den Vorbedingungen des Methodenvertrags gestartet und versucht daraus die
-Nachbedingungen abzuleiten.
+\section{Symbolische Ausführung in Verifast}
+
+Die Verifizierung von Implementierungs-Code findet in Verifast über eine symbolische Ausführung statt:
+Gestartet wird mit den Vorbedingungen des Methodenvertrags, der Code wird dann wie bei der tatsächlichen
+Ausführung von oben nach unten verarbeitet. Jedoch nicht mit konkreten, sondern mit 
+abrakten Werten - logische Formeln, welche die möglichen Variablen-Werte beschreiben. Durch das 
+Untersuchen aller potenziellen Ausführungspfade, werden dann die Nachbedingungen aus den 
+errechneten Formeln abgeleitet. 
+
+
+case split mit ausführungsbaum 
+
+
+\begin{center}
+\includegraphics[width=0.6\textwidth]{images/symbolic_execution.png}
+\end{center}
 
 Der aktuelle Zustand der Ausführung wird dabei durch zwei verschiedene Strukturen charakterisiert: 
 Den Heap, der alle Elemente (engl. heap chunks) des Speichers beinhaltet sowie eine Liste
@@ -42,7 +60,7 @@ prädikate sind typen auf dem symbol heap
 
 ghost commands zum öffnen und schließen
 
-\subsection{Rekursive equal-Implementierung}
+\section{Rekursive equal-Implementierung}
 
 \todo{in acsl werden vor- und nachbedingung separat ausgewertet, auf grund der rückwärtsverifikation}
 
@@ -53,13 +71,13 @@ code zeigen
 
 rekursion meist einfacher zu beweisen
 
-\subsection{ACSL-Implementierung im Vergleich}
+\section{ACSL-Implementierung im Vergleich}
 
 rekursive implementierung mit acsl zeigen
 
 toolunterstützung frama-c zeigen und erklären
 
-\subsection{Schleifeninvarianten}
+\section{Schleifeninvarianten}
 
 schleifeninvarianten in acsl
 
@@ -69,7 +87,7 @@ dann in verifast zeigen
 
 ähnlich, alles muss in invariante defniiert sein, was man benutzen will
 
-\subsection{Lemmata und Axiome}
+\section{Lemmata und Axiome}
 
 fixpoint nochmal zeigen (take)
 
@@ -81,7 +99,7 @@ ggf. screenshot hier erst zeigen
 
 erklären wieso es notwendig ist
 
-\subsection{Speicherprobleme aufdecken}
+\section{Speicherprobleme aufdecken}
 
 malloc/free - chunks
 
@@ -89,6 +107,6 @@ zeigen an hand von main-funktion (unit-test)
 
 verifast hilft klar zu dokumentieren wer für speicher verantwortlich ist (rufer oder gerufener)
 
-\subsection{Überläufe erkennen}
+\section{Überläufe erkennen}
 
 overflow checken
