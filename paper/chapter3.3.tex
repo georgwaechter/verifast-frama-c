@@ -12,17 +12,21 @@ Ghost-Commands, die Prädikate oder weitere logische Beweise mit einbeziehen.
 Die Verifizierung von Implementierungs-Code findet in Verifast über eine symbolische Ausführung statt:
 Gestartet wird mit den Vorbedingungen des Methodenvertrags, der Code wird dann wie bei der tatsächlichen
 Ausführung von oben nach unten verarbeitet. Jedoch nicht mit konkreten, sondern mit 
-abrakten Werten - logische Formeln, welche die möglichen Variablen-Werte beschreiben. Durch das 
-Untersuchen aller potenziellen Ausführungspfade, werden dann die Nachbedingungen aus den 
-errechneten Formeln abgeleitet. 
+abrakten Werten. Diese werden durch logische Formeln repräsentiert, welche die möglichen Variablen-Werte 
+beschreiben. Am Ende der Ausführung sind dann bei erfolgreicher Verifizierung alle Voraussetzungen
+erfüllt, um die Nachbedingungen direkt abzuleiten.
+\newline
+\newline
+Bei der symbolischen Ausführung werden alle potenziellen Ausführungspfade untersucht: Schleifen
+oder auch \texttt{if}-Anweisungen sorgen dafür, dass Verifast diese Verzweigungen einzeln betrachtet
+und verifiziert. Existieren z.B. mehrere \texttt{return}-Anweisungen in der Implementierung, so stellt
+das Werkzeug sicher, dass in jedem Ausgang die Nachbedingungen gelten.
 
-
-case split mit ausführungsbaum 
-
-
-\begin{center}
-\includegraphics[width=0.6\textwidth]{images/symbolic_execution.png}
-\end{center}
+\begin{SCfigure}[1.7][h!]
+	\centering
+		\includegraphics[width=0.3\textwidth]{images/symbolic_execution.png}
+		\caption{Ausführungspfade für die symbolische Ausführung einer if-Anweisung}
+\end{SCfigure}
 
 Der aktuelle Zustand der Ausführung wird dabei durch zwei verschiedene Strukturen charakterisiert: 
 Den Heap, der alle Elemente (engl. heap chunks) des Speichers beinhaltet sowie eine Liste
@@ -54,22 +58,46 @@ In dem Fall von mismatch würde Verifast die Heap chunks \lstinline{ints(a, n, a
 \lstinline{ints(b, n, bl)} beim Konsumieren der Nachbedingung auf dem Heap finden, entfernen und
 somit erfolgreich verifizieren können, dass der Speicher so wie vor dem Aufruf vorhanden ist.
 
+\section{Ghost-Commands in Verifast}
 
+Der folgende Quellcode zeigt eine rekursive Implementierung für \lstinline{equal}. Dieser Code
+soll als Beispiel für das Erklären der sogenannten Ghost-Commands dienen:
 
-prädikate sind typen auf dem symbol heap
+\lstinputlisting[language=C, caption=Rekursive Implementierung für \lstinline{equal} mit Verifast]{codes/equal_recursive.c}
 
-ghost commands zum öffnen und schließen
+Ghost-Commands sind Annotationen, die das Werkzeug anweisen Prädikate zu öffnen bzw. zu schließen. Das
+ist notwendig, weil Verifast Prädikate auch als Typen behandelt, von denen Instanzen auf dem Heap liegen.
 
-\section{Rekursive equal-Implementierung}
+In diesem Beispiel startet die symbolische Ausführung z.B. mit den Prädikaten \lstinline{ints(a, n, al)} 
+sowie \lstinline{ints(b, n, bl)} auf dem Heap. Dass die Variable \lstinline{n} tatsächlich die Länge
+des Arrays beschreibt ist für Verifast zu dem Zeitpunkt noch nicht erkennbar. Erst das Öffnen über die
+Anweisung \lstinline{open ints(a, n, al)} fügt die Inhalte des Prädikats zur Liste der Annahmen hinzu
+und entfernt es gleichzeitig vom Heap. Dadurch ist für Verifast ersichtlich, dass \lstinline{n}
+gleichzusetzen ist mit \texttt{length(al)} und \texttt{length(bl)}. 
 
-\todo{in acsl werden vor- und nachbedingung separat ausgewertet, auf grund der rückwärtsverifikation}
+Für die erste \texttt{return}-Anweisung ergibt sich die Annahme \texttt{length(al) = 0} sowie
+\texttt{length(bl) = 0} über die Variable \texttt{n}. Damit kann Verifast die Nachbedingung
+erfolgreich verifizieren, da eine Liste der Länge 0 gleichzusetzen ist mit dem Konstruktor
+\texttt{nil} (siehe dazu \ref{sec:induktive-listen}) und sich der Ausdruck für den Rückgabewert
+damit auf \texttt{true == (nil == nil)} reduziert.
 
+Die Umkehroperation - das Schließen eines Prädikats - ist zum Beweisen der Nachbedingung ebenfalls notwendig:
+Dabei wird das Prädikat ausgewertet und bei Erfolg wieder auf den Heap gepackt. Dies passiert hier an mehreren 
+Stellen ganz automatisch, da es sich bei \lstinline{ints} um ein sogenanntes präzises Prädikat handelt. 
+Darunter versteht Verifast Prädikate mit eingehenden und ausgehenden Parametern, die exakt die gleiche 
+Speicherregion repräsentieren. 
 
-präzise prädikate sparent schreibaufwand
+\begin{figure}[H]
+Die Kennzeichnung als präzises Prädikat geschieht über die Nutzung eines Semikolons bei der Trennung
+der Prädikaten-Parameter:
 
-code zeigen
+\lstinputlisting[language=C, caption=Präzises Prädikat \lstinline{ints}]{codes/ints_precise_predicate_verifast.c}
+\end{figure}
 
-rekursion meist einfacher zu beweisen
+Präzise Prädikate versucht Verifast während der Verifizierung automatisch zu öffnen und ggf. auch zu
+schließen. Dadurch ist in der obigen Implementierung insbesondere das Schreiben von \texttt{close}-Anweisungen
+nicht notwendig.
+
 
 \section{ACSL-Implementierung im Vergleich}
 

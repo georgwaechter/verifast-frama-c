@@ -5,7 +5,7 @@ Schaut man sich die Verifast-Spezifikation von \lstinline{equal} genauer an, fä
 möglich ist die Inhalte der zwei Speicherbereiche mit \lstinline{==} (siehe Zeile 3) zu vergleichen. 
 Dazu hier nochmal der entsprechende Code-Auszug:
 
-\lstinputlisting[language=C]{codes/equal_contract_verifast.c}
+\lstinputlisting[language=C, caption=Formale Spezifikation für \lstinline{equal} mit Verifast]{codes/equal_contract_verifast.c}
 
 Der \lstinline{==} Operator nach der \lstinline{result}-Variable ist ein einfacher boolescher Vergleich,
 der zweite \lstinline{==} Operator hingegen vergleicht die beiden Variablen \lstinline{al} und \lstinline{bl}.
@@ -17,7 +17,7 @@ dass der Speicherinhalt bei der Mustererkennung als induktive Liste gebunden wir
 
 Induktive Typen können wie folgt definiert werden - hier die \lstinline{list}-Definition von Verifast:
 
-\lstinputlisting[language=C]{codes/inductive_list_verifast.c}
+\lstinputlisting[language=C, caption=Induktive Listendefinition]{codes/inductive_list_verifast.c}
 
 Um zu verstehen wie diese eingesetzt werden, wird das offizielle Verifast \lstinline{ints}-Prädikat genauer
 erläutert. Dieses wurde oben bereits verwendet, denn es ist tatsächlich nur eine andere Schreibweise für die 
@@ -28,7 +28,7 @@ Nachfolgend ist das rekursive \lstinline{ints}-Prädikat abgebildet. Gut zu erke
 wie die \lstinline{intlist} Stück für Stück rekursiv mit Hilfe der Konstruktoren
 \lstinline{cons} bzw. \lstinline{nil} erzeugt wird.
 
-\lstinputlisting[language=C]{codes/ints_predicate_verifast.c}
+\lstinputlisting[language=C, caption=Prädikat \lstinline{ints}]{codes/ints_predicate_verifast.c}
 
 Mit diesen Listen kann man nun flexibel arbeiten, denn Verifast erlaubt die Definition sogenannter
 \lstinline{fixpoint}-Funktionen, mit denen die Listen manipuliert werden. Die grundlegendsten
@@ -38,13 +38,13 @@ Listen-Utensilien bringt Verifast aber gleich mit, z.B. Implementierungen für \
 
 
 
-\section{Mismatch-Spezifikation}
+\section{Verifast-Spezifikation für \texttt{mismatch}}
 
 Mit diesem Wissen ist es nun möglich eine formale Spezifikation für \lstinline{mismatch} mit Verifast
 zu definieren (für das Verstehen der folgenden Erklärungen ist die informelle Spezifikation aus 
 \ref{sec:aufgabenstellung} sehr hilfreich):
 
-\lstinputlisting[language=C]{codes/mismatch_specification_verifast.c}
+\lstinputlisting[language=C, caption=Formale Spezifikation für \lstinline{mismatch} mit Verifast]{codes/mismatch_specification_verifast.c}
 
 \todo{noch genauer erklären?}
 Es gibt in der Nachbedingung zwei mögliche Fälle: Entweder sind die Arrays ungleich
@@ -60,7 +60,7 @@ schreiben, kann es aber nur wie folgt ausdrücken:
 
 Die ACSL-Umsetzung hingegen ist wesentlich länger und verwendet Behaviors:
 
-\lstinputlisting[language=C]{codes/mismatch_specification_acsl.c}
+\lstinputlisting[language=C, caption=ACSL-Variante der Spezifikation für \lstinline{mismatch}]{codes/mismatch_specification_acsl.c}
 
 Die zwei Fälle sind in dieser Variante besser sichtbar und damit auch verständlicher, da die Spezifikation
 aus kleineren Teilen besteht. Sie ist somit lesbarer, mit dem Nachteil viel Platz einzunehmen.
@@ -95,11 +95,14 @@ die Bindung der Arrays in die induktive Liste zu ändern. Statt \lstinline{a[0..
 z.B. ein Prädikat \lstinline{linked_list} verwenden: \lstinline{linked_list(a, n, ?al)}. Der Rest der 
 Spezifikation kann unverändert bleiben.
 
+\todo{mismatch spezifikation für linked lists einbinden?}
+
 \todo{recursive logic definitions in acsl zeigen?}
+\newline
+\newline
 Andersherrum sieht es ähnlich aus - auch in ACSL wäre es möglich induktive Datentypen zu verwenden, doch
 ist das an der Stelle unnötig, da die Quantoren der Prädikatenlogik zur Beschreibung genügen. 
 Der Umstieg von ACSL auf Verifast oder andersrum erfordert daher ein Umdenken, damit die Verifizierung 
 nicht durch einen ineffizenten Einsatz der Sprachmittel unnötig erschwert wird.
 
-\todo{erwähnen, dass mustererkennung ein teilweise ersatz für existenz-quantor ist}
 

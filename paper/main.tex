@@ -3,28 +3,39 @@
 \usepackage[utf8x]{inputenc}
 \usepackage[ngerman]{babel}
 \usepackage{listings}
+\usepackage{caption}
 \usepackage{graphicx}
 \usepackage{color}
 \usepackage{todonotes}
 \usepackage{mathtools}
+\usepackage{float}
+\usepackage{sidecap}
 
+\sidecaptionvpos{figure}{t}
 \definecolor{mygreen}{rgb}{0.08,0.35,0}
 \definecolor{mygray}{rgb}{0.9,0.9,0.9}
 \definecolor{mymauve}{rgb}{0.58,0,0.82}
 
+\DeclareCaptionFormat{listing}{
+  \colorbox[rgb]{1.0, 1.0, 1.0 }{
+    \parbox{\textwidth}{\hspace{17pt}#1#2#3}
+  }
+}
+\captionsetup[lstlisting]{ format=listing,  singlelinecheck=false, margin=0pt, font={bf,footnotesize} }
+
 \title{Ein Vergleich der Verifikationswerkzeuge Verifast und Frama-C}
 \author{Georg Wächter\\Humboldt Universität zu Berlin}
-\date{Dezember 2013}
+\date{Februar 2014}
 
 \lstset{
-  backgroundcolor=\color{mygray}, 
+  backgroundcolor=\color{white}, 
   basicstyle=\ttfamily\small,     
   breakatwhitespace=false,      
   breaklines=true,                
   captionpos=b,                  
   commentstyle=\color{mygreen},    
   extendedchars=true,       
-  frame=none,                 
+  frame=single,                 
   keywordstyle=\color{blue},     
   language=Octave,               
   morekeywords={bool},       

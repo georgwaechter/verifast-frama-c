@@ -14,13 +14,13 @@ Diese Herangehensweise nennt sich Design by Contract und ist die Grundidee der m
 
 
 
-\section{ACSL-Spezifikation für equal}
+\section{ACSL-Spezifikation für \texttt{equal}}
 \label{sec:design-by-contract:acsl-spezifikation}
 
 Nachfolgend ist ein einfaches Beispiel einer ACSL-Funktions-Spezifikation dargestellt.
 Die Funktion equal prüft zwei Ganzzahlen-Arrays auf Gleichheit:
 
-\lstinputlisting[language=C]{codes/equal_contract_acsl.c}
+\lstinputlisting[language=C, caption=Formale Spezifikation der Funktion \lstinline{equal} mit ACSL]{codes/equal_contract_acsl.c}
 
 Der spezielle @-Präfix in Zeile 1 signalisiert dem Verifikationswerkzeug, 
 dass der folgende Kommentarblock als Verifikations-Annotation zu interpretieren ist. Normale C-Compiler hingegen
@@ -53,7 +53,7 @@ Weitere Details zur allgemeinen Funktionsweise als auch speziell zu diesen Präd
 
 Als Vergleich nun eine semantisch identische Spezifikation in Verifast:
 
-\lstinputlisting[language=C]{codes/equal_contract_verifast.c}
+\lstinputlisting[language=C, caption=Formale Spezifikation der Funktion \lstinline{equal} mit Verifast]{codes/equal_contract_verifast.c}
 
 Als erstes fällt die unterschiedliche Platzierung der Annotation auf: In Verifast werden die 
 Annotations-Kommentare nach der Signatur augeführt und nicht davor. Außerdem müssen alle Vor- und 
@@ -85,7 +85,8 @@ dass der Speicherinhalt unverändert bleibt. Der Rückgabewert wird in Verifast 
 (ohne vorangestellten Backslash wie in ACSL) bezeichnet. Der Ausdruck \lstinline{result == (al == bl)} 
 bewirkt, dass der von der Funktion zurückgegebene Wert genau dann wahr ist, wenn die Inhalte der 
 Speicherbereiche \lstinline{al} und \lstinline{bl} gleich sind.
-
+\newline
+\newline
 \todo{das nochmal mit acsl testen}
 Ein wichtiger semantischer Unterschied zur \lstinline{\assigns nothing}-Klausel besteht noch darin, 
 dass ACSL jede Manipulation des Speichers (außer im aktuellen Aufrufrahmen des Stacks) verbietet. 
@@ -109,7 +110,7 @@ Formeln in ACSL und Verifast.
 Weiter oben wurde das Prädikat \lstinline{IsEqual} definiert, hier sei nun exemplarisch die ACSL-Notation
 für diese Aussage dargestellt:
 
-\lstinputlisting[language=C]{codes/equal_predicate_acsl.c}
+\lstinputlisting[language=C, caption=Prädikat \lstinline{IsEqual} formuliert in ACSL]{codes/equal_predicate_acsl.c}
 
 Die Annotation ist eine direkte Umsetzung der Formel von oben - die Interpretation ist klar verständlich für 
 jeden, der prädikatenlogische Formeln lesen kann.
@@ -121,7 +122,7 @@ Arbeit sind allerdings nur Arrays mit bekannter Länge Untersuchungsgegenstand. 
 rekursive Prädikate in Verifast die natürliche Art der Beschreibung. Beispielsweise können Ganzzahl-Arrays
 wie folgt definiert werden:
 
-\lstinputlisting[language=C]{codes/int_array_verifast.c}
+\lstinputlisting[language=C, caption=Prädikat \lstinline{int_array} formuliert mit Verifast]{codes/int_array_verifast.c}
  
 Das Prädikat verweist solange auf sich selbst bis \lstinline{count <= 0}. Dass jede Speicherstelle tatsächlich
 gültig ist, stellt das in Verifast eingebaute Prädikat \lstinline{integer} sicher. In dieser Form ist das Prädikat
@@ -155,12 +156,13 @@ von potenziellen Null-Zeiger-Ausnahmen oder Speicherlöchern das Ziel und nicht 
 Korrektheit. Für ersteres reicht eine reduzierte Spezifikation - funktionale Aspekte werden dabei 
 weggelassen oder ggf. vereinfacht:
 
-\lstinputlisting[language=C]{codes/equal_partial_contract_verifast.c}
+\lstinputlisting[language=C, caption=Unvollständige Spezifikation]{codes/equal_partial_contract_verifast.c}
  
 Diese Spezifikation ge ist immer noch korrekt für eine equal-Implementierung, stellt aber selber nur sicher,
 dass die Zeiger gültig sind und auf den Speicherbereich zugegriffen werden darf. Der Rückgabewert sowie 
 der nicht mutierender Charakter des Algorithmus ist nun nicht mehr formalisiert.
-
+\newline
+\newline
 Denkbar ist auch die Verifizierung der gültigen Aufrufreihenfolge (einer gedachten Zustandsmaschine),
 ohne alle weiteren Nachbedingungen und Ergebnisse zu formalisieren. Somit kann sichergestellt werden,
 dass sich die Zustandsmaschine niemals in einem ungültigen Zustand befindet. Ansonsten erforderliche
@@ -177,7 +179,9 @@ einzeln lesen kann.
 
 Folgende Spezifikation von equal ist eine Variante in ACSL ohne \lstinline{IsEqual}-Prädikat:
 
-\lstinputlisting[language=C]{codes/equal_behavior_acsl.c}
+\begin{figure}[H]
+	\lstinputlisting[language=C, caption=Formale Spezifikation für \lstinline{equal} mit Behavior]{codes/equal_behavior_acsl.c}
+\end{figure}
 
 Der Fall \lstinline{all_equal} in Zeile 7 tritt dann ein, wenn beide Ganzzahl-Arrays gleich sind. Das 
 Gegenteil \lstinline{some_not_equal} ist in Zeile 11 definiert, die jeweiligen Bedingungen in Form von
