@@ -4,14 +4,15 @@ bool equal(const int* a, int n, const int* b)
 {
     //@ open ints(a, n, al);
     //@ open ints(b, n, bl);
+		
     if (n == 0) {
-    	return true;
+        //@ assert length(al) == 0 && length(bl) == 0;
+        //@ assert al == bl;
+        //@ close ints(a, n, al);
+        //@ close ints(b, n, bl);
+        return true;
     }
     
-    if (*a != *b) {
-    	return false;
-    }
-    
-    return equal(a + 1, n - 1, b + 1);
+    // ...
 }
      

@@ -62,32 +62,42 @@ somit erfolgreich verifizieren können, dass der Speicher so wie vor dem Aufruf 
 
 \section{Assertions und Ghost-Commands}
 
-Der folgende Quellcode zeigt eine rekursive Implementierung für \lstinline{equal}. Dieser Code
-soll als Beispiel für das Erklären der sogenannten Ghost-Commands dienen:
+Zusicherungen (engl. assertions) und Ghost-Commands sind Annotationen, die direkt in den Implementierungs-Code
+geschrieben werden. Assertions stellen sicher, dass der enthaltene Ausdruck wahr ist und sind ein nützliches Hilfsmittel, 
+um die Verifizierung besser nachzuvollziehen als auch verständlicher zu machen. Insbesondere dann, wenn das Verifikationswerkzeug 
+nicht triviale Schlüsse zieht, ist es von Vorteil Assertions zu ergänzen und im Code zu belassen.
+
+Ghost-Commands hingegen enthalten Anweisungen für die Verifizierung, z.B. das Aufrufen anderer Sprachkonstrukte 
+(z.B. Lemmata oder Fixpointfunktionen, siehe \ref{verifizierung:lemma}). Sie helfen dem Werkzeug logische Schlüsse 
+zu ziehen, die es alleine nicht tun kann.
+\newline
+\newline
+Der folgende Quellcode zeigt einen Ausschnitt aus einer rekursiven Implementierung für \lstinline{equal} und dient
+hier als Anschauungsmaterial für die Erklärung der oben genannten Annotationstypen:
 
 \lstinputlisting[language=C, caption=Rekursive Implementierung für \lstinline{equal} mit Verifast]{codes/equal_recursive_verifast.c}
 
-Ghost-Commands sind Annotationen, die das Werkzeug anweisen Prädikate zu öffnen bzw. zu schließen. Das
-ist notwendig, weil Verifast Prädikate auch als Typen behandelt, von denen Instanzen auf dem Heap liegen.
+Diese Implementierung zeigt nur die Abbruchbedingung der Rekursion - ist \lstinline{n == 0}, so sind die
+leeren Listen gleich und die Berechnung terminiert. 
 
-In diesem Beispiel startet die symbolische Ausführung z.B. mit den Prädikaten \lstinline{ints(a, n, al)} 
-sowie \lstinline{ints(b, n, bl)} auf dem Heap. Dass die Variable \lstinline{n} tatsächlich die Länge
-des Arrays beschreibt ist für Verifast zu dem Zeitpunkt noch nicht erkennbar. Erst das Öffnen über die
-Anweisung \lstinline{open ints(a, n, al)} fügt die Inhalte des Prädikats zur Liste der Annahmen hinzu
-und entfernt es gleichzeitig vom Heap. Dadurch ist für Verifast ersichtlich, dass \lstinline{n}
-gleichzusetzen ist mit \texttt{length(al)} und \texttt{length(bl)}. 
+Die Zeilen 9 und 10 sind Assertions, die formal beschreiben, dass die induktiven Listen \lstinline{al} und
+\lstinline{bl} die Länge 0 haben müssen und somit gleich lang sind. Damit Verifast in der Lage ist das zu
+beweisen sind die zwei Ghost-Commands in Zeile 5 und 6 notwendig. Sie öffnen das \lstinline{ints}-Prädikat
+und bringen somit dessen Inhalt in die Liste der Annahmen. Erst dadurch ist für Verifast ersichtlich, dass 
+\lstinline{n} gleichzusetzen ist mit \texttt{length(al)} und \texttt{length(bl)}. Außerdem produziert
+das Öffnen des Prädikats die Formel \lstinline{al = nil} bzw. \lstinline{bl = nil} (siehe Definition
+des Prädikats in Listing 3.9 oder 4.2). Damit löst sich die Assertion \lstinline{al == bl} in den
+trivialen Vergleich \lstinline{nil == nil} auf.
+\newline
+\newline
+Das Öffnen der Prädikate konsumiert gleichzeitig auch die entsprechenden Heap-Chunks, was jedoch dazu führt,
+dass diese beim Produzieren der Nachbedingung fehlen. Sie müssen also vor der \(return\)-Anweisung
+wieder geschlossen werden (Zeile 11 und 12), damit sie dann wieder an den Aufrufer zurückgegeben werden können 
+- so wie es die Nachbedingung verlangt.
 
-Für die erste \texttt{return}-Anweisung ergibt sich die Annahme \texttt{length(al) = 0} sowie
-\texttt{length(bl) = 0} über die Variable \texttt{n}. Damit kann Verifast die Nachbedingung
-erfolgreich verifizieren, da eine Liste der Länge 0 gleichzusetzen ist mit dem Konstruktor
-\texttt{nil} (siehe dazu \ref{sec:induktive-listen}) und sich der Ausdruck für den Rückgabewert
-damit auf \texttt{true == (nil == nil)} reduziert.
-
-Die Umkehroperation - das Schließen eines Prädikats - ist zum Beweisen der Nachbedingung ebenfalls notwendig:
-Dabei wird das Prädikat ausgewertet und bei Erfolg wieder auf den Heap gepackt. Dies passiert hier an mehreren 
-Stellen ganz automatisch, da es sich bei \lstinline{ints} um ein sogenanntes präzises Prädikat handelt. 
-Darunter versteht Verifast Prädikate mit eingehenden und ausgehenden Parametern, die exakt die gleiche 
-Speicherregion repräsentieren. 
+Das Schreiben dieser \(close\)-Annotation ist jedoch oft nicht notwendig, da Verifast sie automatisch
+einführt, wenn es sich um ein sogenanntes präzises Prädikat handelt. Darunter versteht Verifast Prädikate mit 
+eingehenden und ausgehenden Parametern, die exakt die gleiche Speicherregion repräsentieren. 
 
 \begin{figure}[H]
 Die Kennzeichnung als präzises Prädikat geschieht über die Nutzung eines Semikolons bei der Trennung
@@ -95,20 +105,17 @@ der Prädikaten-Parameter:
 
 \lstinputlisting[language=C, caption=Präzises Prädikat \lstinline{ints}]{codes/ints_precise_predicate_verifast.c}
 \end{figure}
-
 Präzise Prädikate versucht Verifast während der Verifizierung automatisch zu öffnen und ggf. auch zu
-schließen. Dadurch ist in der obigen Implementierung insbesondere das Schreiben von \texttt{close}-Anweisungen
-nicht notwendig.
+schließen. Dadurch ist in der obigen Implementierung das Schreiben der \texttt{close}-Anweisungen
+nicht zwingend notwendig.
 \newline
 \newline
-Mit Hilfe der im Quelltext angegebenen Ghost Commands kann Verifast die Implementierung nun erfolgreich
-verifizieren.
+Assertions in ACSL werden genauso notiert wie in Verifast. Ghost-Commands hingegen werden
+mit dem Schlüsseltwort \lstinline{ghost} eingeleitet, sind aber generell nicht so oft wie in
+Verifast notwendig. Das kommt daher, dass Frama-C aufwendigere Berechnungen durchführt, um
+entsprechende logische Schlüsse zu ziehen. Das ist jedoch auch spürbar, wenn man die
+Geschwindigkeit der Werkzeuge vergleicht.
 
-\section{ACSL-Implementierung im Vergleich}
-
-rekursive implementierung mit acsl zeigen
-
-toolunterstützung frama-c zeigen und erklären
 
 \section{Schleifeninvarianten}
 
@@ -120,7 +127,10 @@ dann in verifast zeigen
 
 ähnlich, alles muss in invariante defniiert sein, was man benutzen will
 
+toolunterstützung frama-c zeigen und erklären
+
 \section{Lemmata und Axiome}
+\label{verifizierung:lemma}
 
 intsinv zeigen mit length
 
