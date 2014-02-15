@@ -12,6 +12,6 @@ bool equal(const int* a, int n, const int* b)
     	return false;
     }
     
-    return equal(a + 1, b + 1, n - 1);
+    return equal(a + 1, n - 1, b + 1);
 }
      

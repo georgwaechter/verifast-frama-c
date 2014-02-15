@@ -85,21 +85,24 @@ dass der Speicherinhalt unverändert bleibt. Der Rückgabewert wird in Verifast 
 (ohne vorangestellten Backslash wie in ACSL) bezeichnet. Der Ausdruck \lstinline{result == (al == bl)} 
 bewirkt, dass der von der Funktion zurückgegebene Wert genau dann wahr ist, wenn die Inhalte der 
 Speicherbereiche \lstinline{al} und \lstinline{bl} gleich sind.
-\newline
-\newline
-\todo{das nochmal mit acsl testen}
-Ein wichtiger semantischer Unterschied zur \lstinline{\assigns nothing}-Klausel besteht noch darin, 
-dass ACSL jede Manipulation des Speichers (außer im aktuellen Aufrufrahmen des Stacks) verbietet. 
-Verifast jedoch garantiert nur, dass der Inhalt des Speichers nach dem Aufruf gleich ist. Damit wäre 
-das Verändern und anschließende Zurück-verändern erlaubt - eine Feinheit, die im Kontext der
-Parallelprogrammierung wichtig ist.
 
-Verifast hat eigens für diesen Zweck sogenannte Fractional Permissions, mit denen sich Gleiches
-erreichen lässt. Darauf wird in dieser Arbeit aber nicht weiter eingegangen.
-
-Die Verifast-Spezifikation hat also tatsächlich (fast) die gleiche Semantik, erreicht dies aber wegen der 
+Die Verifast-Spezifikation hat also tatsächlich die gleiche Semantik, erreicht dies aber wegen der 
 zu Grunde liegenden Seperation Logic (siehe \ref{sec:theorie:seperation-logic}) auf eine andere ganz 
 andere Art und Weise.
+\newline
+\newline
+Wichtig zu erwähnen ist noch, dass die \lstinline{\assigns nothing}-Klausel aus ACSL genau wie Verifast 
+theoretisch das Ändern des Speicherinhalts erlaubt, wenn er zum Ende der Funktion wieder rekonstruiert wird.
+Denn es wird lediglich überprüft, dass der Inhalt nach dem Aufruf mit dem vor
+dem Aufruf übereinstimmt. Eine Feinheit, die im Kontext der Parallelprogrammierung wichtig ist, wenn
+die Funktion inmitten der Ausführung unterbrochen wird bzw. parallel zu einer anderen ausgeführt wird,
+die auf gemeinsame Variablen zurückgreift.
+
+Um die Manipulation zu jeder Zeit zu verbieten, hat Verifast das Konzept der sogenannten Fractional Permissions.
+Damit lässt sich steuern, ob eine Funktion nur lesend oder auch schreibend auf Speicherbereiche zugreifen darf.
+Auf die Verwendung dieses Sprachmittels wird in dieser Arbeit jedoch nicht weiter eingegangen.
+
+
 
 \section{Einfache und rekursive Prädikate}
 \label{sec:design-by-contract:predicates}
@@ -158,7 +161,7 @@ weggelassen oder ggf. vereinfacht:
 
 \lstinputlisting[language=C, caption=Unvollständige Spezifikation]{codes/equal_partial_contract_verifast.c}
  
-Diese Spezifikation ge ist immer noch korrekt für eine equal-Implementierung, stellt aber selber nur sicher,
+Diese Spezifikation ist immer noch korrekt für eine equal-Implementierung, stellt aber selber nur sicher,
 dass die Zeiger gültig sind und auf den Speicherbereich zugegriffen werden darf. Der Rückgabewert sowie 
 der nicht mutierender Charakter des Algorithmus ist nun nicht mehr formalisiert.
 \newline
