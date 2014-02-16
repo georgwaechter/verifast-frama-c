@@ -112,7 +112,9 @@ Formeln in ACSL und Verifast.
 Weiter oben wurde das Prädikat \lstinline{IsEqual} definiert, hier sei nun exemplarisch die ACSL-Notation
 für diese Aussage dargestellt:
 
+\begin{figure}[H]
 \lstinputlisting[language=C, caption=Prädikat \lstinline{IsEqual} formuliert in ACSL]{codes/equal_predicate_acsl.c}
+\end{figure}
 
 Die Annotation ist eine direkte Umsetzung der Formel von oben - die Interpretation ist klar verständlich für 
 jeden, der prädikatenlogische Formeln lesen kann.
@@ -124,8 +126,10 @@ Arbeit sind allerdings nur Arrays mit bekannter Länge Untersuchungsgegenstand. 
 rekursive Prädikate in Verifast die natürliche Art der Beschreibung. Beispielsweise können Ganzzahl-Arrays
 wie folgt definiert werden:
 
+\begin{figure}[H]
 \lstinputlisting[language=C, caption=Prädikat \lstinline{int_array} formuliert mit Verifast]{codes/int_array_verifast.c}
- 
+\end{figure}
+
 Das Prädikat verweist solange auf sich selbst bis \lstinline{count <= 0}. Dass jede Speicherstelle tatsächlich
 gültig ist, stellt das in Verifast eingebaute Prädikat \lstinline{integer} sicher. In dieser Form ist das Prädikat
 \lstinline{int_array} nun praktisch identisch mit der \lstinline{IsValidRange}-Variante aus der ACSL-Spezifikation, 
@@ -215,7 +219,9 @@ Schaut man sich die Verifast-Spezifikation von \lstinline{equal} genauer an, fä
 möglich ist die Inhalte der zwei Speicherbereiche mit \lstinline{==} (siehe Zeile 3) zu vergleichen. 
 Dazu hier nochmal der entsprechende Code-Auszug:
 
+\begin{figure}[H]
 \lstinputlisting[language=C, caption=Formale Spezifikation für \lstinline{equal} mit Verifast]{codes/equal_contract_verifast.c}
+\end{figure}
 
 Der \lstinline{==} Operator nach der \lstinline{result}-Variable ist ein einfacher boolescher Vergleich,
 der zweite \lstinline{==} Operator hingegen vergleicht die beiden Variablen \lstinline{al} und \lstinline{bl}.
@@ -238,7 +244,9 @@ Nachfolgend ist das rekursive \lstinline{ints}-Prädikat abgebildet. Gut zu erke
 wie die \lstinline{intlist} Stück für Stück rekursiv mit Hilfe der Konstruktoren
 \lstinline{cons} bzw. \lstinline{nil} erzeugt wird.
 
+\begin{figure}[H]
 \lstinputlisting[language=C, caption=Prädikat \lstinline{ints}]{codes/ints_predicate_verifast.c}
+\end{figure}
 
 Mit diesen Listen kann man nun flexibel arbeiten, denn Verifast erlaubt die Definition sogenannter
 \lstinline{fixpoint}-Funktionen, mit denen die Listen manipuliert werden. Die grundlegendsten
@@ -248,13 +256,15 @@ Listen-Utensilien bringt Verifast aber gleich mit, z.B. Implementierungen für \
 
 
 
-\section{Verifast-Spezifikation für \texttt{mismatch}}
+\section{Formale Spezifikation für \texttt{mismatch}}
 
 Mit diesem Wissen ist es nun möglich eine formale Spezifikation für \lstinline{mismatch} mit Verifast
 zu definieren (für das Verstehen der folgenden Erklärungen ist die informelle Spezifikation aus 
 \ref{sec:aufgabenstellung} sehr hilfreich):
 
+\begin{figure}[H]
 \lstinputlisting[language=C, caption=Formale Spezifikation für \lstinline{mismatch} mit Verifast]{codes/mismatch_specification_verifast.c}
+\end{figure}
 
 Es gibt in der Nachbedingung zwei mögliche Fälle: Entweder sind die Arrays ungleich
 (\lstinline{result < n}) oder sie sind gleich (\lstinline{result == n}). Das ist leider nicht direkt
@@ -266,10 +276,12 @@ Da Verifast keine Prädikatenlogik kennt, gibt es weder Quantoren noch Implikati
 Nachbedingung beispielsweise möchte man intuitiv \((result < n) \rightarrow al[result] \neq  bl[result]\)
 schreiben, kann es aber nur wie folgt ausdrücken: 
 \lstinline{result < n ? nth(result, al) != nth(result, bl) : true}.
-
-Die ACSL-Umsetzung hingegen ist wesentlich länger und verwendet Behaviors:
-
+\newline
+\newline
+Die ACSL-Umsetzung ist wesentlich länger und verwendet Behaviors:
+\begin{figure}[H]
 \lstinputlisting[language=C, caption=ACSL-Variante der Spezifikation für \lstinline{mismatch}]{codes/mismatch_specification_acsl.c}
+\end{figure}
 
 Die zwei Fälle sind in dieser Variante besser sichtbar und damit auch verständlicher, da die Spezifikation
 aus kleineren Teilen besteht. Sie ist somit lesbarer, mit dem Nachteil viel Platz einzunehmen.

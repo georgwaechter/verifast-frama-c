@@ -119,6 +119,18 @@ Geschwindigkeit der Werkzeuge vergleicht.
 
 \section{Schleifeninvarianten}
 
+Schleifeninvarianten beschreiben eine Eigenschaft, die vor und nach jeder Iteration gültig ist. Sie
+werden wie Ghost-Commands per Annotation an die Schleife geschrieben und helfen dem Werkzeug die
+Nachbedingungen zu verifizieren.
+\newline
+\newline
+Der folgende Quellcode zeigt eine ACSL-Implementierung für \lstinline{mismatch}, die alle
+notwendigen Schleifeninvarianten enthält (Spezifikation siehe Listing 3.11):
+\begin{figure}[H]
+\lstinputlisting[language=C, caption=ACSL-Implementierung für \lstinline{mismatch}]{codes/mismatch_acsl.c}
+\end{figure} 
+
+
 schleifeninvarianten in acsl
 
 alle angefassten variablen müssen per assigns erlaubt werden
