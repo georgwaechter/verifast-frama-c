@@ -122,39 +122,87 @@ Geschwindigkeit der Werkzeuge vergleicht.
 Schleifeninvarianten beschreiben eine Eigenschaft, die vor und nach jeder Iteration gültig ist. Sie
 werden wie Ghost-Commands per Annotation an die Schleife geschrieben und helfen dem Werkzeug die
 Nachbedingungen zu verifizieren.
-\newline
-\newline
-Der folgende Quellcode zeigt eine ACSL-Implementierung für \lstinline{mismatch}, die alle
-notwendigen Schleifeninvarianten enthält (Spezifikation siehe Listing 3.11):
+
 \begin{figure}[H]
-\lstinputlisting[language=C, caption=ACSL-Implementierung für \lstinline{mismatch}]{codes/mismatch_acsl.c}
+Der folgende Quellcode zeigt eine ACSL-Implementierung für \lstinline{mismatch}
+(Spezifikation siehe Listing 3.11):
+\lstinputlisting[language=C, caption=Implementierung für \lstinline{mismatch} mit ACSL-Annotationen]{codes/mismatch_acsl.c}
+\end{figure}
+
+Die Invariante in Zeile 4 beschreibt den Gültigkeitsbereich der Variable \lstinline{i}, in Zeile 5 wird definiert, 
+dass alle Elemente \lstinline{< i } der beiden Arrays gleich sind. Außerdem verlangt ACSL, dass alle
+Variablen-Manipulationen für die Schleife explizit angegeben werden (siehe Zeile 6). Damit kann das Werkzeug
+nun die beiden Fälle aus den Nachbedingungen beweisen.
+
+Hier erweist es sich auch wieder als vorteilhaft, dass für die Spezifikation bereits das Prädikat
+\lstinline{IsEqual} definiert wurde, denn in der Schleifeninvariante kann dieses wiederverwendet werden. Damit
+ist auch für den Leser schneller ersichtlich, dass die Invariante beim Beweis der Spezifikation hilft.
+
+\begin{figure}[H]
+	\centering
+\includegraphics[width=0.8\textwidth]{images/acsl-prove-mismatch.png}
+
+Die Implementierung für \lstinline{mismatch} wurde erfolgreich verifiziert.
+\end{figure}
+
+Invarianten in ACSL und Verifast funktionieren bis auf kleinere syntaktische Unterschiede nach dem gleichen Prinzip.
+Wie schon von den Spezifikationen bekannt, ist es auch hier in Verifast wieder notwendig die Invarianten in nur
+einer einzigen Annotation auszudrücken. Außerdem kann der Schleifenkörper nur auf Heap-Chunks zurückgreifen, die
+in der Invariante explizit angegeben werden. Verifast entfernt vor dem Schleifenbeginn alle aktuellen Chunks
+und stellt diese nach dem Austritt aus der Schleife wieder her. Der Schleifenkörper verhält sich also
+wie eine eigenständige Funktion.
+
+\begin{figure}[H]
+Nachfolgend ist die Implementation von oben nochmal gezeigt, an der Stelle aber mit Invarianten für Verifast.
+
+\lstinputlisting[language=C, caption=Implementierung für \lstinline{mismatch} mit Verifast-Annotationen]{codes/mismatch_verifast.c}
 \end{figure} 
 
+Wie in der dazugehörigen Spezifikation (siehe Listing 3.10) wird die Funktion \lstinline{take} genutzt,
+um die ersten \lstinline{i} Elemente der Liste \lstinline{al} und \lstinline{bl} zu vergleichen.
+Die Einschränkung des Wertebereichs der Variablen \lstinline{i} ist identisch mit der ACSL-Variante -
+bis auf den syntaktischen Unterschied, dass Verifast keine Verkettung von Vergleichsoperatoren erlaubt.
 
-schleifeninvarianten in acsl
+Wie oben beschrieben muss außerdem der Speicherinhalt der Arrays \lstinline{al} und \lstinline{bl} für
+den Schleifenkörper zugreifbar gemacht werden. Deshalb finden sich hier die \lstinline{ints}-Prädikate
+aus der Spezifikation wieder. Sie stellen sicher, dass die Elemente \lstinline{a[0 <= i < n]} gelesen
+werden können.
 
-alle angefassten variablen müssen per assigns erlaubt werden
-
-dann in verifast zeigen
-
-ähnlich, alles muss in invariante defniiert sein, was man benutzen will
-
-toolunterstützung frama-c zeigen und erklären
+Im Unterschied zu Verifast ist es nicht notwendig und auch nicht möglich Schreibrechte für die lokale Variable 
+\lstinline{i} zu erteilen. Auf lokale Variablen darf der Schleifenkörper in Verifast immer zugreifen, lesend
+als auch schreibend.
+\newline
+\newline
+Versucht man die Implementierung mit Verifast nun zu beweisen, erhält man einen Fehler: Die Schleifeninvariante
+konnte nicht bewiesen werden. 
+Das liegt daran, dass das Werkzeug aus dem Schleifenkörper allein nicht folgern kann, dass in der nächsten Iteration 
+die Länge der gleichen Listen um eins gewachsen ist. Der Fehler tritt darum beim \lstinline{==} der Invariante auf.
+Zur Lösung wird ein Lemma benötigt, welchen diesen Schritt für Verifast nachvollziehbar macht.
 
 \section{Lemmata und Axiome}
 \label{verifizierung:lemma}
 
+detailliert zeigen wie der schritt gemacht werden kann
+
+take(i, al) und take(i, bl) und a[i] == b[i] daraus folgt take(i + 1, al) == take(i + 1, bl)
+
+take_one_plus lemma zeigen
+
+man muss die lemmas alle kennen .. oder selber schreiben
+
+es zeigt sich wieder: verifast wertet geschwindigkeit wichtiger als intelligenz des werkzeugs
+
+automatische ausführen von lemmas geht mit lemma_auto
+
+wurde tatsächlich schon automatisch benutzt ... kann auch gut mit der verifast gui nachfollzogen werden
+beim ints prädikat
+
 intsinv zeigen mit length
 
-fixpoint nochmal zeigen (take)
+lemma auto ist axiom
 
 erwähnen dass verifast terminierung von fixpount und lemmas prüft
 
-\lstinline{take_one_plus} lemma zeigen
-
-ggf. screenshot hier erst zeigen
-
-erklären wieso es notwendig ist
 
 \section{Speicherprobleme aufdecken}
 
