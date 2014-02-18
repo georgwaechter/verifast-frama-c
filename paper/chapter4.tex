@@ -195,9 +195,9 @@ in einem Ghost-Command per Annotation statt:
 Das Lemma \lstinline{take_plus_one} sorgt dafür, dass Verifast den Ausdruck \lstinline{take(i + 1, al)}
 versteht und die Invariante (siehe Listing 4.4 oben) vollständig beweisen kann. Es ist wie folgt
 definiert (in der von Verifast mitgelieferten listex.gh):
-
+\begin{figure}[H]
 \lstinputlisting[language=C, caption=Lemma \lstinline{take_plus_one}]{codes/take_plus_one.c}
-
+\end{figure}
 Wird dieses Lemma in obiger Schleife (nach dem if-Block) aufgerufen, so kann Verifast
 die Invariante \lstinline{take(i, al) == take(i, bl)} nach dem Induktionsschritt \lstinline{i++}
 beweisen. Der folgende Code zeigt den Aufruf des Lemmas innerhalb der Schleife plus weitere Assertions:
@@ -254,7 +254,43 @@ wurden Assertions eingefügt.
 \lstinputlisting[language=C, caption=Beweis des Lemmas \lstinline{take_one_plus}]{codes/take_plus_one_proof.c}
 \end{figure} 
 Für viele in Verifast enthaltene Lemmata gibt es bereits Beweise. Diese befinden sich jedoch in einer separaten
-Datei, damit das Werkzeug nicht bei jeder Verifizierung alle diese überprüfen muss.
+Datei, damit das Werkzeug nicht bei jeder Verifizierung all diese nachprüfen muss.
+
+\section{Terminierung}
+
+Um die totale Korrektheit zu beweisen, ist es notwendig die Terminierung der Implementierung zu
+verifizieren. Im Falle von Schleifen, muss eine sogenannte Variante ergänzt werden, die
+in jeder Iteration kleiner wird und in endlich Schritten zu einem kleinstem Element führt.
+
+Beide Verifikationswerkzeuge erlauben die Notation und Verifizierung einer solchen Variante analog zur
+Schleifeninvariante. Die folgende Schleife (aus der \texttt{equal}-Implementierung) wurde mit einer Variante 
+in ACSL-Syntax angereichert. Dieselbe Variante für Verifast würde genauso lauten, allerdings
+mit dem Schlüsselwort \texttt{decreases} eingeleitet werden.
+\begin{figure}[H]
+\lstinputlisting[language=C, caption=Schleifenvariante in ACSL]{codes/loop_variant_acsl.c}
+\end{figure}
+
+Tatsächlich kann bereits ein kleiner Tippfehler dafür sorgen, dass die Implementierung
+nicht terminiert. Das Werkzeug Verifast beweist die funktionale Korrektheit aber trotzdem
+(siehe Screenshot). Frama-C dagegen warnt wenn eine Variante fehlt und generiert selbstständig
+eine Dummy-Variante. So fällt zumindest auf, dass die Terminierung noch nicht bewiesen ist.
+
+\begin{figure}[H]
+	\centering
+\includegraphics[width=1.0\textwidth]{images/verifast-partial-correctness.png}
+\caption{Tippfehler beim \texttt{i++} in der Implementierung}
+\end{figure}
+
+Das Beispiel zeigt, dass automatische Tests an dieser Stelle einen wichtigen Beitrag leisten
+können. Denn ein einfacher Unit-Test würde reichen, um den Tippfehler aufzudecken. In allen
+Fällen in denen die Terminierung nur sehr schwierig oder gar nicht zu beweisen ist, bieten
+Unit-Tests außerdem eine einfachere bzw. überhaupt eine Lösung. Auch wenn damit natürlich
+kein Beweis der totalen Korrektheit zu erbringen ist.
+\newline
+\newline
+ACSL kann darüber hinaus auch die Terminierung von rekursiven Funktionen prüfen, was in
+Verifast derzeit nicht möglich ist.
+
 
 \section{Speicherprobleme aufdecken}
 

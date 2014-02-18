@@ -1,44 +1,29 @@
-﻿
-\chapter{Vergleich fortgeschrittene Konzepte}
+﻿\chapter{Vergleich weiterer Aspekte}
 
-halteproblem .. nicht alles ist verifizierbar
+\section{Arbeit mit dem Werkzeug}
 
-\section{Modulare Verifikation}
+oberfläche in verifast überlegen .. aber auch noch verbesserungswürdig
+plugin in IDE wünschenswert
 
-zeigen wie mismatch mit equal implementiert werden kann
+frama-c stark entkoppelt ... verschiedene beweiser, in verifast alles aus einer hand
+und leider nicht open source
 
-außerdem: prädikate helfen beim information hiding
+geschwindigkeit in verifast erleichtert arbeit, da langes warten entfällt
 
-\section{Terminierung}
+beides ist automatisierbar über kommandozeile
 
-ist optional und schwierig .. nicht immer möglich (halteproblem)
-motivieren wieso .. tippfehler kann verifizierung ungültig machen
-totale korrektheit, nicht partielle ist ziel
-
-
-terminierung ist wichtig für rekursive funktionen und schleifen
-measure = integer measure, decreases ...
-
-zeigen wie man terminierung in acsl und verifast beweist
-
-verifast unterstützt nur loop-terminierung, keine rekursion
-
-terminates in acsl
-
-\section{Axiome und Lemmata}
-
-lemma auto und axiome vergleichen
-
-lemma in verifast und acsl
-
-wofür braucht man diese?
-
-fixpoint functions
+kleinere unterschiede in der unterstützung der c-sprach-features
+	verifast unterstützt gotos, acsl kann das nicht
+	verifast unterstützt keine mehrdimensionalen arrays
+	
+	dokumentation unterschiedlich
+	
+	beide werkzeuge beherrschen modulare verifizierung, acsl als auch
+	verifast beweisen jede funktion/lemma unabhängig voneinander
 
 \section{Aliasing}
 
 copy oder move zeigen und unterschied zwischen acsl und verifast
 
 \lstinline{\seperated}
-
 
