@@ -182,27 +182,79 @@ Zur Lösung wird ein Lemma benötigt, welchen diesen Schritt für Verifast nachv
 \section{Lemmata und Axiome}
 \label{verifizierung:lemma}
 
-detailliert zeigen wie der schritt gemacht werden kann
+Lemmata sind Funktionen, die dem Werkzeug helfen sollen logische Schritte zu machen. Wie normale
+Funktionen besitzen sie Vorbedingungen sowie Nachbedingungen und müssen explizit aufgerufen werden.
+Da es sich um Code handelt, der nur für das Verifikationswerkzeug bestimmt ist, findet der Aufruf
+in einem Ghost-Command per Annotation statt:
 
-take(i, al) und take(i, bl) und a[i] == b[i] daraus folgt take(i + 1, al) == take(i + 1, bl)
+\lstset{frame=none, numbers=none}                      
+\begin{lstlisting}
+//@ ghost take_plus_one(i, al);
+\end{lstlisting}
+\lstset{frame=single, numbers=left}    
+Das Lemma \lstinline{take_plus_one} sorgt dafür, dass Verifast den Ausdruck \lstinline{take(i + 1, al)}
+versteht und die Invariante (siehe Listing 4.4 oben) vollständig beweisen kann. Es ist wie folgt
+definiert (in der von Verifast mitgelieferten listex.gh):
 
-take_one_plus lemma zeigen
+\lstinputlisting[language=C, caption=Lemma \lstinline{take_plus_one}]{codes/take_plus_one.c}
 
-man muss die lemmas alle kennen .. oder selber schreiben
+Wird dieses Lemma in obiger Schleife (nach dem if-Block) aufgerufen, so kann Verifast
+die Invariante \lstinline{take(i, al) == take(i, bl)} nach dem Induktionsschritt \lstinline{i++}
+beweisen. Der folgende Code zeigt den Aufruf des Lemmas innerhalb der Schleife plus weitere Assertions:
+\begin{itemize}
+\item Zeile 8 folgt aus der Invariante selbst
+\item Zeile 9 ist die Schlussfolgerung aus der vorangegangenen if-Anweisung
+\item Zeilen 10 und 11 wenden das Lemma auf die Listen \lstinline{al} und \lstinline{bl} an
+\item Zeilen 12 und 13 beschreiben den Effekt (die Nachbedingung) des Lemmas
+\item Zeile 14 inkremniert die Schleifenvariable (verschoben aus Schleifenkopf, da ansonsten die folgende Zusicherung nicht im Code platziert werden kann)
+\item Zeile 15 stellt die nun bewiesene Invariante dar
+\end{itemize}
 
-es zeigt sich wieder: verifast wertet geschwindigkeit wichtiger als intelligenz des werkzeugs
+\lstinputlisting[language=C, firstline=3, lastline=18, caption=Aufruf Lemma \lstinline{take_plus_one} in Schleife]{codes/mismatch_verifast_2.c}
 
-automatische ausführen von lemmas geht mit lemma_auto
+Es besteht in Verifast auch die Möglichkeit ein Lemma mit dem Schlüsselwort \lstinline{lemma_auto} zu deklarieren.
+Damit muss es nicht mehr explizit aufgerufen werden, sondern wird automatisch genutzt, wie die von 
+ACSL bekannten Axiome. Richtig dokumentiert ist diese Funktion allerdings nicht, da sie laut der Verifast-Autoren
+nur für Experten gedacht ist. 
 
-wurde tatsächlich schon automatisch benutzt ... kann auch gut mit der verifast gui nachfollzogen werden
-beim ints prädikat
+Ein Grund dafür ist, dass eine unbedachte Ausnutzung des Schlüsselwortes
+den von Verifast genutzten SMT-Solver (Satisfability Modulo Theories) in eine Endloschleife bringen kann. Ein
+weiterer Nachteil ist zudem, dass der Verifikationsprozess nicht mehr vollständig nachvollziehbar ist.
+Denn den automatischen Aufruf des Lemmas zeigt Verifast nicht an, wenn man die einzelnen
+Schritte des symbolischen Ausführungspfades auf der Oberfläche inspiziert.
+\newline
+\newline
+Ein sinnvoller Einsatz der automatischen Lemmata sind globale Invarianten, z.B. die Eigenschaften von Datenstrukturen
+im C- oder Ghostcode. In ACSL gibt es für diese Fälle die sogenannten Typ-Invarianten, die entweder zu jeder Zeit oder
+nur beim Ein- und Austritt in eine Methode gelten müssen. Letztere werden als schwachte Invarianten bezeichnet.
 
-intsinv zeigen mit length
+Tatsächlich wurde bei der Verifizierung der gezeigten Implementierungungen bereits eine solche
+globale Invariante - formuliert als Lemma - automatisch genutzt. Die Funktion \lstinline{ints_inv}
+(definiert in prelude.h) beschreibt den Zusammenhang zwischen der Fixpunktfunktion \texttt{length}
+(Länge einer Liste) und dem \lstinline{ints}-Prädikat:
 
-lemma auto ist axiom
+\lstinputlisting[language=C, caption=Lemma \lstinline{ints_inv}]{codes/ints_inv.c}
 
-erwähnen dass verifast terminierung von fixpount und lemmas prüft
-
+Ohne dieses Lemma wäre die Verifizierung der \lstinline{mismatch}-Implementierung (Listing 4.4)
+nicht erfolgreich, da die Information fehlen würde, dass \lstinline{n} (im Lemma \lstinline{count})
+der Länge der Listen entspricht.
+\newline
+\newline
+Analog zu den Axiomen in ACSL ist es auch in Verifast nicht notwendig einen Beweis der Lemmata anzugeben -
+das Werkzeug vertraut den Angaben blind. Dort wo es jedoch möglich ist, sollte man einen Beweis anführen,
+damit die Verifizierung keine Schwachstellen besitzt.
+Der Beweis wird als Funktionskörper definiert und von Verifast auf Terminierung überprüft. Dabei muss
+\todo{zitat zu tutorial, seite 15}
+darauf geachtet werden, dass das Werkzeug die Induktion erkennt. Für die Induktion über eine Liste
+ist es beispielsweise notwendig den Beweis mit einer \texttt{switch}-Anweisung zu beginnen. Eine
+semantisch äquivalente Form mit \texttt{if}-Anweisungen wird nicht akzeptiert.
+\begin{figure}[H]
+Der folgende Ghost-Code zeigt den Beweis des entsprechenden Lemmas. Um das Verstehen zu erleichtern,
+wurden Assertions eingefügt.
+\lstinputlisting[language=C, caption=Beweis des Lemmas \lstinline{take_one_plus}]{codes/take_plus_one_proof.c}
+\end{figure} 
+Für viele in Verifast enthaltene Lemmata gibt es bereits Beweise. Diese befinden sich jedoch in einer separaten
+Datei, damit das Werkzeug nicht bei jeder Verifizierung alle diese überprüfen muss.
 
 \section{Speicherprobleme aufdecken}
 
