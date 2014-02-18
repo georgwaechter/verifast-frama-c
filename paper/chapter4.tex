@@ -214,8 +214,8 @@ beweisen. Der folgende Code zeigt den Aufruf des Lemmas innerhalb der Schleife p
 
 Es besteht in Verifast auch die Möglichkeit ein Lemma mit dem Schlüsselwort \lstinline{lemma_auto} zu deklarieren.
 Damit muss es nicht mehr explizit aufgerufen werden, sondern wird automatisch genutzt, wie die von 
-ACSL bekannten Axiome. Richtig dokumentiert ist diese Funktion allerdings nicht, da sie laut der Verifast-Autoren
-nur für Experten gedacht ist. 
+ACSL bekannten Axiome. Richtig dokumentiert ist diese Funktionalität allerdings nicht, da sie laut den Verifast-Autoren
+nur für Experten gedacht ist. \todo{referenz auf paper von bart jacobs}
 
 Ein Grund dafür ist, dass eine unbedachte Ausnutzung des Schlüsselwortes
 den von Verifast genutzten SMT-Solver (Satisfability Modulo Theories) in eine Endloschleife bringen kann. Ein
@@ -243,11 +243,12 @@ der Länge der Listen entspricht.
 Analog zu den Axiomen in ACSL ist es auch in Verifast nicht notwendig einen Beweis der Lemmata anzugeben -
 das Werkzeug vertraut den Angaben blind. Dort wo es jedoch möglich ist, sollte man einen Beweis anführen,
 damit die Verifizierung keine Schwachstellen besitzt.
-Der Beweis wird als Funktionskörper definiert und von Verifast auf Terminierung überprüft. Dabei muss
-\todo{zitat zu tutorial, seite 15}
-darauf geachtet werden, dass das Werkzeug die Induktion erkennt. Für die Induktion über eine Liste
-ist es beispielsweise notwendig den Beweis mit einer \texttt{switch}-Anweisung zu beginnen. Eine
-semantisch äquivalente Form mit \texttt{if}-Anweisungen wird nicht akzeptiert.
+Der Beweis wird als Funktionskörper definiert und automatisch geprüft. Verifast testet außerdem die
+Terminierung der Lemmafunkton. 
+Dabei muss \todo{zitat zu tutorial, seite 15} darauf geachtet werden, dass das Werkzeug die Induktion auch 
+erkennen kann. Für die Induktion über eine Liste ist es beispielsweise notwendig den Beweis mit einer 
+\texttt{switch}-Anweisung zu beginnen. Eine semantisch äquivalente Form mit \texttt{if}-Anweisungen wird 
+nicht unterstützt.
 \begin{figure}[H]
 Der folgende Ghost-Code zeigt den Beweis des entsprechenden Lemmas. Um das Verstehen zu erleichtern,
 wurden Assertions eingefügt.
@@ -292,6 +293,10 @@ ACSL kann darüber hinaus auch die Terminierung von rekursiven Funktionen prüfe
 Verifast derzeit nicht möglich ist.
 
 
+\section{Überläufe erkennen}
+
+overflow checken
+
 \section{Speicherprobleme aufdecken}
 
 malloc/free - chunks
@@ -300,6 +305,4 @@ zeigen an hand von main-funktion (unit-test)
 
 verifast hilft klar zu dokumentieren wer für speicher verantwortlich ist (rufer oder gerufener)
 
-\section{Überläufe erkennen}
 
-overflow checken

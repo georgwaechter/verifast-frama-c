@@ -25,6 +25,7 @@ Der spezielle @-Präfix in Zeile 1 signalisiert dem Verifikationswerkzeug,
 dass der folgende Kommentarblock als Verifikations-Annotation zu interpretieren ist. Normale C-Compiler hingegen
 ignorieren den Kommentar.
 
+\todo{isvalidrange aktualisieren}
 Die Vorbedingungen sind in Zeile 2 und 3 zu finden: \lstinline{IsValidRange} ist ein Prädikat, welches hier sicherstellt,
 dass die Zeiger \lstinline{a} und \lstinline{b} gültig sind und auf den Speicherbereich \lstinline{a[0..n]} 
 (von \lstinline{a[0]} bis \lstinline{a[n-1]}) bzw. \lstinline{b[0..n]} zugegriffen 
@@ -59,7 +60,7 @@ Annotations-Kommentare nach der Signatur augeführt und nicht davor. Außerdem m
 Nachbedingungen in nur einer einzigen \lstinline{requires} bzw. \lstinline{ensures}-Anweisung 
 zusammengefasst werden.
 
-Eine \lstinline{assigns}-Klausel taucht auch nicht auf. Dennoch ist erkennbar, dass es sich um einen 
+Eine \lstinline{assigns}-Klausel taucht nicht auf. Dennoch ist erkennbar, dass es sich um einen 
 nicht-mutierenden Algorithmus handelt. Anders als in ACSL wird nicht explizit angegeben ob und auf welche 
 Speicherstellen zugegriffen werden darf. Stattdessen wird eine Aussage über den Speicherinhalt selbst 
 getroffen. Der \lstinline{x |-> y} Operator (engl. points-to) spielt dabei eine wichtige Rolle. Er gibt an, 
