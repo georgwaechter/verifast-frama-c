@@ -1,4 +1,4 @@
-﻿\chapter{Vergleich der Verifizierung von Implementierungen}
+﻿\chapter{Vergleich der Verifizierungen}
 
 Nachdem im vorigen Kapitel die Spezifikationen und darin verwendete Sprachmittel verglichen wurden,
 geht es nun darum zu verifizieren, dass die Implementierungen diese tatsächlich erfüllen.
@@ -231,9 +231,9 @@ nur beim Ein- und Austritt in eine Methode gelten müssen. Letztere werden als s
 Tatsächlich wurde bei der Verifizierung der gezeigten Implementierungungen bereits eine solche
 globale Invariante - formuliert als Lemma - automatisch genutzt. Die Funktion \lstinline{ints_inv}
 (definiert in prelude.h) beschreibt den Zusammenhang zwischen der Fixpunktfunktion \texttt{length}
-(Länge einer Liste) und dem \lstinline{ints}-Prädikat:
+(Länge einer Liste) und dem \lstinline{ints}-Prädikat.
 
-\lstinputlisting[language=C, caption=Lemma \lstinline{ints_inv}]{codes/ints_inv.c}
+\lstinputlisting[language=C, caption=Lemma \lstinline{ints_inv} - Invariante für int-Arrays]{codes/ints_inv.c}
 
 Ohne dieses Lemma wäre die Verifizierung der \lstinline{mismatch}-Implementierung (Listing 4.4)
 nicht erfolgreich, da die Information fehlen würde, dass \lstinline{n} (im Lemma \lstinline{count})
@@ -293,16 +293,45 @@ ACSL kann darüber hinaus auch die Terminierung von rekursiven Funktionen prüfe
 Verifast derzeit nicht möglich ist.
 
 
-\section{Überläufe erkennen}
+\section{Arbeit mit den Werkzeugen}
 
-overflow checken
+Im Gegensatz zu Verifast bezeichnet ACSL nicht ein vollständiges Werkzeug, sondern ausschließlich
+die Annotationssprache. Die Verarbeitung übernimmt eine Kombination aus Frama-C, Why\footnote{
+\url{http://why.lri.fr/}} und daran angeschlossene Beweiser wie Alt-Ergo\footnote{\url{http://alt-ergo.lri.fr/}}
+oder Z3\footnote{\url{http://research.microsoft.com/en-us/um/redmond/projects/z3/}}. Das ermöglicht 
+eine voneinander unabhängige Weiterentwicklung der Sprache und des Verifizierungs-Backends. Beispielsweise 
+können für spezielle Probleme somit auch spezialisierte Beweiser eingesetzt werden. Im Extremfall kann
+dann die Verifizierung einer Implementierung nicht durch einen, sondern nur durch die Summe aller
+Beweiser gelingen.
 
-\section{Speicherprobleme aufdecken}
+\begin{figure}[H]
+	\centering
+\includegraphics[width=1.0\textwidth]{images/why-multiple-provers.png}
+\caption{Verifizierung mit mehreren Beweisern auf der Why-Plattform}
+\end{figure}
 
-malloc/free - chunks
+In Verifast hingegen sind die Sprache und die Verifizierung in einer Software zusammen gefasst,
+es ist nicht möglich den integrierten Z3 Beweiser auszutauschen.
 
-zeigen an hand von main-funktion (unit-test)
 
-verifast hilft klar zu dokumentieren wer für speicher verantwortlich ist (rufer oder gerufener)
+oberfläche in verifast überlegen .. aber auch noch verbesserungswürdig
+plugin in IDE wünschenswert
+
+frama-c stark entkoppelt ... verschiedene beweiser, in verifast alles aus einer hand
+und leider nicht open source
+
+geschwindigkeit in verifast erleichtert arbeit, da langes warten entfällt
+
+beides ist automatisierbar über kommandozeile
+
+kleinere unterschiede in der unterstützung der c-sprach-features
+	verifast unterstützt gotos, acsl kann das nicht
+	verifast unterstützt keine mehrdimensionalen arrays
+	
+	dokumentation unterschiedlich
+	
+	beide werkzeuge beherrschen modulare verifizierung, acsl als auch
+	verifast beweisen jede funktion/lemma unabhängig voneinander
+
 
 
