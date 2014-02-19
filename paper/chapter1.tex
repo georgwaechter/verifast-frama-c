@@ -2,33 +2,40 @@
 
 \section{Aufgabenstellung und Durchführung}
 \label{sec:aufgabenstellung}
-Diese Arbeit vergleicht die statischen Verifikationswerkzeuge Verifast und ACSL in Kombination mit Frama-C. 
+Diese Arbeit vergleicht die statischen Verifikationswerkzeuge Verifast\footnote{
+\url{http://people.cs.kuleuven.be/~bart.jacobs/verifast/}} und ACSL\footnote{\url{http://frama-c.com/acsl.html}} 
+in Kombination mit Frama-C\footnote{\url{http://frama-c.com}}. 
 Der Fokus liegt dabei auf einfachen Algorithmen, die mit Arrays arbeiten ohne sie zu verändern.
 Dabei wird die Lesbarkeit, Ausdrucksstärke sowie der notwendige manuelle Aufwand der Verifikation betrachtet.
 Für den praktischen Einsatz wichtige Faktoren werden ebenso untersucht. Das sind insbesondere die verfügbare 
-Dokumentation, die dazugehörigen Tools sowie die Lernkurve beim Einsatz der Werkzeuge.
+Dokumentation, die Integration in den Entwicklungsprozess und die Geschwindigkeit der Werkzeuge.
+\newline
+\newline
+Als durchgängiges Beispiel dient in dieser Arbeit der standardisierte mismatch-Algorithmus\footnote{siehe
+\url{http://msdn.microsoft.com/de-de/library/f0bsxbk9.aspx}} aus
+der C++ Standard-Bibliothek. Die Grundlage für spätere Formalisierung ist die folgende vereinfachte\footnote{es
+wird auf Iteratoren und eine selbst definierte Vergleichsfunktion verzichtet} Signatur und 
+die dazugehörige informelle Spezifikation:
 
-Als durchgängiges Beispiel dient in dieser Arbeit der standardisierte mismatch-Algorithmus aus
-der C++ Standard-Bibliothek. In leicht vereinfachter Form sieht dessen Signatur wie folgt aus:
-
-
+\lstset{frame=none, numbers=none}    
 \lstinputlisting[language=C]{codes/mismatch_signature.c}
+\lstset{frame=single, numbers=left}
 
-Als Grundlage für folgende Formalisierungen verwenden wir folgende informelle Spezifikation:
-
-\todo{Erwähnen, dass return == size, wenn alles identisch?}
-\emph{Vergleicht die Elemente der beiden Arrays beginnend mit 0 bis einschließlich size - 1 und gibt den
-Index der ersten Elemente zurück, die sich unterscheiden.}
-
+\noindent \emph{Vergleicht die Elemente der beiden Arrays beginnend bei 0 bis einschließlich size - 1 und gibt den
+Index der ersten Elemente zurück, die sich unterscheiden. Sind alle Elemente gleich, gibt der Algorithmus
+size - die Länge der Liste - zurück.}
+\newline
+\newline
 Auf Grund des einfachen Beispiels hat der Vergleich nur eine begrenzte Aussagekraft, denn es werden nicht alle
 Spracheigenschaften von Verifast bzw. ACSL gezeigt und verglichen. Zudem kommt hinzu, dass sich beide Werkzeuge
-kontinuierlich - in ihre jeweils eigene Richtung - weiterentwickeln. Es wird also immer Anwendungsfälle geben,
+kontinuierlich - in ihre jeweils eigene Richtung - weiterentwickeln. Es wird darum immer Anwendungsfälle geben,
 in denen ein Werkzeug dem anderen überlegen ist oder sogar alternativlos ist.
-
 
 
 \section{Verifast}
 \label{sec:verifast}
+
+
 
 KU Löwen university, by bart jacobs
 
@@ -61,8 +68,11 @@ zusammen mit verifast teil des STANCE projekts
 \section{Zielgruppe}
 \label{sec:zielgruppe}
 
-Für das Verstehen der Arbeit sollte der Leser mindestens die Grundlagen der Programmiersprache C beherrschen.
-Theoretische Kenntnisse zur Aussagen- und Prädikatenlogik sind ebenfalls sehr hilfreich.
+Für das Verstehen der Arbeit sollte der Leser die Grundlagen der Programmiersprache C beherrschen.
+sowie theoretische Kenntnisse zur Aussagen- und Prädikatenlogik besitzen.
+Konkrete Erfahrungen mit ACSL und Frama-C sind hilfreich, da beim Vergleich der Werkzeuge an vielen
+Stellen Verifast detaillierter als ACSL erläutert wird. Die Arbeit ist darum auch als Einstieg in Verifast
+für ACSL-Nutzer geeignet und ausgelegt.
 
-Idealerweise hat der Leser bereits Erfahrung im Umgang mit ACSL und Frama-C und kann nach dem Lesen dieser Arbeit
-ebenfalls mit Verifast arbeiten. 
+ 
+

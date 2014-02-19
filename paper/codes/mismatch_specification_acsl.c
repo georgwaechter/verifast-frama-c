@@ -1,6 +1,6 @@
 /*@
-  requires IsValidRange(a, n);
-  requires IsValidRange(b, n);
+  requires \valid_range(a, 0, n - 1);
+  requires \valid_range(b, 0, n - 1);
   assigns \nothing;
 
   behavior all_equal:
