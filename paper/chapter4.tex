@@ -311,18 +311,26 @@ Beweiser gelingen.
 \end{figure}
 
 In Verifast hingegen sind die Sprache und die Verifizierung in einer Software zusammen gefasst,
-es ist nicht möglich den integrierten Z3 Beweiser auszutauschen.
-
-
-oberfläche in verifast überlegen .. aber auch noch verbesserungswürdig
-plugin in IDE wünschenswert
-
-frama-c stark entkoppelt ... verschiedene beweiser, in verifast alles aus einer hand
-und leider nicht open source
+es ist nicht möglich den integrierten Z3 Beweiser auszutauschen. Dafür ermöglicht Verifast das
+einfacherere Nachvollziehen der Verifizierung direkt im Quellcode. Insbesondere die Möglichkeit
+Haltepunkte zu setzen, erleichtert die Arbeit enorm, da der Zustand der symbolischen Ausführung
+inspizierbar ist und schnell erkennen lässt an welcher Stelle es noch hakt.
+\\
+\\
+Mit ACSL ist so etwas nicht denkbar, da die Verifizierung auf einem anderem Prinzip beruht. Die
+in Why gezeigten \todo{screenshot einfügen}Ausgaben der Formeln sind zwar hilfreich, aber längst nicht so einfach nachvollziehbar und
+verständlich wie der Zustand in Verifast.
+\\
+\\
+Für beide Werkzeuge aber gilt, dass sie leider nur alleine lauffähig sind und nicht im Rahmen
+einer Entwicklungsumgebung wie Eclipse\footnote{\url{www.eclipse.org}} genutzt werden können.
+Mindestens genauso wichtig aber ist die Unterstützung für die Kommandozeile, die beide Werkzeuge
+mitbringen. Damit ist die Verifizierung auch automatisiert möglich und die Einbettung in eine
+Continous Integration\footnote{\url{http://de.wikipedia.org/wiki/Kontinuierliche_Integration}}-Umgebung möglich.
+\\
+\\
 
 geschwindigkeit in verifast erleichtert arbeit, da langes warten entfällt
-
-beides ist automatisierbar über kommandozeile
 
 kleinere unterschiede in der unterstützung der c-sprach-features
 	verifast unterstützt gotos, acsl kann das nicht
