@@ -9,14 +9,14 @@ Ghost-Commands, die Prädikate oder weitere logische Beweise mit einbeziehen.
 
 \section{Symbolische Ausführung in Verifast}
 
+\todo{terminologie mit verifast paper abgleichen, zitat zu jacobs-2010}
 Die Verifizierung von Implementierungs-Code findet in Verifast über eine symbolische Ausführung statt:
 Gestartet wird mit den Vorbedingungen des Methodenvertrags, der Code wird dann wie bei der tatsächlichen
 Ausführung von oben nach unten verarbeitet. Jedoch nicht mit konkreten, sondern mit 
 abrakten Werten. Diese werden durch logische Formeln repräsentiert, welche die möglichen Variablen-Werte 
 beschreiben. Am Ende der Ausführung sind dann bei erfolgreicher Verifizierung alle Voraussetzungen
 erfüllt, um die Nachbedingungen direkt abzuleiten.
-\newline
-\newline
+
 Bei der symbolischen Ausführung werden alle potenziellen Ausführungspfade untersucht: Schleifen
 oder auch \texttt{if}-Anweisungen sorgen dafür, dass Verifast diese Verzweigungen einzeln betrachtet
 und verifiziert. Existieren z.B. mehrere \texttt{return}-Anweisungen in der Implementierung, so stellt
@@ -70,8 +70,7 @@ nicht triviale Schlüsse zieht, ist es von Vorteil Assertions zu ergänzen und i
 Ghost-Commands hingegen enthalten Anweisungen für die Verifizierung, z.B. das Aufrufen anderer Sprachkonstrukte 
 (z.B. Lemmata oder Fixpointfunktionen, siehe \ref{verifizierung:lemma}). Sie helfen dem Werkzeug logische Schlüsse 
 zu ziehen, die es alleine nicht tun kann.
-\newline
-\newline
+
 Der folgende Quellcode zeigt einen Ausschnitt aus einer rekursiven Implementierung für \lstinline{equal} und dient
 hier als Anschauungsmaterial für die Erklärung der oben genannten Annotationstypen:
 
@@ -88,8 +87,7 @@ und bringen somit dessen Inhalt in die Liste der Annahmen. Erst dadurch ist für
 das Öffnen des Prädikats die Formel \lstinline{al = nil} bzw. \lstinline{bl = nil} (siehe Definition
 des Prädikats in Listing 3.9 oder 4.2). Damit löst sich die Assertion \lstinline{al == bl} in den
 trivialen Vergleich \lstinline{nil == nil} auf.
-\newline
-\newline
+
 Das Öffnen der Prädikate konsumiert gleichzeitig auch die entsprechenden Heap-Chunks, was jedoch dazu führt,
 dass diese beim Produzieren der Nachbedingung fehlen. Sie müssen also vor der \(return\)-Anweisung
 wieder geschlossen werden (Zeile 11 und 12), damit sie dann wieder an den Aufrufer zurückgegeben werden können 
@@ -108,8 +106,7 @@ der Prädikaten-Parameter:
 Präzise Prädikate versucht Verifast während der Verifizierung automatisch zu öffnen und ggf. auch zu
 schließen. Dadurch ist in der obigen Implementierung das Schreiben der \texttt{close}-Anweisungen
 nicht zwingend notwendig.
-\newline
-\newline
+
 Assertions in ACSL werden genauso notiert wie in Verifast. Ghost-Commands hingegen werden
 mit dem Schlüsseltwort \lstinline{ghost} eingeleitet, sind aber generell nicht so oft wie in
 Verifast notwendig. Das kommt daher, dass Frama-C aufwendigere Berechnungen durchführt, um
@@ -171,13 +168,14 @@ werden können.
 Im Unterschied zu Verifast ist es nicht notwendig und auch nicht möglich Schreibrechte für die lokale Variable 
 \lstinline{i} zu erteilen. Auf lokale Variablen darf der Schleifenkörper in Verifast immer zugreifen, lesend
 als auch schreibend.
-\newline
-\newline
+
 Versucht man die Implementierung mit Verifast nun zu beweisen, erhält man einen Fehler: Die Schleifeninvariante
 konnte nicht bewiesen werden. 
 Das liegt daran, dass das Werkzeug aus dem Schleifenkörper allein nicht folgern kann, dass in der nächsten Iteration 
 die Länge der gleichen Listen um eins gewachsen ist. Der Fehler tritt darum beim \lstinline{==} der Invariante auf.
 Zur Lösung wird ein Lemma benötigt, welchen diesen Schritt für Verifast nachvollziehbar macht.
+
+
 
 \section{Lemmata und Axiome}
 \label{verifizierung:lemma}
@@ -222,8 +220,7 @@ den von Verifast genutzten SMT-Solver (Satisfability Modulo Theories) in eine En
 weiterer Nachteil ist zudem, dass der Verifikationsprozess nicht mehr vollständig nachvollziehbar ist.
 Denn den automatischen Aufruf des Lemmas zeigt Verifast nicht an, wenn man die einzelnen
 Schritte des symbolischen Ausführungspfades auf der Oberfläche inspiziert.
-\newline
-\newline
+
 Ein sinnvoller Einsatz der automatischen Lemmata sind globale Invarianten, z.B. die Eigenschaften von Datenstrukturen
 im C- oder Ghostcode. In ACSL gibt es für diese Fälle die sogenannten Typ-Invarianten, die entweder zu jeder Zeit oder
 nur beim Ein- und Austritt in eine Methode gelten müssen. Letztere werden als schwachte Invarianten bezeichnet.
@@ -238,8 +235,7 @@ globale Invariante - formuliert als Lemma - automatisch genutzt. Die Funktion \l
 Ohne dieses Lemma wäre die Verifizierung der \lstinline{mismatch}-Implementierung (Listing 4.4)
 nicht erfolgreich, da die Information fehlen würde, dass \lstinline{n} (im Lemma \lstinline{count})
 der Länge der Listen entspricht.
-\newline
-\newline
+
 Analog zu den Axiomen in ACSL ist es auch in Verifast nicht notwendig einen Beweis der Lemmata anzugeben -
 das Werkzeug vertraut den Angaben blind. Dort wo es jedoch möglich ist, sollte man einen Beweis anführen,
 damit die Verifizierung keine Schwachstellen besitzt.
@@ -287,8 +283,7 @@ können. Denn ein einfacher Unit-Test würde reichen, um den Tippfehler aufzudec
 Fällen in denen die Terminierung nur sehr schwierig oder gar nicht zu beweisen ist, bieten
 Unit-Tests außerdem eine einfachere bzw. überhaupt eine Lösung. Auch wenn damit natürlich
 kein Beweis der totalen Korrektheit zu erbringen ist.
-\newline
-\newline
+
 ACSL kann darüber hinaus auch die Terminierung von rekursiven Funktionen prüfen, was in
 Verifast derzeit nicht möglich ist.
 
@@ -315,13 +310,11 @@ es ist nicht möglich den integrierten Z3 Beweiser auszutauschen. Dafür ermögl
 einfacherere Nachvollziehen der Verifizierung direkt im Quellcode. Insbesondere die Möglichkeit
 Haltepunkte zu setzen, erleichtert die Arbeit enorm, da der Zustand der symbolischen Ausführung
 inspizierbar ist und schnell erkennen lässt an welcher Stelle es noch hakt.
-\\
-\\
+
 Mit ACSL ist so etwas nicht denkbar, da die Verifizierung auf einem anderem Prinzip beruht. Die
 in Why gezeigten \todo{screenshot einfügen?}Ausgaben der Formeln sind zwar hilfreich, aber längst nicht so einfach nachvollziehbar und
 verständlich wie der Zustand in Verifast.
-\\
-\\
+
 Für beide Werkzeuge aber gilt, dass sie leider nur alleine lauffähig sind und nicht im Rahmen
 einer Entwicklungsumgebung wie Eclipse\footnote{\url{www.eclipse.org}} genutzt werden können. 
 Für die Verifizierung muss also der Arbeitsfluss unterbrochen werden. Denn auch wenn die Verifizierung
@@ -331,10 +324,9 @@ den Code auszuführen, zu testen, zu debuggen und verifizieren zu können.
 Mindestens genauso wichtig aber ist die Unterstützung für die Kommandozeile, die beide Werkzeuge
 mitbringen. Damit ist die Verifizierung auch automatisiert möglich und die Einbettung in eine
 Continous Integration\footnote{\url{http://de.wikipedia.org/wiki/Kontinuierliche_Integration}}-Umgebung möglich.
-\\
-\\
+
 Ein wichtiger Unterschied der beiden Untersuchungsobjekte ist die unterschiedliche Verifizierungs-Geschwindigkeit
-in der Praxis. Denn Verifast ist um ein Vielfaches schneller als Frama-C. 
+in der Praxis. Denn Verifast ist um ein Vielfaches schneller\cite[Kap. 3]{jac10-1} als Frama-C. 
 
 Daraus lässt sich jedoch keine Schlussfolgerung bzgl. der Qualität der Werkzeuge ziehen. Das unterschiedliche Tempo ist 
 vielmehr ein Resultat der unterschiedlichen Ansätze: Verifast erwartet mehr Einsatz von der verifizierenden Person, da

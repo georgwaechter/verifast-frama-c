@@ -59,16 +59,14 @@ Als erstes fällt die unterschiedliche Platzierung der Annotation auf: In Verifa
 Annotations-Kommentare nach der Signatur aufgeführt und nicht davor. Außerdem müssen alle Vor- und 
 Nachbedingungen in nur einer einzigen \lstinline{requires} bzw. \lstinline{ensures}-Anweisung 
 zusammengefasst werden.
-\\
-\\
+
 Eine explizite Angabe zu den Seiteneffekten analog zur \lstinline{assigns}-Klausel ist nicht vorhanden. 
 Dennoch ist erkennbar, dass es sich um einen nicht-mutierenden Algorithmus handelt. Anders als in ACSL wird 
 nicht explizit angegeben ob und auf welche Speicherstellen zugegriffen werden darf. Stattdessen wird eine 
 Aussage über den Speicherinhalt selbst getroffen. Der \lstinline{x |-> y} Operator (engl. points-to) spielt dabei eine wichtige Rolle. Er gibt an, 
 dass die Speicherstelle \lstinline{x} den Inhalt \lstinline{y} hat. Gleichzeitig stellt Verifast sicher, 
 dass der Zeiger \lstinline{x} gültig ist - analog zur \lstinline{\valid(x)} Anweisung aus ACSL.
-\\
-\\
+
 Unbekannte Werte - in dem Fall der Speicherinhalt - werden per Mustererkennung (engl. pattern matching) ergänzt. 
 Die Ausdruck \lstinline{a[0..n] |-> ?al} hat damit zwei Aufgaben: Sicherstellen, dass die Zeiger \lstinline{a[0..n]}
 gültig sind; sowie den dahinterliegenden Speicherinhalt identifizieren und an die Variable \lstinline{al}
@@ -76,8 +74,7 @@ binden. Verifast erlaubt die Verwendung dieser Variablen sogar in den Nachbeding
 adäquates Mittel, um alte Werte (aus der Zeit des Methodenaufrufes) zu verwenden, um Seiteneffekte zu
 beschreiben sowie Speicherinhalte zu vergleichen. In ACSL wäre für eine ähnliche Herangehensweise
 die Verwendung von \lstinline{\old} notwendig.
-\\
-\\
+
 Aussagen über den Speicherinhalt werden in Verifast mit der speziellen Konjunktion \lstinline{&*&} 
 verbunden (siehe dazu auch \ref{sec:theorie:seperation-logic}). In diesem Beispiel wird z.B. die Vorbedingung \lstinline{n >= 0} mit Aussagen zu den 
 Speicherbereichen \lstinline{a[0..n]} und \lstinline{b[0..n]} verknüpft. Der \lstinline{&&} Operator 
@@ -91,8 +88,7 @@ Speicherbereiche \lstinline{al} und \lstinline{bl} gleich sind.
 
 Die Verifast-Spezifikation hat also tatsächlich die gleiche Semantik, erreicht dies aber wegen der 
 zu Grunde liegenden Separierungs-Logik auf eine andere ganz andere Art und Weise.
-\\
-\\
+
 Wichtig zu erwähnen ist noch, dass die \lstinline{\assigns nothing}-Klausel aus ACSL wie auch Verifast 
 das Ändern des Speicherinhalts erlaubt, solange er zum Ende der Funktion hin wieder rekonstruiert wird.
 Denn es wird lediglich überprüft, dass der Inhalt nach dem Aufruf mit dem vor
@@ -111,8 +107,7 @@ Auf die Verwendung dieses Sprachmittels wird in dieser Arbeit jedoch nicht weite
 
 Prädikate sind ein grundlegendes Abstraktionsmittel für das Zusammenfassen und Wiederverwenden von logischen 
 Formeln in ACSL als auch Verifast.
-\\
-\\
+
 Für die Spezifikation von \texttt{equal} wurde das Prädikat \lstinline{IsEqual} verwendet. Eine
 exemplarische ACSL-Notation dafür ist nachfolgend abgebildet. Es handelt sich um eine direkte
 Übersetzung der prädikatenlogischen Formel, die weiter oben dargestellt ist.
@@ -136,8 +131,7 @@ die in \ref{sec:design-by-contract:acsl-spezifikation} zu sehen war.
 Auffällig ist an der Stelle noch die Verwendung des \lstinline{_}-Zeichens in Zeile 3. Wie in vielen anderen 
 Sprachen auch, bezeichnet es eine anonyme Variable, die an dieser Stelle aus syntaktischen Gründen angegeben werden
 muss, deren Inhalt jedoch nicht weiter von Interesse ist. 
-\\
-\\
+
 Wird das \lstinline{integer} Prädikat ohne anonyme Variable verwendet, bedeutet der Aufruf von 
 \lstinline{integer(start, ?s)} so viel wie \lstinline{*start |-> ?s}. Allerdings erlaubt Verifast
 den Einsatz des \lstinline{|->} Operators nicht zusammen mit der Derefenzierung eines einzelnen
@@ -167,8 +161,7 @@ Diese Spezifikation ist immer noch korrekt in dem Sinne, dass eine Implementieru
 weiterhin verifizierbar ist. Es wird aber nur sichergestellt, dass die Zeiger gültig sind und außerdem
 auf den Speicherbereich zugegriffen werden darf. Der Rückgabewert und potenzielle Seiteneffekte des 
 Algorithmus sind nicht detaillierter formalisiert.
-\\
-\\
+
 Denkbar ist auch die Verifizierung der gültigen Aufrufreihenfolge (einer gedachten Zustandsmaschine\footnote{dazu
 könnte man jeden Zustand mit einem eigenem Prädikat abbilden und diese in den Vorbedingungen erzwingen}),
 ohne alle weiteren Nachbedingungen und Ergebnisse zu formalisieren. Somit kann sichergestellt werden,
@@ -183,8 +176,7 @@ Laufzeit-Überprüfungen können dann wegfallen.
 In ACSL gibt es die Möglichkeit mehrere Fälle (engl. behavior) innerhalb einer Spezifikation getrennt voneinander zu
 notieren. Das kann die Lesbarkeit erheblich erleichtern, da man für jeden Fall die Vor- und Nachbedingungen
 einzeln lesen und verstehen kann.
-\\
-\\
+
 Die folgende Spezifikation für \texttt{equal} ist eine solche Variante ohne Verwendung des 
 \lstinline{IsEqual}-Prädikats:
 
@@ -195,8 +187,7 @@ Gegenteil \lstinline{some_not_equal} ist in Zeile 11 definiert, die jeweiligen B
 prädikatenlogischen Formeln finden sich als \lstinline{assumes}-Anweisungen wieder. Besonders anzumerken ist,
 dass die Anweisungen \lstinline{complete behaviors} bzw. \lstinline{disjoint behaviors} dafür sorgen, dass
 alle Fälle abgedeckt und gleichzeitig auch disjunkt sind.
-\\
-\\
+
 In Verifast wäre das nur manuell zu erreichen, allerdings mit wesentlich längeren Ausdrücken. Reicht 
 es in ACSL die \lstinline{assumes}-Fälle \lstinline{a, b, c} als \lstinline{behavior} 
 aufzulisten und per \lstinline{disjoint behaviors} zu verknüpfen, so müsste in Verifast die folgende
@@ -209,8 +200,7 @@ kein Behavior mehr notwendig, siehe \ref{sec:design-by-contract:acsl-spezifikati
 ist besser verständlich - nicht nur weil sie kürzer ist, auch weil die Prädikatenformeln verschwunden ist. 
 Damit kann sie nun mindestens oberflächlich auch dann verstanden werden, wenn kein 
 prädikatenlogisches Wissen vorhanden ist.
-\\
-\\
+
 Die Definition der möglichen Seiteneffekte ist in den Sprachen unterschiedlich gelöst. In ACSL
 ist an Hand der \lstinline{assigns \nothing} Klausel sofort ersichtlich, dass keine Speichermanipulation
 erfolgt. Dieser Aspekt ist in Verifast hingegen nicht so schnell zu erfassen.
@@ -233,8 +223,7 @@ Das ist möglich, da es sich um Listen vom Typ \lstinline{list<int>} handelt. Di
 von Verifast vordefinierter (generischer) induktiver Datentyp, ganz ähnlich zu den Listen in funktionalen 
 Sprachen wie Haskell. Damit ist klar, dass die Array-Notation \lstinline{a[0..n] |-> ?al} dafür sorgt, 
 dass der Speicherinhalt bei der Mustererkennung als induktive Liste gebunden wird.
-\\
-\\
+
 Induktive Typen können wie folgt definiert werden mit Verifast:
 
 \lstinputlisting[language=C, caption=Induktive Listendefinition (kopiert aus list.gh)]{codes/inductive_list_verifast.c}
@@ -244,8 +233,7 @@ Um die Verwendung der Listen besser zu verstehen, wird an dieser Stelle detailli
 denn es ist tatsächlich lediglich eine andere Schreibweise für die bereits genutzte Array-Notation. 
 Das Binden der Inhalte aus dem Array \lstinline{a} ist darum auch äquivalent via 
 \lstinline{ints(a, n, ?al)} möglich.
-\\
-\\
+
 \begin{figure}[H]
 Nachfolgend ist eben dieses rekursive \lstinline{ints}-Prädikat abgebildet. Gut zu erkennen ist dabei
 wie die \lstinline{intlist} rekursiv mit Hilfe der Konstruktoren \lstinline{cons} bzw. \lstinline{nil} 
@@ -280,8 +268,7 @@ Die Zeile 3 kombiniert daher beide Fälle (\lstinline{result <= n}) und nutzt di
 der Rückgabewert \lstinline{result} stets die Anzahl der gleichen Elemente enthält: Der Vergleich der
 \lstinline{take}-Resultate sorgt dann somit dafür, dass entweder alle Elemente oder nur
 alle vor dem ersten gefundenem Unterschied gleich sind. 
-\\
-\\
+
 Die Fallunterscheidung ist erst am Ende der Nachbedingung sichtbar, innerhalb des \lstinline{? :} Operators.
 Intuitiv möchte man an der Stelle \((result < n) \rightarrow al[result] \neq  bl[result]\)
 schreiben, kann es aber ohne die Implikation in Verifast nicht so ausdrücken.
@@ -294,8 +281,7 @@ Die ACSL-Umsetzung verwendet Behaviors und ist dementsprechend wesentlich länge
 Die zwei Fälle sind in dieser Variante besser sichtbar, sinnvoll benannt und damit auch verständlicher, 
 da die Spezifikation aus kleineren Teilen besteht. Sie ist somit lesbarer, mit dem Nachteil viel Platz einzunehmen.
 Eine Abwägung zwischen Codelänge und Kompaktheit des Codes ist aber generell schwierig und sehr subjektive.
-\\
-\\
+
 Des Weiteren fällt auf, dass die ACSL-Spezifikation direkt mit den Variablen \lstinline{a} und
 \lstinline{b} arbeitet, wohingegen die Verifast-Variante die funktionalen Aspekte ausschließlich
 mit Hilfe der induktiven Listen \lstinline{al} und \lstinline{bl} beschreibt. 
@@ -309,8 +295,7 @@ damit würden aber die Vorteile der jeweiligen Sprache keine Anwendung finden. E
 auch mit Verifast möglich, macht die Spezifikation aber nicht verständlicher, dafür aber die Verifizierung
 der Implementierung schwieriger\footnote{Da dann nicht mehr direkt mit induktiven Listen, sondern zusätzlich
 mit einem Prädikat und weiteren erforderlichen Lemmatas gearbeitet werden muss (siehe \ref{verifizierung:lemma})}.
-\\
-\\
+
 Das Beschreiben der Speicherinhalte und Einführen der Variablen  \lstinline{al} und \lstinline{bl} ist außerdem
 ohnehin notwendig, um auszudrücken, dass der Speicher nicht verändert und nicht gelöscht wird. Denn Verifast wertet
 auch \lstinline{malloc}- und \lstinline{free}-Aufrufe aus, um den Zugriff auf gelöschten Speicher zu verhindern bzw.
@@ -326,8 +311,7 @@ hin zu verketteten Listen hätte damit nur einen kleinen Einfluss auf die Spezif
 ausreichend die Bindung der Arrays in die induktive Liste zu ändern. Statt \lstinline{a[0..n] |-> ?al} würde man also
 z.B. ein Prädikat \lstinline{linked_list} verwenden: \lstinline{linked_list(a, n, ?al)}. Der Rest der 
 Spezifikation kann unverändert bleiben.
-\\
-\\
+
 Andersherrum sieht es ähnlich aus - auch in ACSL wäre es möglich induktive Datentypen zu verwenden, doch
 ist das an der Stelle unnötig, da die Quantoren der Prädikatenlogik zur Beschreibung genügen. 
 Der Umstieg von ACSL auf Verifast oder andersrum erfordert daher ein Umdenken, damit die Verifizierung 
