@@ -1,4 +1,4 @@
-﻿\chapter{Vergleich von Spezifikationen}
+﻿\chapter{Vergleich der Funktionskontrakte}
 \label{sec:design-by-contract}
 
 \todo{überarbeiten!}
@@ -19,7 +19,7 @@ Diese Herangehensweise nennt sich Design by Contract und ist die Grundidee der m
 
 Nachfolgend ist ein einfaches Beispiel einer ACSL-Funktions-Spezifikation dargestellt.
 Die Funktion equal prüft zwei Ganzzahlen-Arrays auf Gleichheit:
-
+\todo{isEqual hier noch nicht verwenden}
 \lstinputlisting[language=C, caption=Formale Spezifikation der Funktion \lstinline{equal} mit ACSL]{codes/equal_contract_acsl.c}
 
 Der spezielle @-Präfix in Zeile 1 signalisiert dem Verifikationswerkzeug, 
@@ -102,7 +102,7 @@ Auf die Verwendung dieses Sprachmittels wird in dieser Arbeit jedoch nicht weite
 
 
 
-\section{Einfache und rekursive Prädikate}
+\section{Nutzerdefinierte Prädikate}
 \label{sec:design-by-contract:predicates}
 
 Prädikate sind ein grundlegendes Abstraktionsmittel für das Zusammenfassen und Wiederverwenden von logischen 
@@ -145,7 +145,7 @@ Die vollständige Fassung dieses Prädikats wird weiter unten in \ref{sec:indukt
 
 
 
-\section{Unvollständige Spezifikationen: Robustheit als Ziel}
+\section{Kontrakte für robuste und sichere Implementierungen}
 \label{sec:design-by-contract:partielle-korrektheit}
 
 Das Ziel der in \ref{sec:design-by-contract:acsl-spezifikation} vorgestellten Spezifikation war die
@@ -170,7 +170,7 @@ Laufzeit-Überprüfungen können dann wegfallen.
 
 
 
-\section{Lesbarkeit von Spezifikationen}
+\section{Weitere Strukturierungsmöglichkeiten für Funktionskontrakte in ACSL}
 \label{sec:design-by-contract:behaviors}
 
 In ACSL gibt es die Möglichkeit mehrere Fälle (engl. behavior) innerhalb einer Spezifikation getrennt voneinander zu
@@ -200,11 +200,6 @@ kein Behavior mehr notwendig, siehe \ref{sec:design-by-contract:acsl-spezifikati
 ist besser verständlich - nicht nur weil sie kürzer ist, auch weil die Prädikatenformeln verschwunden ist. 
 Damit kann sie nun mindestens oberflächlich auch dann verstanden werden, wenn kein 
 prädikatenlogisches Wissen vorhanden ist.
-
-Die Definition der möglichen Seiteneffekte ist in den Sprachen unterschiedlich gelöst. In ACSL
-ist an Hand der \lstinline{assigns \nothing} Klausel sofort ersichtlich, dass keine Speichermanipulation
-erfolgt. Dieser Aspekt ist in Verifast hingegen nicht so schnell zu erfassen.
-
 
 
 \section{Induktive Listen mit Verifast}
