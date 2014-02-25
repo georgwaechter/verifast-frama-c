@@ -103,6 +103,7 @@ der Prädikaten-Parameter:
 
 \lstinputlisting[language=C, caption=Präzises Prädikat \lstinline{ints}]{codes/ints_precise_predicate_verifast.c}
 \end{figure}
+\todo{präzise führt dazu, dass änderungen am speicher analog für listenelemente ausgeführt werden}
 Präzise Prädikate versucht Verifast während der Verifizierung automatisch zu öffnen und ggf. auch zu
 schließen. Dadurch ist in der obigen Implementierung das Schreiben der \texttt{close}-Anweisungen
 nicht zwingend notwendig.
@@ -335,4 +336,8 @@ Frama-C hingegen kann auch komplexere Berechnungen ausführen, kommt mit weniger
 wesentlich langsamer.
 
 
+\section{Arithmetische Überläufe}
 
+in frama-c stellen gut erkennbar
+
+in verifast lemma limits
