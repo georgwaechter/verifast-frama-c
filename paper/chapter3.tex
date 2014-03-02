@@ -66,10 +66,13 @@ gültig ist, erfordert das oben erwähnte \lstinline{integer}-Prädikat. Der zwe
 Aussage über den Speicherinhalt zu treffen. Da dies in diesem Kontext nicht notwendig ist, wird eine anonyme Variable
 \lstinline{_} eingesetzt, da die Angabe des Parameters zwingend notwendig ist.
 
-Die einzelnen Aussagen werden mit der Konjunktion \lstinline{&*&} verknüpft, was dafür sorgt, dass die entsprechenden
+Die einzelnen Aussagen werden mit der Konjunktion \lstinline{&*&} verknüpft\footnote{Der \lstinline{&&} Operator 
+existiert zusätzlich für logische Verknüpfungen.}, was dafür sorgt, dass die entsprechenden
 Speicherbereiche disjunkt sind (siehe dazu auch \ref{sec:theorie:seperation-logic}). In dem Fall wird also bereits
-durch die Syntax klar, dass \lstinline{start} und \lstinline{start + 1} nicht überlappen. Der \lstinline{&&} Operator 
-existiert jedoch weiterhin für logische Verknüpfungen.
+durch die Syntax klar, dass \lstinline{start} und \lstinline{start + 1} nicht überlappen. Ein solches Prädikat
+mit Angaben zu Speicherinhalten wird auch als Heap-Chunk bezeichnet und beschreibt das Recht diesen zu
+manipulieren\footnote{Die Lese/Schreibrechte eines Heap-Chunks können in Verifast über einen Koeffizienten
+(engl. fractional permissions) gesteuert werden. Darauf wird in dieser Arbeit jedoch nicht weiter eingegangen.}.
 
 In dieser Form ist das Prädikat nun semantisch äquivalent zum \lstinline{\valid_range} aus ACSL. Die Zeile 2 aus
 der \texttt{equal}-Spezifikation kann in Verifast damit nun als \lstinline{int_array(a, n)} ausgedrückt werden.
@@ -136,22 +139,16 @@ Listen \lstinline{al} und \lstinline{bl} formuliert.
 Eine explizite Angabe zu den Seiteneffekten analog zur \lstinline{assigns}-Klausel ist nicht Teil des Kontrakts. 
 Dennoch kann man ableiten, dass es sich um einen nicht-mutierenden Algorithmus handelt. Denn anders als in ACSL
 werden nicht die Seiteneffekte selbst beschrieben, sondern der Inhalt des Speichers vor und nach der Ausführung.
+Diese Angabe ist obligatorisch, da der C-Code der Implementierung nur auf Speicher zugreifen darf, der in der
+Vorbedingung erwähnt wurde.
 
-Damit erklärt sich wieso in der Nachbedingung die Arrays mit ihrem Gültigkeitsbereich nochmals aufgeführt sind.
+Damit erklärt sich weshalb in der Nachbedingung die Arrays mit ihrem Gültigkeitsbereich nochmals aufgeführt sind.
 Zudem werden die in der Vorbedingung gebundenen Listen wiederverwendet, um per \lstinline{a[0..n] |-> al}
 sicherzustellen, dass der Speicherinhalt unverändert ist. Der Zugriff auf die Variablen aus der Vorbedingung ist
 dabei ohne weitere Angabe eines \lstinline{\old}-Operators wie in ACSL möglich.
 
 Die Verifast-Spezifikation hat tatsächlich die gleiche Semantik, erreicht dies aber wegen der 
 unterschiedlichen Sprachmittel auf eine andere andere Art und Weise.
-
-Wichtig zu erwähnen ist an der Stelle, dass die \lstinline{\assigns nothing}-Klausel aus ACSL wie auch Verifast 
-das Ändern des Speicherinhalts erlaubt, solange er zum Ende der Funktion hin wieder rekonstruiert wird.
-Es wird lediglich geprüft, dass der Inhalt nach dem Aufruf mit dem vor dem Aufruf übereinstimmt. Eine Feinheit, die im 
-Kontext der Parallelprogrammierung wichtig ist, wenn die Funktion inmitten der Ausführung unterbrochen wird bzw. parallel 
-zu einer anderen ausgeführt wird, die auf gemeinsame Variablen zurückgreift\footnote{Welche Lese/Schreibrechte
-eine Funktion hat, kann in Verifast mit den sogenannten Fractional Permission gesteuert werden. Darauf wird in dieser Arbeit
-jedoch nicht weiter eingegangen.}.
 
 
 \section{Unterschiede in der Umsetzung}
@@ -246,23 +243,43 @@ Eine Abwägung zwischen Codelänge und Kompaktheit des Codes ist aber generell s
 \section{Kontrakte für robuste und sichere Implementierungen}
 \label{sec:design-by-contract:partielle-korrektheit}
 
-\todo{diesen text überarbeiten}
-Das Ziel der in \ref{sec:design-by-contract:acsl-spezifikation} vorgestellten Spezifikation war die
-möglichst vollständige funktionale Definition, damit kein Raum für Interpretationen frei bleibt. Allerdings ist
-das nicht immer gewünscht: Soll die Robustheit der Software sichergestellt werden, so ist das Aufspüren 
-von potenziellen Null-Zeiger-Ausnahmen oder Speicherlöchern das Ziel und nicht die funktionale
-Korrektheit. Für ersteres reicht eine reduzierte Spezifikation - funktionale Aspekte werden dabei 
-weggelassen oder ggf. vereinfacht:
+Die Funktionskontrakte in diesem Kapitel sind alle mit Hinblick auf eine vollständige Verhaltensbeschreibung
+enstanden. Dennoch können sie kaum als vollständig bezeichnet werden, da die Vollständigkeit eines Kontraktes
+nur im Zusammenhang mit dem Verifikationsziel bewertet werden kann. Beispielsweise könnte für zeitkritische
+Systeme neben der Beschreibung des Verhaltens auch die Laufzeitkomplexität von Interesse sein.
 
-\lstinputlisting[language=C, caption=Spezifikation ]{codes/equal_partial_contract_verifast.c}
- 
-Diese Spezifikation ist immer noch korrekt in dem Sinne, dass eine Implementierung der Prozedur
-weiterhin verifizierbar ist. Es wird aber nur sichergestellt, dass die Zeiger gültig sind und außerdem
-auf den Speicherbereich zugegriffen werden darf. Der Rückgabewert und potenzielle Seiteneffekte des 
-Algorithmus sind nicht detaillierter formalisiert.
+Für den Nachweis der Robustheit ist es wichtig die Abwesenheit fataler Laufzeitfehler zu garantieren,
+damit unerwartete Eingaben die Software nicht zum Absturz bringen können. Mit den Verifikationswerkzeugen lassen 
+sich folgende Fehler erkennen und deren Abwesenheit verifizieren:
+\begin{enumerate}
+\item Dereferenzierung von Nullzeigern
+\item Zugriff auf Speicherinhalte außerhalb der Arraygrenzen
+\item Fehlerhafte Speicherverwaltung
+\item Arithmetische Überläufe
+\end{enumerate}
 
-Denkbar ist auch die Verifizierung der gültigen Aufrufreihenfolge (einer gedachten Zustandsmaschine\footnote{dazu
-könnte man jeden Zustand mit einem eigenem Prädikat abbilden und diese in den Vorbedingungen erzwingen}),
-ohne alle weiteren Nachbedingungen und Ergebnisse zu formalisieren. Somit kann sichergestellt werden,
-dass sich die Zustandsmaschine niemals in einem ungültigen Zustand befindet. Ansonsten erforderliche
-Laufzeit-Überprüfungen können dann wegfallen.
+VeriFast und Frama-C prüfen bei der Derefenzierung einer Zeigervariablen stets, dass diese gültig ist (das heißt
+nicht \texttt{null}) und sich im zuvor definiertem Gültigkeitsbereich befindet. Listing 3.11 zeigt einen Funktionskontrakt, 
+der bei erfolgreicher Verifizierung der Implementierung die Probleme eins und zwei ausschließt.
+
+\lstinputlisting[language=C, caption=Spezifikation für \texttt{equal} mit Fokus auf Robustheit]{codes/equal_robust_contract_acsl.c}
+
+Das Verhindern arithmetischer Überläufe kann nicht direkt im Kontrakt vereinbart werden. Im Werkzeug VeriFast
+ist es eine Option, die für die Verifizierung an - oder ausgeschaltet werden kann. In Frama-C ... \todo{testen}
+
+Den Umgang mit malloc bzw. free versteht nur das Verifikationswerkzeug VeriFast. Mit dessen Hilfe ist es möglich
+nie freigegebenen Speicher oder auch das doppelte Löschen eines Speicherbereichs zu erkennen. Die Grundlage dafür
+sind die bereits in \ref{} eingeführten Heap Chunks, die den Zugriff auf disjunkte Speicherbereiche definieren. 
+Anders als der Name es implizieren lässt, sind damit aber nicht nur Speicherinhalt im tatsächlichen Freispeicher
+(engl. heap) gemeint, sondern auch solche auf dem Stapelspeicher (engl. stack). Tatsächlich legt VeriFast für
+per malloc allokierte Bereiche einen zusätzlichen zweiten Chunk an, damit eine Unterscheidung zwischen Stack und
+Heap möglich ist. Somit kann z.B. auch ein fehlerhafter free-Aufruf erkannt werden, der Teile des Stacks löschen soll.
+
+malloc block ints zeigen
+
+keine funktion nur die ints chunks nehmen, aber die malloc block ints nicht mit nehmen in der precondition? z.B. sinnvoll
+
+\todo{leaken zeigen}
+
+\todo{testen ob frama-c auch problem meldet bei zugriff auf a[n]}
+
