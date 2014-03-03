@@ -1,11 +1,11 @@
 ﻿\chapter{Vergleich der Sprachen für die Funktionskontrakte}
 \label{sec:design-by-contract}
 
-Dieses Kapitel vergleicht die Sprachkonstrukte aus ACSL und Verifast für die Beschreibung von Funktionskontrakten.
+Dieses Kapitel vergleicht die Sprachkonstrukte aus ACSL und VeriFast für die Beschreibung von Funktionskontrakten.
 
 Nutzerdefinierte Prädikate und induktive Listen werden an Hand des einfachen \texttt{equal}-Algorithmus vorgestellt.
 Daraufhin wird eine weitere Strukturierungsmöglichkeit für Kontrakte in ACSL diskutiert und bei der anschließenden
-Formalisierung von \texttt{mismatch} verwendet. Die Verifast-Variante wird vorgestellt und auf die Unterschiede
+Formalisierung von \texttt{mismatch} verwendet. Die VeriFast-Variante wird vorgestellt und auf die Unterschiede
 der beiden Umsetzungen eingegangen. 
 
 Abschließend wird die Verwendung formaler Spezifikationen in Hinblick auf sichere und robuste Software betrachtet.
@@ -35,11 +35,11 @@ Der Rückgabewert - als \lstinline{\result} in Zeile 7 bezeichnet - ist genau da
 Prädikatenformel zur Beschreibung dieses Sachverhalts:
 \[result \equiv \forall(i) (0 \leq i < n \rightarrow a[i] = b[i])\]
 
-\section{Nutzerdefinierte Prädikate in ACSL und Verifast}
+\section{Nutzerdefinierte Prädikate in ACSL und VeriFast}
 \label{sec:design-by-contract:predicates}
 
 Prädikate sind ein grundlegendes Abstraktionsmittel zum Zusammenfassen und Wiederverwenden logischer
-Formeln in ACSL und Verifast.
+Formeln in ACSL und VeriFast.
 
 Für die \texttt{equal}-Spezifikation bietet sich die Einführung eines Prädikates \texttt{IsEqual} an,
 da es die Eliminierung und spätere Wiederverwendung der prädikatenlogischen Formel erlaubt. Der Kontrakt
@@ -52,14 +52,14 @@ Die Definition dieses nutzerdefinierten Prädikates geschieht in einem eigenem A
 
 \lstinputlisting[language=C, caption=Prädikat \lstinline{IsEqual} formuliert in ACSL]{codes/equal_predicate_acsl.c}
 
-Die Annotationssprache von Verifast besitzt kein integriertes Prädikat zur Definition gültiger Speicherbereiche,
+Die Annotationssprache von VeriFast besitzt kein integriertes Prädikat zur Definition gültiger Speicherbereiche,
 wie es in ACSL mit \lstinline{\valid_range} existiert. Lediglich das Anfordern einer einzelnen ganzen Zahl hinter
 einem \lstinline{int*} Zeiger ist mit dem Prädikat \lstinline{integer} möglich.
 
-Zusammen mit rekursiven Prädikaten lassen sich damit in Verifast ebenfalls vollständige Arrays oder sogar komplexere
+Zusammen mit rekursiven Prädikaten lassen sich damit in VeriFast ebenfalls vollständige Arrays oder sogar komplexere
 Datenstrukturen beschreiben. Der nachfolgende Annotationsblock zeigt ein solches rekursives Prädikat.
 
-\lstinputlisting[language=C, caption=Nutzerdefiniertes Prädikat \lstinline{int_array} in Verifast]{codes/int_array_verifast.c}
+\lstinputlisting[language=C, caption=Nutzerdefiniertes Prädikat \lstinline{int_array} in VeriFast]{codes/int_array_VeriFast.c}
 
 Das Prädikat ruft sich solange selbst auf bis \lstinline{count <= 0}. Dass jede Speicherstelle des Arrays \lstinline{start}
 gültig ist, erfordert das oben erwähnte \lstinline{integer}-Prädikat. Der zweite Parameter dieses Prädikats erlaubt es eine
@@ -71,36 +71,36 @@ existiert zusätzlich für logische Verknüpfungen.}, was dafür sorgt, dass die
 Speicherbereiche disjunkt sind (siehe dazu auch \ref{sec:theorie:seperation-logic}). In dem Fall wird also bereits
 durch die Syntax klar, dass \lstinline{start} und \lstinline{start + 1} nicht überlappen. Ein solches Prädikat
 mit Angaben zu Speicherinhalten wird auch als Heap-Chunk bezeichnet und beschreibt das Recht diesen zu
-manipulieren\footnote{Die Lese/Schreibrechte eines Heap-Chunks können in Verifast über einen Koeffizienten
+manipulieren\footnote{Die Lese/Schreibrechte eines Heap-Chunks können in VeriFast über einen Koeffizienten
 (engl. fractional permissions) gesteuert werden. Darauf wird in dieser Arbeit jedoch nicht weiter eingegangen.}.
 
 In dieser Form ist das Prädikat nun semantisch äquivalent zum \lstinline{\valid_range} aus ACSL. Die Zeile 2 aus
-der \texttt{equal}-Spezifikation kann in Verifast damit nun als \lstinline{int_array(a, n)} ausgedrückt werden.
+der \texttt{equal}-Spezifikation kann in VeriFast damit nun als \lstinline{int_array(a, n)} ausgedrückt werden.
 
-Wie oben erwähnt besitzt zwar die Annotationssprache von Verifast kein Prädikat \lstinline{int_array}, das Werkzeug
+Wie oben erwähnt besitzt zwar die Annotationssprache von VeriFast kein Prädikat \lstinline{int_array}, das Werkzeug
 als solches hingegen schon. Häufig benötigte Prädikate und weitere Funktionen werden in Form von Header-Dateien
 mitgeliefert und teilweise sogar automatisch eingebunden\footnote{prelude.h wird automatisch eingebunden, weitere 
 Header-Dateien können per \\ \lstinline{//@ #include "listex.gh"} eingebunden werden}.
 
 
-\section{Induktive Listen mit Verifast}
+\section{Induktive Listen mit VeriFast}
 \label{sec:induktive-listen}
 
-Da Verifast keine Quantoren aus der Prädikatenlogik unterstützt, ist es nicht möglich die \texttt{equal}-Funktion
+Da VeriFast keine Quantoren aus der Prädikatenlogik unterstützt, ist es nicht möglich die \texttt{equal}-Funktion
 auf die gleiche Weise wie in ACSL (siehe Listing 3.1) zu beschreiben. Geeignet dafür wären die oben eingeführten
 rekursiven Prädikate. Ein noch besserer und flexiblerer Ansatz ist hingegen die Verwendung von induktiven Listen.
 
-Für dessen Verwendung sprechen mehrere Gründe: Listen lassen sich in Verifast mit dem \lstinline{==} Operator vergleichen,
-was sich für die Formalisierung von \texttt{equal} sehr anbietet. Außerdem bringt Verifast etliche rekursive Prädikate
+Für dessen Verwendung sprechen mehrere Gründe: Listen lassen sich in VeriFast mit dem \lstinline{==} Operator vergleichen,
+was sich für die Formalisierung von \texttt{equal} sehr anbietet. Außerdem bringt VeriFast etliche rekursive Prädikate
 mit, die aus einem Array eine Liste konstruieren.
 
-\lstinputlisting[language=C, caption=Definition des generischen Listentyps (übernommen aus list.gh)]{codes/inductive_list_verifast.c}
+\lstinputlisting[language=C, caption=Definition des generischen Listentyps (übernommen aus list.gh)]{codes/inductive_list_VeriFast.c}
 
 Ein solches Prädikat lautet \lstinline{ints} und ist eine erweiterte Version des oben vorgestellten Prädikats
 \lstinline{int_array}. Zusätzlich zum Zeiger und der Größe des Arrays wird dort ein dritter Parameter angegeben, der
 den Speicherinhalt als Liste repräsentiert. 
 
-\lstinputlisting[language=C, caption=Rekursives Prädikat \lstinline{ints}]{codes/ints_predicate_verifast.c}
+\lstinputlisting[language=C, caption=Rekursives Prädikat \lstinline{ints}]{codes/ints_predicate_VeriFast.c}
 
 In der Definition von \lstinline{ints} werden nun die Werte über das \lstinline{integer} Prädikat extrahiert und
 daraus die Liste mit Hilfe der Konstruktoren \lstinline{nil} und \lstinline{cons} aus Listing 3.5 erzeugt. Unbekannte
@@ -108,32 +108,32 @@ Werte bindet der \lstinline{?} Operator mit Hilfe der Musterkennung (engl. patte
 Variablen.
 
 Die Anforderung eines gültigen Arrays sowie die Bindung an eine Listenvariable kann nun kombiniert mit diesem Prädikat
-geschehen: \lstinline{ints(a, n, ?al)}. Tatsächlich bietet Verifast dafür auch eine Kurzschreibweise an. Mit dem Zeiger-Operator
+geschehen: \lstinline{ints(a, n, ?al)}. Tatsächlich bietet VeriFast dafür auch eine Kurzschreibweise an. Mit dem Zeiger-Operator
 (engl. points to) lässt sich äquivalent und besser lesbar \lstinline{a[0..n] |-> ?al} formulieren.
 
-Mit einer durch das Prädikat erzeugten Liste lässt es sich sehr flexibel arbeiten, denn Verifast erlaubt 
+Mit einer durch das Prädikat erzeugten Liste lässt es sich sehr flexibel arbeiten, denn VeriFast erlaubt 
 die Definition sogenannter Fixpunkt-Funktionen\footnote{im Rahmen dieser Arbeit ist das Schreiben eigener
 Fixpunkt-Funktionen nicht notwendig, darum wird nicht detaillierter auf deren Implementierung eingegangen} (engl. fixpoint functions), 
 mit denen Listen bzw. beliebige induktive Daten iteriert und manipuliert werden können. Grundlegende
-Listen-Utensilien bringt Verifast gleich mit: Implementierungen für \lstinline{head}, 
+Listen-Utensilien bringt VeriFast gleich mit: Implementierungen für \lstinline{head}, 
 \lstinline{tail}, \lstinline{append} (Hinzufügen von Elementen) oder auch \lstinline{take} 
 (Kopie der ersten N Elemente).
 
 
-\section{Verifast-Spezifikation für \texttt{equal}}
-\label{sec:design-by-contract:verifast-variante}
+\section{VeriFast-Spezifikation für \texttt{equal}}
+\label{sec:design-by-contract:VeriFast-variante}
 
-Eine Formalisierung von \texttt{equal} lässt sich nun mit den bekannten Sprachmitteln in Verifast wie folgt
+Eine Formalisierung von \texttt{equal} lässt sich nun mit den bekannten Sprachmitteln in VeriFast wie folgt
 erreichen.
 
-\lstinputlisting[language=C, caption=Formale Spezifikation der Funktion \lstinline{equal} mit Verifast]{codes/equal_contract_verifast.c}
+\lstinputlisting[language=C, caption=Formale Spezifikation der Funktion \lstinline{equal} mit VeriFast]{codes/equal_contract_VeriFast.c}
 
-Dieses Beispiel zeigt zwei kleine syntaktische Unterschiede zwischen ACSL und Verifast: Funktionskontrakte
-werden in Verifast nach der Signatur geschrieben, in ACSL jedoch davor. Außerdem erzwingt Verifast die
+Dieses Beispiel zeigt zwei kleine syntaktische Unterschiede zwischen ACSL und VeriFast: Funktionskontrakte
+werden in VeriFast nach der Signatur geschrieben, in ACSL jedoch davor. Außerdem erzwingt VeriFast die
 Formulierung der Vor- und Nachbedingungen in jeweils einer einzigen \lstinline{requires} bzw. \lstinline{ensures}-Anweisung.
 
 Der Rückgabewert ist wie beim ACSL-Kontrakt aus Listing 3.1 genau dann wahr, wenn die Arrays elementweise
-identisch sind. In Verifast wird die Aussage jedoch nicht direkt mit Hilfe der Zeiger, sondern indirekt durch die
+identisch sind. In VeriFast wird die Aussage jedoch nicht direkt mit Hilfe der Zeiger, sondern indirekt durch die
 Listen \lstinline{al} und \lstinline{bl} formuliert.
 
 Eine explizite Angabe zu den Seiteneffekten analog zur \lstinline{assigns}-Klausel ist nicht Teil des Kontrakts. 
@@ -147,25 +147,25 @@ Zudem werden die in der Vorbedingung gebundenen Listen wiederverwendet, um per \
 sicherzustellen, dass der Speicherinhalt unverändert ist. Der Zugriff auf die Variablen aus der Vorbedingung ist
 dabei ohne weitere Angabe eines \lstinline{\old}-Operators wie in ACSL möglich.
 
-Die Verifast-Spezifikation hat tatsächlich die gleiche Semantik, erreicht dies aber wegen der 
+Die VeriFast-Spezifikation hat tatsächlich die gleiche Semantik, erreicht dies aber wegen der 
 unterschiedlichen Sprachmittel auf eine andere andere Art und Weise.
 
 
 \section{Unterschiede in der Umsetzung}
 
 In gewissen Grenzen wäre es möglich die Annotationen der Sprachen eins zu eins zu übersetzen\footnote{Mit
-Verifast kann man z.B. auch einen eingeschränkten \(\forall\)-Quantor nachbauen, siehe Tutorial\cite[Kap. 17]{jacobs-tutorial}},
+VeriFast kann man z.B. auch einen eingeschränkten \(\forall\)-Quantor nachbauen, siehe Tutorial\cite[Kap. 17]{jacobs-tutorial}},
 damit würden aber die Vorteile der jeweiligen Sprache keine Anwendung finden. Ein \lstinline{IsEqual}-Prädikat wäre z.B.
-auch mit Verifast möglich, macht die Spezifikation aber nicht verständlicher, dafür aber die Verifizierung
+auch mit VeriFast möglich, macht die Spezifikation aber nicht verständlicher, dafür aber die Verifizierung
 der Implementierung schwieriger\footnote{Da dann nicht mehr direkt mit induktiven Listen, sondern zusätzlich
 mit einem Prädikat und weiteren erforderlichen Lemmatas gearbeitet werden muss (siehe \ref{verifizierung:lemma})}.
 
 Das Beschreiben der Speicherinhalte und Einführen der Variablen  \lstinline{al} und \lstinline{bl} ist außerdem
-ohnehin notwendig, um auszudrücken, dass der Speicher nicht verändert und nicht gelöscht wird. Denn Verifast wertet
+ohnehin notwendig, um auszudrücken, dass der Speicher nicht verändert und nicht gelöscht wird. Denn VeriFast wertet
 auch \lstinline{malloc}- und \lstinline{free}-Aufrufe aus, um den Zugriff auf gelöschten Speicher zu verhindern bzw.
 Speicherlöcher nicht entstehen zu lassen.
 
-Es liegt also nahe diese Variablen auch weiter zu verwenden - die Sprachmittel von Verifast (wie die Array-Notation in Kombination mit dem
+Es liegt also nahe diese Variablen auch weiter zu verwenden - die Sprachmittel von VeriFast (wie die Array-Notation in Kombination mit dem
 \lstinline{|->} Operator) drängen einen mehr als ACSL dazu induktive Datentypen zu nutzen.
 
 Der Vorteil ist ein höherer Grad der Abstraktion, denn Aussagen über Listen wie z.B.
@@ -178,7 +178,7 @@ Spezifikation kann unverändert bleiben.
 
 Andersherrum sieht es ähnlich aus - auch in ACSL wäre es möglich induktive Datentypen zu verwenden, doch
 ist das an der Stelle unnötig, da die Quantoren der Prädikatenlogik zur Beschreibung genügen. 
-Der Umstieg von ACSL auf Verifast oder andersrum erfordert daher ein Umdenken, damit die Verifizierung 
+Der Umstieg von ACSL auf VeriFast oder andersrum erfordert daher ein Umdenken, damit die Verifizierung 
 nicht durch einen ineffizenten Einsatz der Sprachmittel unnötig erschwert wird.
 
 
@@ -201,24 +201,24 @@ prädikatenlogischen Formeln finden sich als \lstinline{assumes}-Anweisungen wie
 dass die Anweisungen \lstinline{complete behaviors} bzw. \lstinline{disjoint behaviors} dafür sorgen, dass
 alle Fälle abgedeckt und gleichzeitig auch disjunkt sind.
 
-In Verifast wäre das nur manuell zu erreichen, allerdings mit wesentlich längeren Ausdrücken. Reicht 
+In VeriFast wäre das nur manuell zu erreichen, allerdings mit wesentlich längeren Ausdrücken. Reicht 
 es in ACSL die \lstinline{assumes}-Fälle \lstinline{a, b, c} als \lstinline{behavior} 
-aufzulisten und per \lstinline{disjoint behaviors} zu verknüpfen, so müsste in Verifast die folgende
+aufzulisten und per \lstinline{disjoint behaviors} zu verknüpfen, so müsste in VeriFast die folgende
 Formel geschrieben werden:
 \[(a \land \neg b \land \neg c) \lor (\neg a \land b \land \neg c) \lor (\neg a \land \neg b \land c)\]
 
 
-\section{Formale Spezifikationen für \texttt{mismatch} in ACSL und Verifast}
+\section{Formale Spezifikationen für \texttt{mismatch} in ACSL und VeriFast}
 
-Mit dem Wissen über Prädikate und induktive Listen ist es nun möglich eine formale Spezifikation für \lstinline{mismatch} mit Verifast
+Mit dem Wissen über Prädikate und induktive Listen ist es nun möglich eine formale Spezifikation für \lstinline{mismatch} mit VeriFast
 zu definieren (für das Verstehen der folgenden Erklärungen ist die informelle Spezifikation aus 
 \ref{sec:aufgabenstellung} sehr hilfreich):
 
-\lstinputlisting[language=C, caption=Formale Spezifikation für \lstinline{mismatch} mit Verifast]{codes/mismatch_specification_verifast.c}
+\lstinputlisting[language=C, caption=Formale Spezifikation für \lstinline{mismatch} mit VeriFast]{codes/mismatch_specification_VeriFast.c}
 
 Die Nachbedingung beinhaltet die zwei möglichen Fälle: Entweder ist mindestens ein Element ungleich
 (\lstinline{result < n}) oder alle sind identisch (\lstinline{result == n}). Das ist leider nicht auf den
-ersten Blick in der Spezifikation wiederzufinden, denn das separate Definieren disjunkter Fällen wird in Verifast 
+ersten Blick in der Spezifikation wiederzufinden, denn das separate Definieren disjunkter Fällen wird in VeriFast 
 nicht unterstützt (siehe \ref{sec:design-by-contract:behaviors}). 
 
 Die Zeile 3 kombiniert daher beide Fälle (\lstinline{result <= n}) und nutzt die Tatsache aus, dass
@@ -228,7 +228,7 @@ alle vor dem ersten gefundenem Unterschied gleich sind.
 
 Die Fallunterscheidung ist erst am Ende der Nachbedingung sichtbar, innerhalb des \lstinline{? :} Operators.
 Intuitiv möchte man an der Stelle \((result < n) \rightarrow al[result] \neq  bl[result]\)
-schreiben, kann es aber ohne die Implikation in Verifast nicht so ausdrücken.
+schreiben, kann es aber ohne die Implikation in VeriFast nicht so ausdrücken.
 
 \begin{figure}[H]
 Die ACSL-Umsetzung verwendet die eben eingeführten Behaviors und ist dementsprechend wesentlich länger:
@@ -276,7 +276,7 @@ sondern auch solche auf dem Stapelspeicher (engl. stack). Tatsächlich legt Veri
 per malloc allokierte Bereiche einen zusätzlichen zweiten Chunk an, damit eine Unterscheidung zwischen Stack und
 Heap möglich ist. Somit kann z.B. auch ein fehlerhafter free-Aufruf erkannt werden, der Teile des Stacks löschen würde.
 
-\lstinputlisting[language=C, caption=Kontrakt für \texttt{strdup} (String duplizieren) in VeriFast]{codes/strdup_contract_verifast.c}
+\lstinputlisting[language=C, caption=Kontrakt für \texttt{strdup} (String duplizieren) in VeriFast]{codes/strdup_contract_VeriFast.c}
 
 Aus dem Kontrakt für \texttt{strdup} in Listing 3.12 lässt sich nun auslesen, dass die Implementierung neuen Speicher
 erzeugt. Der zusätzliche Heap-Chunk \lstinline{malloc_bloc_chars} ist außerdem die Voraussetzung dafür, dass der Speicherbereich
