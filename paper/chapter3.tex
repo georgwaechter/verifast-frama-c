@@ -259,27 +259,30 @@ sich folgende Fehler erkennen und deren Abwesenheit verifizieren:
 \end{enumerate}
 
 VeriFast und Frama-C prüfen bei der Derefenzierung einer Zeigervariablen stets, dass diese gültig ist (das heißt
-nicht \texttt{null}) und sich im zuvor definiertem Gültigkeitsbereich befindet. Listing 3.11 zeigt einen Funktionskontrakt, 
-der bei erfolgreicher Verifizierung der Implementierung die Probleme eins und zwei ausschließt.
+nicht \texttt{null}) und sich im zuvor definiertem Gültigkeitsbereich befindet. 
 
-\lstinputlisting[language=C, caption=Spezifikation für \texttt{equal} mit Fokus auf Robustheit]{codes/equal_robust_contract_acsl.c}
+Damit diese Fehler in der Implementierung erkannt werden können, ist nur eine minmale Annotation notwendig. 
+Für \texttt{equal} muss wie in Listing 3.11 abgebildet z.B. formalisiert werden, dass der zweite Parameter die 
+Länge der beiden Arrays bezeichnet. 
 
-Das Verhindern arithmetischer Überläufe kann nicht direkt im Kontrakt vereinbart werden. Im Werkzeug VeriFast
-ist es eine Option, die für die Verifizierung an - oder ausgeschaltet werden kann. In Frama-C ... \todo{testen}
+\lstinputlisting[language=C, caption=Minimaler Kontrakt für \texttt{equal}]{codes/equal_robust_contract_acsl.c}
 
-Den Umgang mit malloc bzw. free versteht nur das Verifikationswerkzeug VeriFast. Mit dessen Hilfe ist es möglich
-nie freigegebenen Speicher oder auch das doppelte Löschen eines Speicherbereichs zu erkennen. Die Grundlage dafür
-sind die bereits in \ref{} eingeführten Heap Chunks, die den Zugriff auf disjunkte Speicherbereiche definieren. 
-Anders als der Name es implizieren lässt, sind damit aber nicht nur Speicherinhalt im tatsächlichen Freispeicher
-(engl. heap) gemeint, sondern auch solche auf dem Stapelspeicher (engl. stack). Tatsächlich legt VeriFast für
+Die Verfizierung des korrekten Speichermanagements wird nur von VeriFast unterstützt. Die Grundlage dafür
+sind die bereits in \ref{sec:design-by-contract:predicates} eingeführten Heap Chunks, die den Zugriff auf disjunkte 
+Speicherbereiche steuern.
+
+Anders als der Name es vermuten lässt, sind damit aber nicht nur Speicherinhalte im Freispeicher (engl. heap) gemeint, 
+sondern auch solche auf dem Stapelspeicher (engl. stack). Tatsächlich legt VeriFast für
 per malloc allokierte Bereiche einen zusätzlichen zweiten Chunk an, damit eine Unterscheidung zwischen Stack und
-Heap möglich ist. Somit kann z.B. auch ein fehlerhafter free-Aufruf erkannt werden, der Teile des Stacks löschen soll.
+Heap möglich ist. Somit kann z.B. auch ein fehlerhafter free-Aufruf erkannt werden, der Teile des Stacks löschen würde.
 
-malloc block ints zeigen
+\lstinputlisting[language=C, caption=Kontrakt für \texttt{strdup} (String duplizieren) in VeriFast]{codes/strdup_contract_verifast.c}
 
-keine funktion nur die ints chunks nehmen, aber die malloc block ints nicht mit nehmen in der precondition? z.B. sinnvoll
+Aus dem Kontrakt für \texttt{strdup} in Listing 3.12 lässt sich nun auslesen, dass die Implementierung neuen Speicher
+erzeugt. Der zusätzliche Heap-Chunk \lstinline{malloc_bloc_chars} ist außerdem die Voraussetzung dafür, dass der Speicherbereich
+an einer anderen Stelle per \texttt{delete} wieder entfernt werden kann.
 
-\todo{leaken zeigen}
+Das Erkennen arithmetischer Überläufe wird von beiden Werkzeugen unterstützt, siehe dazu \ref{sec:implementation:overflows}.
 
-\todo{testen ob frama-c auch problem meldet bei zugriff auf a[n]}
+
 

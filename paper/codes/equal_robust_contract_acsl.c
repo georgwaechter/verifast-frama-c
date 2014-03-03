@@ -1,5 +1,5 @@
 /*@
-  requires \valid_range(a, 0, n -1);
+  requires \valid_range(a, 0, n - 1);
   requires \valid_range(a, 0, n - 1);
   requires n >= 0;
 */
