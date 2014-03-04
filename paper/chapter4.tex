@@ -7,9 +7,9 @@ zusätzliche Annotationen im Quellcode, damit die korrekten logische Schlüsse g
 werden können. Beispielsweise müssen Schleifeninvarianten ergänzt werden oder sogenannte
 Ghost-Commands, die Prädikate oder weitere logische Beweise mit einbeziehen.
 
+
 \section{Symbolische Ausführung in VeriFast}
 
-\todo{terminologie mit VeriFast paper abgleichen, zitat zu jacobs-2010}
 Die Verifizierung von Implementierungs-Code findet in VeriFast über eine symbolische Ausführung statt:
 Gestartet wird mit den Vorbedingungen des Methodenvertrags, der Code wird dann wie bei der tatsächlichen
 Ausführung von oben nach unten verarbeitet. Jedoch nicht mit konkreten, sondern mit 
@@ -28,12 +28,16 @@ oder auch \texttt{if}-Anweisungen sorgen dafür, dass VeriFast diese Verzweigung
 und verifiziert. Existieren mehrere \texttt{return}-Anweisungen in der Implementierung, so stellt
 das Werkzeug sicher, dass in jedem Ausgang die Nachbedingungen gelten.
 
-Der aktuelle Zustand der Ausführung wird dabei durch zwei verschiedene Strukturen charakterisiert: 
-Den Heap, der alle Elemente (engl. heap chunks) des Speichers beinhaltet sowie eine Liste
-der geschlussfolgerten Annahmen (engl. assumptions). Bei der Ausführung der Vorbedingungen werden
-diese Aussagen nun untersucht und entweder zum Heap hinzugefügt oder zu den Annahmen.
+Der aktuelle Ausführungszustand setzt sich dabei aus folgenden Elementen zusammen: 
+Dem symbolischen Heap zur Verwaltung der Heap-Chunks, dem symbolischen Speicher sowie den Pfadbedingungen
+(engl. path conditions) \cite[Kap. 2.1]{jacobs-2010}. 
 
-Beim Verstehen dieser Schritte ist die VeriFast-Oberfläche sehr hilfreich, da sie den aktuellen
+Der symbolische Speicher bildet die aktuellen lokalen Variablen auf die entsprechenden logischen Formeln ab.
+Die Pfadbedingungen hingegen sind Folgerungen, die aus der Ausführung des Implementations-Codes und aus den Annotationen
+berechnet werden. Für den \texttt{false}-Pfad der Verzweigung aus Abbildung 4.1 wird beispielsweise
+\lstinline{i >= n} geschlussfolgert.
+
+Beim Verstehen der einzelnen Schritte ist die VeriFast-Oberfläche sehr hilfreich, da sie den aktuellen
 Zustand für einen beliebigen Haltepunkt anzeigen kann. Die folgende Situation zeigt die Ausführung
 einer \lstinline{mismatch}-Implementierung bis zum gesetzten Haltepunkt (gelb hervorgehoben).
 
@@ -41,7 +45,7 @@ einer \lstinline{mismatch}-Implementierung bis zum gesetzten Haltepunkt (gelb he
 \includegraphics[width=1.0\textwidth]{images/VeriFast-state-after-precondition.png}
 \end{center}
 
-Gut zu erkennen ist, dass logische Ausdrücke wie \(n >= 0\) in die Liste der Annahmen 
+Gut zu erkennen ist, dass logische Ausdrücke wie \(n >= 0\) in die Liste der Pfadbedingungen 
 (im Bild als \glqq Assumptions\grqq betitelt) aufgenommen wurden. Die \lstinline{ints}-Prädikate hingegen
 wurden zum Heap hinzugefügt. Diesen Prozess nennt VeriFast \glqq Producing assertion\grqq, wobei sich das Verb
 \glqq Producing\grqq auf das Hinzufügen von Elementen zum aktuellen Zustand der symbolischen Ausführung
@@ -290,7 +294,7 @@ VeriFast derzeit nicht möglich ist.
 
 
 \section{Arbeit mit den Werkzeugen}
-
+\todo{section ggf. in anderes kapitel auslagern und überarbeiten}
 Im Gegensatz zu VeriFast bezeichnet ACSL nicht ein vollständiges Werkzeug, sondern ausschließlich
 die Annotationssprache. Die Verarbeitung übernimmt eine Kombination aus Frama-C, Why\footnote{
 \url{http://why.lri.fr/}} und daran angeschlossene Beweiser wie Alt-Ergo\footnote{\url{http://alt-ergo.lri.fr/}}
