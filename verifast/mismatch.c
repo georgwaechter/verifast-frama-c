@@ -23,7 +23,10 @@ lemma void take_plus_one_<t>(int i, list<t> xs)
 
 int mismatch(const int *a, int n, const int* b) 
 //@ requires a[0..n] |-> ?al &*& b[0..n] |-> ?bl;
-//@ ensures a[0..n] |-> al &*& b[0..n] |-> bl &*& result <= n &*& take(result, al) == take(result, bl) &*& (result < n ? nth(result, al) != nth(result, bl) : true); 
+/*@ ensures  a[0..n] |->  al &*& b[0..n] |->  bl &*& result <= n &*& 
+             take(result, al) == take(result, bl) &*& 
+             (result < n ? nth(result, al) != nth(result, bl) : true); 
+@*/
 {
     for (int i = 0; i < n; i)
     //@ invariant 0 <= i && i <= n &*& ints(a, n, al) &*& ints(b, n, bl) &*& take(i, al) == take(i, bl);

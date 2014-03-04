@@ -190,11 +190,11 @@ Funktionen besitzen sie Vorbedingungen sowie Nachbedingungen und müssen explizi
 Da es sich um Code handelt, der nur für das Verifikationswerkzeug bestimmt ist, findet der Aufruf
 in einem Ghost-Command per Annotation statt:
 
-\lstset{frame=none, numbers=none}                      
+\lstset{frame=none}                      
 \begin{lstlisting}
 //@ ghost take_plus_one(i, al);
 \end{lstlisting}
-\lstset{frame=single, numbers=left}    
+\lstset{frame=single}    
 Das Lemma \lstinline{take_plus_one} sorgt dafür, dass VeriFast den Ausdruck \lstinline{take(i + 1, al)}
 versteht und die Invariante (siehe Listing 4.4 oben) vollständig beweisen kann. Es ist wie folgt
 definiert (in der von VeriFast mitgelieferten listex.gh):
@@ -338,6 +338,9 @@ vielmehr ein Resultat der unterschiedlichen Ansätze: VeriFast erwartet mehr Ein
 die logischen Folgerungen des Werkzeugs eher klein sind und darum viele Annotationen in der Implementierung nötig sind.
 Frama-C hingegen kann auch komplexere Berechnungen ausführen, kommt mit weniger Annotationen aus, ist daher aber auch
 wesentlich langsamer.
+
+- frama c gui lässt kein bearbeiten des codes zu
+
 
 
 \section{Arithmetische Überläufe}
