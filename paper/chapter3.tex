@@ -69,7 +69,7 @@ Aussage über den Speicherinhalt zu treffen. Da dies in diesem Kontext nicht not
 
 Die einzelnen Aussagen werden mit der Konjunktion \lstinline{&*&} verknüpft\footnote{Der \lstinline{&&} Operator 
 existiert zusätzlich für logische Verknüpfungen.}, was dafür sorgt, dass die entsprechenden
-Speicherbereiche disjunkt sind (siehe dazu auch \ref{sec:theorie:seperation-logic}). In dem Fall wird also bereits
+Speicherbereiche disjunkt sind (siehe dazu auch Abschnitt \ref{sec:theorie:seperation-logic}). In dem Fall wird also bereits
 durch die Syntax klar, dass \lstinline{start} und \lstinline{start + 1} nicht überlappen. Ein solches Prädikat
 mit Angaben zu Speicherinhalten wird auch als Heap-Chunk bezeichnet und beschreibt das Recht diesen zu
 manipulieren\footnote{Die Lese/Schreibrechte eines Heap-Chunks können in VeriFast über einen Koeffizienten
@@ -159,7 +159,8 @@ VeriFast kann man z.B. auch einen eingeschränkten \(\forall\)-Quantor nachbauen
 damit würden aber die Vorteile der jeweiligen Sprache keine Anwendung finden. Ein \lstinline{IsEqual}-Prädikat wäre z.B.
 auch mit VeriFast möglich, macht die Spezifikation aber nicht verständlicher, dafür aber die Verifizierung
 der Implementierung schwieriger\footnote{Da dann nicht mehr direkt mit induktiven Listen, sondern zusätzlich
-mit einem Prädikat und weiteren erforderlichen Lemmatas gearbeitet werden muss (siehe \ref{verifizierung:lemma})}.
+mit einem Prädikat und weiteren erforderlichen Lemmatas gearbeitet werden muss (siehe Abschnitt
+\ref{verifizierung:lemma} im nächsten Kapitel)}.
 
 Das Beschreiben der Speicherinhalte und Einführen der Variablen  \lstinline{al} und \lstinline{bl} ist außerdem
 ohnehin notwendig, um auszudrücken, dass der Speicher nicht verändert und nicht gelöscht wird. Denn VeriFast wertet
@@ -220,7 +221,7 @@ zu definieren (für das Verstehen der folgenden Erklärungen ist die informelle 
 Die Nachbedingung beinhaltet die zwei möglichen Fälle: Entweder ist mindestens ein Element ungleich
 (\lstinline{result < n}) oder alle sind identisch (\lstinline{result == n}). Das ist leider nicht auf den
 ersten Blick in der Spezifikation wiederzufinden, denn das separate Definieren disjunkter Fällen wird in VeriFast 
-nicht unterstützt (siehe \ref{sec:design-by-contract:behaviors}). 
+nicht unterstützt (siehe Abschnitt \ref{sec:design-by-contract:behaviors}). 
 
 Die Zeile 3 kombiniert daher beide Fälle (\lstinline{result <= n}) und nutzt die Tatsache aus, dass
 der Rückgabewert \lstinline{result} stets die Anzahl der gleichen Elemente enthält: Der Vergleich der
@@ -283,7 +284,8 @@ Aus dem Kontrakt für \texttt{strdup} in Listing 3.12 lässt sich nun auslesen, 
 erzeugt. Der zusätzliche Heap-Chunk \lstinline{malloc_bloc_chars} ist außerdem die Voraussetzung dafür, dass der Speicherbereich
 an einer anderen Stelle per \texttt{delete} wieder entfernt werden kann.
 
-Das Erkennen arithmetischer Überläufe wird von beiden Werkzeugen unterstützt, siehe dazu \ref{sec:implementation:overflows}.
+Das Erkennen arithmetischer Überläufe wird von beiden Werkzeugen unterstützt, siehe dazu Abschnitt \ref{sec:implementation:overflows}
+im nächsten Kapitel.
 
 
 
