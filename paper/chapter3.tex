@@ -70,13 +70,16 @@ Aussage über den Speicherinhalt zu treffen. Da dies in diesem Kontext nicht not
 Die einzelnen Aussagen werden mit der Konjunktion \lstinline{&*&} verknüpft\footnote{Der \lstinline{&&} Operator 
 existiert zusätzlich für logische Verknüpfungen.}, was dafür sorgt, dass die entsprechenden
 Speicherbereiche disjunkt sind (siehe dazu auch Abschnitt \ref{sec:theorie:seperation-logic}). In dem Fall wird also bereits
-durch die Syntax klar, dass \lstinline{start} und \lstinline{start + 1} nicht überlappen. Ein solches Prädikat
+durch die Syntax klar, dass \lstinline{start} und \lstinline{start + 1} nicht überlappen. 
+\todo{memory chunk. speicherzugriffsrech nicht nur heap}
+Ein solches Prädikat
 mit Angaben zu Speicherinhalten wird auch als Heap-Chunk bezeichnet und beschreibt das Recht diesen zu
 manipulieren\footnote{Die Lese/Schreibrechte eines Heap-Chunks können in VeriFast über einen Koeffizienten
 (engl. fractional permissions) gesteuert werden. Darauf wird in dieser Arbeit jedoch nicht weiter eingegangen.}.
 
-In dieser Form ist das Prädikat nun semantisch äquivalent zum \lstinline{\valid} aus ACSL. Die Zeile 2 aus
-der \texttt{equal}-Spezifikation kann in VeriFast damit nun als \lstinline{int_array(a, n)} ausgedrückt werden.
+In dieser Form ist das Prädikat nun semantisch äquivalent zum \lstinline{\valid} aus ACSL. Die Vorbedingung für die
+Variable \lstinline{a} aus der \texttt{equal}-Spezifikation kann in VeriFast damit nun als \lstinline{int_array(a, n)}
+ausgedrückt werden.
 
 Wie oben erwähnt besitzt zwar die Annotationssprache von VeriFast kein Prädikat \lstinline{int_array}, das Werkzeug
 als solches hingegen schon. Häufig benötigte Prädikate und weitere Funktionen werden in Form von Header-Dateien
@@ -197,8 +200,8 @@ Die folgende Spezifikation für \texttt{equal} ist eine solche Variante ohne Ver
 
 \lstinputlisting[language=C, caption=Formale Spezifikation für \texttt{equal} mit Behavior]{codes/chapter3/equal_behavior_acsl.c}
 
-Der Fall \lstinline{all_equal} in Zeile 7 tritt dann ein, wenn beide Ganzzahl-Arrays gleich sind. Das 
-Gegenteil \lstinline{some_not_equal} ist in Zeile 11 definiert, die jeweiligen Bedingungen in Form von
+Der Fall \lstinline{all_equal} tritt dann ein, wenn beide Ganzzahl-Arrays gleich sind. Das 
+Gegenteil \lstinline{some_not_equal} ist direkt darunter definiert, die jeweiligen Bedingungen in Form von
 prädikatenlogischen Formeln finden sich als \lstinline{assumes}-Anweisungen wieder. Besonders anzumerken ist,
 dass die Anweisungen \lstinline{complete behaviors} bzw. \lstinline{disjoint behaviors} dafür sorgen, dass
 alle Fälle abgedeckt und gleichzeitig auch disjunkt sind.
@@ -218,19 +221,17 @@ zu definieren (für das Verstehen der folgenden Erklärungen ist die informelle 
 
 \lstinputlisting[language=C, caption=Formale Spezifikation für \lstinline{mismatch} mit VeriFast]{codes/chapter3/mismatch_specification_verifast.c}
 
-Die Nachbedingung beinhaltet die zwei möglichen Fälle: Entweder ist mindestens ein Element ungleich
+Die Nachbedingung behandelt die zwei möglichen Fälle: Entweder ist mindestens ein Element ungleich
 (\lstinline{result < n}) oder alle sind identisch (\lstinline{result == n}). Das ist leider nicht auf den
 ersten Blick in der Spezifikation wiederzufinden, denn das separate Definieren disjunkter Fällen wird in VeriFast 
-nicht unterstützt (siehe Abschnitt \ref{sec:design-by-contract:behaviors}). 
-
-Die Zeile 3 kombiniert daher beide Fälle (\lstinline{result <= n}) und nutzt die Tatsache aus, dass
-der Rückgabewert \lstinline{result} stets die Anzahl der gleichen Elemente enthält: Der Vergleich der
-\lstinline{take}-Resultate sorgt dann somit dafür, dass entweder alle Elemente oder nur
+nicht unterstützt (siehe Abschnitt \ref{sec:design-by-contract:behaviors}). Es werden daher beide Fälle kombiniert
+und die Tatsache ausgenutzt, dass der Rückgabewert \lstinline{result} stets die Anzahl der gleichen Elemente enthält:
+Der Vergleich der \lstinline{take}-Resultate sorgt dann somit dafür, dass entweder alle Elemente oder nur
 alle vor dem ersten gefundenem Unterschied gleich sind. 
 
 Die Fallunterscheidung ist erst am Ende der Nachbedingung sichtbar, innerhalb des \lstinline{? :} Operators.
 Intuitiv möchte man an der Stelle \((result < n) \rightarrow al[result] \neq  bl[result]\)
-schreiben, kann es aber ohne die Implikation in VeriFast nicht so ausdrücken.
+schreiben, kann es aber ohne Implikation in VeriFast nicht anders ausdrücken.
 
 \begin{figure}[H]
 Die ACSL-Umsetzung verwendet die eben eingeführten Behaviors und ist dementsprechend wesentlich länger:
@@ -269,7 +270,8 @@ Länge der beiden Arrays bezeichnet.
 
 \lstinputlisting[language=C, caption=Minimaler Kontrakt für \texttt{equal}]{codes/chapter3/equal_robust_contract_acsl.c}
 
-Die Verfizierung des korrekten Speichermanagements wird nur von VeriFast unterstützt. Die Grundlage dafür
+Die Verfizierung des korrekten Speichermanagements wird derzeit nur von VeriFast unterstützt\footnote{Die ACSL-Spezifikation
+definiert Prädikate zum Beschreiben von Speicherallokationen, Frama-C unterstützt diese allerdings derzeit nicht}. Die Grundlage dafür
 sind die bereits in \ref{sec:design-by-contract:predicates} eingeführten Heap Chunks, die den Zugriff auf disjunkte 
 Speicherbereiche steuern.
 

@@ -14,7 +14,7 @@
 
 \sidecaptionvpos{figure}{t}
 \definecolor{mygreen}{rgb}{0.08,0.35,0}
-\definecolor{mygray}{rgb}{0.9,0.9,0.9}
+\definecolor{mygray}{rgb}{0.95,0.95,0.95}
 \definecolor{mymauve}{rgb}{0.58,0,0.82}
 
 \DeclareCaptionFormat{listing}{
@@ -29,7 +29,7 @@
 \date{März 2014}
 
 \lstset{
-  backgroundcolor=\color{white}, 
+  backgroundcolor=\color{mygray}, 
   basicstyle=\ttfamily\small,     
   breakatwhitespace=false,      
   breaklines=true,                
@@ -47,7 +47,8 @@
   stepnumber=1,       
   stringstyle=\color{mymauve},  
   tabsize=2,   
-  columns=fixed,                  
+  columns=fixed, 
+  rulecolor=\color{mygray}                 
 }
 
 \renewcommand\floatpagefraction{.90}
@@ -58,6 +59,10 @@
 
 \addtolength{\parskip}{0.5\baselineskip}
 \parindent=0cm
+
+% need to appear as last \usepackage to avoid nonsensical warnings,
+% cf. http://mrunix.de/forums/showthread.php?t=38657#8
+\usepackage[hidelinks]{hyperref}
 
 \begin{document}
 

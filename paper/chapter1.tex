@@ -17,7 +17,7 @@ der C++ Standard-Bibliothek. Die Grundlage für spätere Formalisierungen ist di
 wird auf Iteratoren und eine selbst definierte Vergleichsfunktion verzichtet} Signatur und 
 die dazugehörige informelle Spezifikation:
 
-\lstset{frame=none, numbers=none}    
+\lstset{frame=none}    
 \lstinputlisting[language=C]{codes/mismatch_signature.c}
 \lstset{frame=single}
 
@@ -32,40 +32,42 @@ kontinuierlich - in ihre jeweils eigene Richtung - weiterentwickeln. Es wird dar
 in denen ein Werkzeug dem anderen überlegen ist oder sogar alternativlos ist.
 
 
-\section{VeriFast}
-\label{sec:VeriFast}
-
-Veri
-
-KU Löwen university, by bart jacobs
-
-
-for C and java
-
-
-functional correctness
-
-
-seperation logic - angepasste hoare logic
-
-
-malloc/free - keien speicherlöscher
-
-
-multithreading .. z.B. lock free datenstrukturen
-
-kein eigener name für die sprache, darum wird immer nur von VeriFast gesprochen
-
-
-industrieeinsatz
-
 \section{Frama-C}
 \label{acsl-und-frama-c}
 
-ansi/iso-c specification language
+Frama-C ist eine modulare Werkzeugsammlung für die Analyse von C-Programmen entwickelt von CEA\footnote{\url{www.cear.fr}}
+(französisches Kommissariat für Atomenergie und alternative Energien) sowie Inria\footnote{\url{www.inria.fr}} 
+(französisches Forschungsinstitut für Informatik). Es beinhaltet viele verschiedene Plugins mit denen der C-Code
+analysiert, transformiert oder verifiziert werden kann. 
+
+In dieser Arbeit wird ausschließlich das WP-Plugin\footnote{WP steht für Weakest Precondition, siehe
+\url{http://frama-c.com/wp.html}} für die deduktive Verifikation betrachtet. Um es zu verwenden, müssen die zu beweisenden 
+Eigenschaften als ACSL-Annotationen zum Quellcode hinzugefügt werden, woraus Frama-C dann die 
+Beweispflichten (engl. proof obligations) in Form von prädikatenlogischen Formeln generiert. Angebundene automatische oder 
+interaktive Beweiser wie Alt-Ergo\footnote{\url{http://alt-ergo.lri.fr/}} oder Coq\footnote{\url{http://coq.inria.fr/}}
+versuchen diese dann zu lösen.
+
+Die Verifikation basiert auf der Hoare-Logik, die 1969 von C.A.R. Hoare eingeführt wurde\cite{hoare}. Dabei
+handelt es sich um ein formales System aus verschiedene logischen Regeln, mit denen die Korrektheit von
+Computerprogrammen bewiesen werden kann.
 
 
-zusammen mit VeriFast teil des STANCE projekts
+\section{VeriFast}
+\label{sec:VeriFast}
+
+VeriFast ist ein statisches Verifizierungswerkzeug für Java und C entwickelt an der KU Leuven in den Niederlanden.
+Wie Frama-C unterstützt es die Verifikation von Spezifikationen, die in den Quellcode annotiert wurden. Die verwendete
+Annotationssprache hat keinen eigenen Namen, darum ist mit \glqq VeriFast\grqq abhängig vom Kontext entweder die Sprache oder das
+Werkzeug als solches gemeint.
+
+Die Annotationen werden nicht über deduktive Verifikation, sondern mittels symbolischer Ausführung bewiesen. Das Austauschen
+des Beweisers so wie in Frama-C ist außerdem nicht möglich\footnote{VeriFast nutzt den Z3-Beweiser von Microsoft Research,
+\url{http://z3.codeplex.com/}}, da es sich um eine geschlossene Software handelt.
+
+Das Programm versteht Quellcode-Annotationen geschrieben in der Separierungslogik, die 2002 von John C. Reynolds publiziert
+wurde\cite{reynolds-2002}. Dabei handelt es sich um eine Erweiterung der Hoarelogik, die zusätzliche Aussagen über den Speicher
+erlaubt. 
+
 
 \section{Zielgruppe}
 \label{sec:zielgruppe}
