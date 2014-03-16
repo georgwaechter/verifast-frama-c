@@ -71,11 +71,44 @@ entscheiden kann, dass ein beliebiger Algorithmus zum Ende kommt\cite{turing}[Se
 \section{Separierungslogik}
 \label{sec:theorie:seperation-logic}
 
-Die Separierungslogik ist eine Erweiterung des Hoare-Kalküls.
+Die Separierungslogik ist eine Erweiterung des Hoare-Kalküls, die weitergehende Aussagen über den Speicherinhalt
+und den Zugriff darauf erlaubt. Die Bedeutung des Hoare-Tripels wird dazu etwas erweitert - der Programmcode des
+betrachteten Tripels darf nur noch auf den Speicher zugreifen, der in der Vorbedingung erwähnt oder aber im Code
+allokiert wurde\cite{reynolds-2002}[Kapitel 4].
 
-Seperation Logic
+Außerdem wird die von Hoare definierte zugrunde liegende Programmiersprache erweitert, um Befehle zum Anfordern (engl. allocate), 
+Löschen, Manipulieren und Auslesen des Speichers. Der Ausführungszustand wird um zwei neue Komponenten erweitert, damit 
+diese Aktionen abgebildet werden können: Der dynamische Speicherbereich (engl. heap) verknüpft Adressen mit ihren
+Werten; die lokalen Variablen (engl. store/stack) assozieren die Namen der Variablen mit ihren Inhalten. 
 
-konjunktion erklären
+Die neu eingeführten Konstrukte sind bewusst stark angelehnt an die maschinennahen Konzepte der Zeigerarithmetik sowie des
+Stapelspeichers. Somit ist die Anwendung der Logik auf C-Programme leicht möglich.
 
-zusätzliche frame rule für * operator
+Damit Vor- und Nachbedingungen Aussagen über den Speicher treffen können, erweitert die Separierungslogik die
+von Hoare verwendete Prädikatenlogik um folgende Operatoren bzw. Atome: 
+\begin{align*}
+\langle Aussage \rangle & ::= \dots \\
+& \begin{array}{l r}
+  | \: \textbf{emp} & \textrm{leerer Speicher}\\
+  | \: \langle Ausdruck \rangle \to \langle Ausdruck \rangle & \textrm{einzelner Wert im Speicher}\\
+  | \: \langle Aussage \rangle \ast \langle Aussage \rangle & \textrm{disjunkte Speicherbereiche, Konjunktion}\\
+  | \: \langle Aussage \rangle -\!\! \ast \langle Aussage \rangle & \textrm{disjunkte Speicherbereiche, Implikation}\\
+\end{array}
+\end{align*}
+Insbesondere die spezielle Konjunktion ist an dieser Stelle wichtig, da sie auch in VeriFast eine wichtige Rolle spielt.
+Sie stellt sicher, dass beide Aussagen zutreffen und die entsprechenden Speicherbereiche disjunkt sind. 
+
+Das folgende Hoare-Tripel zeigt ein Beispiel für die Anwendung der Operatoren. Der gezeigte Programmabschnitt ist in C-Syntax
+formuliert und demonstriert die Semantik des Konjunktions-Operators.
+\begin{align*}
+& \{a \to 5 \ast b \to 5 \} \\
+& \text{*a = *a + *b;} \\
+& \{a \to 10 \ast b \to 5\}
+\end{align*}
+Würde man stattdessen eine einfache logische Konjunktion in die Aussagen einsetzen, wäre das Tripel nicht mehr 
+gültig. Denn es wäre möglich, dass a und b auf dieselbe Speicheradresse zeigen.
+
+VeriFast unterstützt außerdem das Konzept der geteilten Speicherzugriffe (engl. fractional persmissions). Das
+ist eine Ergänzung zur Separierungslogik mit der das Aufsplitten von Lesezugriffen für Speicherbereiche möglich ist\cite{concurrent}.
+Damit ist auch das Formalisieren und Beweisen konkurrierender Programme möglich.  
 
