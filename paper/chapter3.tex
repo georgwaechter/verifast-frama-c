@@ -281,7 +281,7 @@ per malloc allokierte Bereiche einen zusätzlichen zweiten Chunk an, damit eine 
 Heap möglich ist. Somit kann z.B. auch ein fehlerhafter free-Aufruf erkannt werden, der Teile des Stacks löschen würde.
 
 \lstinputlisting[language=C, caption=Kontrakt für \texttt{strdup} (String duplizieren) in VeriFast]{codes/chapter3/strdup_contract_verifast.c}
-
+\todo{fresh in acsl}
 Aus dem Kontrakt für \texttt{strdup} in Listing 3.12 lässt sich nun auslesen, dass die Implementierung neuen Speicher
 erzeugt. Der zusätzliche Heap-Chunk \lstinline{malloc_bloc_chars} ist außerdem die Voraussetzung dafür, dass der Speicherbereich
 an einer anderen Stelle per \texttt{delete} wieder entfernt werden kann.

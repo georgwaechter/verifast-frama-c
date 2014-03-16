@@ -1,15 +1,77 @@
 ﻿
 \chapter{Theoretische Grundlagen}
 
+In diesem Kapitel werden die theoretischen Grundlagen der beiden Verifikationswerkzeuge kurz erläutert. Dabei wird bewusst
+auf ausführliche Formalismen verzichtet, diese können in den Quellen bei Bedarf nachgelesen werden.
+
+Als erstes wird das Hoare-Kalkül beschrieben - die Grundlage der Softwareverifikation von Frama-C als auch VeriFast.
+Anschließend werden die Begriffe der partiellen und totalen Korrekheit im Zusammenhang mit der Terminierung eines Programms
+eingeführt. Der letzte Abschnitt widmet sich der Separierungslogik als die theoretische Basis für die Verifizierung
+mit VeriFast.
+
 \section{Hoare-Kalkül}
 
-Hoare Logik kurz angerissen
+Das Hoare-Kalkül ist ein formales System zum Beweisen der Korrektheit von Programmen. Es verwendet eine Reihe logischer
+Regeln und Axiome, die direkt auf den Quellcode angewendet werden und mit sogenannten Hoare-Tripeln arbeiten. Ein solches
+Tripel beschreibt den Zustand vor und nach der Ausführung eines Programmteils mit Hilfe von prädikatenlogischen
+Formeln.
+\begin{displaymath}
+\{P\} \: S \: \{Q\}
+\end{displaymath}
+Die Formel P gilt vor, Q hingegen nach der Ausführung von S. Damit kann nun die Ableitungsregel zur Komposition von
+zwei aufeinander folgenden Programmabschnitten aufgestellt werden:
+\begin{displaymath}
+\frac{\{P\} \:S\: \{R\} \:, \: \{R\} \: T \: \{Q\}}{\{P\}\: S; T \: \{Q\}}
+\end{displaymath}
+Die Regel besagt, dass das unter dem Strich stehende Tripel wahr ist, wenn die über dem Strich
+stehenden Tripel beide wahr sind.
 
-weakest precondition ... von hinten nach vorne wird gerechnet
+Weitergehende Formalien sind für das Verstehen dieser Arbeit nicht notwendig. Da die im Fokus stehenden
+Algorithmen mit Schleifen arbeiten, sei hier noch die Iterationsregel gezeigt, die auf While-Schleifen
+bzw. auf For-Schleifen im C-Code angewendet wird: 
+\begin{displaymath}
+\frac{\{I \land B\} \:S\: \{I\}}{\{I\}\: while(B)\: S\: \{I \land \neg B\}}
+\end{displaymath}
+I bezeichnet die Schleifeninvariante, S den Schleifenkörper und B die Eintrittsbedingung. Kann nachgewiesen werden,
+dass S die Invariante erhält und vor der Ausführung B wahr ist, dann gilt die unter dem Strich stehende Aussage.
+B und S sind direkt aus dem Quellcode entnommen, die Schleifeninvariante hingegen muss bei der Verifizierung 
+manuell angegeben werden (siehe dazu den Abschnitt über Schleifeninvarianten im Kapitel 4).
 
+Für die Verifizierung müssen nun alle Regeln auf den Quellcode angewendet werden. Eine von Frama-C verwendete Variation des Hoare-Kalküls
+stellt das System der schwächsten Vorbedingungen (engl. weakest preconditions) dar. Dabei findet eine Rückwärtsanalyse
+ders Quellcodes statt. Begonnen wird mit der gegebenen Nachbedingungen. In jedem Schritt wird dann die schwächste Vorbedingung
+abgeleitet, sodass am Ende zu beweisen ist, dass die als letztes berechnete Vorbedingung aus der gegebenen Vorbedingung folgt.
+Ist dieses Vorgehen erfolgreich, so erfüllt der Quellcode die gegebene Spezifikation aus Vor- und Nachbedingung.
+
+\section{Terminierung}
+
+Mit Hilfe des Hoare-Kalküls lässt sich nicht nachweisen, dass ein Programm terminiert, d.h. nach endlich vielen Schritten 
+beendet ist. Man spricht deshalb von der partiellen Korrektheit, da das Programm nur dann das gewünschte 
+Verhalten zeigt, wenn es auch tatsächlich zum Ende kommt.
+
+Die oben gezeigte Iterationsregel lässt sich z.B. auch dann anwenden, wenn es sich um eine Endlosschleife handelt. Der Nachweis,
+dass die Schleife tatsächlich terminiert, ist zusätzlich zu erbringen. 
+
+Die folgende erweiterte Iterationsregel erbringt bei Anwendung genau diesen Beweis. Für die entsprechende Schleife ist damit, die
+sogenannte totale Korrektheit gezeigt:
+\begin{displaymath}
+\frac{\{I \land B \land t = z \} \:S\: \{I \land t < z\}, I \implies t \geq 0}{\{I\}\: while(B)\: S\: \{I \land \neg B\}}
+\end{displaymath}
+
+Diese erweiterte Regel ergänzt die als t bezeichnete Schleifenvariante. Durch die zusätzliche Bedingung, dass aus der gültigen Invariante
+eine positive Variante folgt, ergibt sich die Terminierung der Schleife. Denn in jedem Schleifendurchlauf verringert sich die Variante,
+sodass letztendlich irgendwann ein Ende erreicht sein muss\footnote{Die Variante t könnte in diesem Fall mit natürlichen Zahlen arbeiten,
+das Prinzip ist aber nicht darauf beschränkt, siehe dazu die formalen Ausführungen in \cite{floyd}[Seite 31].}.
+
+Der Nachweis der totalen Korrektheit wird in dieser Arbeit für die vorgestellten einfachen Algorithmen angestrebt.
+Allerdings ist es nicht möglich die Terminierung für beliebige Algorithmen zu beweisen, da es sich um ein nicht entscheidbares 
+Problem handelt\footnote{Der Mathematiker Alan Turing hat bereits 1936 bewiesen, dass es keinen Algorithmus gibt, der 
+entscheiden kann, dass ein beliebiger Algorithmus zum Ende kommt\cite{turing}[Seite 230-265].}.
 
 \section{Separierungslogik}
 \label{sec:theorie:seperation-logic}
+
+Die Separierungslogik ist eine Erweiterung des Hoare-Kalküls.
 
 Seperation Logic
 
@@ -17,6 +79,3 @@ konjunktion erklären
 
 zusätzliche frame rule für * operator
 
-\section{Terminierung}
-
-Partielle/Totale Korrektheit - Terminierung

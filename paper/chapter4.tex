@@ -30,7 +30,7 @@ das Werkzeug sicher, dass in jedem Ausgang die Nachbedingungen gelten.
 
 Der aktuelle Ausführungszustand setzt sich dabei aus folgenden Elementen zusammen: 
 Dem symbolischen Heap zur Verwaltung der Heap-Chunks, dem symbolischen Speicher sowie den Pfadbedingungen
-(engl. path conditions) \cite[Kap. 2.1]{jacobs-2010}. 
+(engl. path conditions) \cite[Kap. 2]{jacobs-2010}. 
 
 Der symbolische Speicher bildet die aktuellen lokalen Variablen auf die entsprechenden logischen Formeln ab.
 Die Pfadbedingungen hingegen sind Folgerungen, die aus der Ausführung des Implementations-Codes und aus den Annotationen
@@ -218,10 +218,10 @@ beweisen. Der folgende Code zeigt den Aufruf des Lemmas innerhalb der Schleife p
 Es besteht in VeriFast auch die Möglichkeit ein Lemma mit dem Schlüsselwort \lstinline{lemma_auto} zu deklarieren.
 Damit muss es nicht mehr explizit aufgerufen werden, sondern wird automatisch genutzt, wie die von 
 ACSL bekannten Axiome. Richtig dokumentiert ist diese Funktionalität allerdings nicht, da sie laut den VeriFast-Autoren
-nur für Experten gedacht ist. \todo{referenz auf paper von bart jacobs}
+nur für Experten gedacht ist.
 
-Ein Grund dafür ist, dass eine unbedachte Ausnutzung des Schlüsselwortes
-den von VeriFast genutzten SMT-Solver (Satisfability Modulo Theories) in eine Endloschleife bringen kann. Ein
+Ein Grund dafür ist, dass eine unbedachte Ausnutzung des Schlüsselwortes den von VeriFast genutzten 
+SMT-Solver (Satisfability Modulo Theories) dazu bringen kann, nicht mehr zu terminieren\cite{jacobs-2010}[Kapitel 4]. Ein
 weiterer Nachteil ist zudem, dass der Verifikationsprozess nicht mehr vollständig nachvollziehbar ist.
 Denn den automatischen Aufruf des Lemmas zeigt VeriFast nicht an, wenn man die einzelnen
 Schritte des symbolischen Ausführungspfades auf der Oberfläche inspiziert.
@@ -246,10 +246,10 @@ das Werkzeug vertraut den Angaben blind. Dort wo es jedoch möglich ist, sollte 
 damit die Verifizierung keine Schwachstellen besitzt.
 Der Beweis wird als Funktionskörper definiert und automatisch geprüft. VeriFast testet außerdem die
 Terminierung der Lemmafunkton. 
-Dabei muss \todo{zitat zu tutorial, seite 15} darauf geachtet werden, dass das Werkzeug die Induktion auch 
+Dabei muss darauf geachtet werden, dass das Werkzeug die Induktion auch 
 erkennen kann. Für die Induktion über eine Liste ist es beispielsweise notwendig den Beweis mit einer 
 \texttt{switch}-Anweisung zu beginnen. Eine semantisch äquivalente Form mit \texttt{if}-Anweisungen wird 
-nicht unterstützt.
+nicht unterstützt\cite{jacobs-tutorial}{Seite 15].
 \begin{figure}[H]
 Der folgende Ghost-Code zeigt den Beweis des entsprechenden Lemmas. Um das Verstehen zu erleichtern,
 wurden Assertions eingefügt.
