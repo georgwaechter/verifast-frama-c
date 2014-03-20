@@ -58,7 +58,7 @@ sogenannte totale Korrektheit gezeigt:
 \frac{\{I \land B \land t = z \} \:S\: \{I \land t < z\}, I \implies t \geq 0}{\{I\}\: while(B)\: S\: \{I \land \neg B\}}
 \end{displaymath}
 
-Diese erweiterte Regel ergänzt die als t bezeichnete Schleifenvariante. Durch die zusätzliche Bedingung, dass aus der gültigen Invariante
+Diese erweiterte Regel ergänzt die als \lstinline{t} bezeichnete Schleifenvariante. Durch die zusätzliche Bedingung, dass aus der gültigen Invariante
 eine positive Variante folgt, ergibt sich die Terminierung der Schleife. Denn in jedem Schleifendurchlauf verringert sich die Variante,
 sodass letztendlich irgendwann ein Ende erreicht sein muss\footnote{Die Variante t könnte in diesem Fall mit natürlichen Zahlen arbeiten,
 das Prinzip ist aber nicht darauf beschränkt, siehe dazu die formalen Ausführungen in \cite{floyd}[Seite 31].}.

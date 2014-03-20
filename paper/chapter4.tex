@@ -101,13 +101,11 @@ Das Schreiben dieser \(close\)-Annotation ist jedoch oft nicht notwendig, da Ver
 einführt, wenn es sich um ein sogenanntes präzises Prädikat handelt. Darunter versteht VeriFast Prädikate mit 
 eingehenden und ausgehenden Parametern, die exakt die gleiche Speicherregion repräsentieren. 
 
-\begin{figure}[H]
 Die Kennzeichnung als präzises Prädikat geschieht über die Nutzung eines Semikolons bei der Trennung
 der Prädikaten-Parameter:
 
 \lstinputlisting[language=C, caption=Präzises Prädikat \lstinline{ints}]{codes/ints_precise_predicate_VeriFast.c}
-\end{figure}
-\todo{präzise führt dazu, dass änderungen am speicher analog für listenelemente ausgeführt werden}
+
 Präzise Prädikate versucht VeriFast während der Verifizierung automatisch zu öffnen und ggf. auch zu
 schließen. Dadurch ist in der obigen Implementierung das Schreiben der \texttt{close}-Anweisungen
 nicht zwingend notwendig.
@@ -125,11 +123,9 @@ Schleifeninvarianten beschreiben eine Eigenschaft, die vor und nach jeder Iterat
 werden wie Ghost-Commands per Annotation an die Schleife geschrieben und helfen dem Werkzeug die
 Nachbedingungen zu verifizieren.
 
-\begin{figure}[H]
 Der folgende Quellcode zeigt eine ACSL-Implementierung für \lstinline{mismatch}
 (Spezifikation siehe Listing 3.11):
 \lstinputlisting[language=C, caption=Implementierung für \lstinline{mismatch} mit ACSL-Annotationen]{codes/mismatch_acsl.c}
-\end{figure}
 
 Die Invariante in Zeile 4 beschreibt den Gültigkeitsbereich der Variable \lstinline{i}, in Zeile 5 wird definiert, 
 dass alle Elemente \lstinline{< i } der beiden Arrays gleich sind. Außerdem verlangt ACSL, dass alle
@@ -140,13 +136,6 @@ Hier erweist es sich auch wieder als vorteilhaft, dass für die Spezifikation be
 \lstinline{IsEqual} definiert wurde, denn in der Schleifeninvariante kann dieses wiederverwendet werden. Damit
 ist auch für den Leser schneller ersichtlich, dass die Invariante beim Beweis der Spezifikation hilft.
 
-\begin{figure}[H]
-	\centering
-\includegraphics[width=0.8\textwidth]{images/acsl-prove-mismatch.png}
-
-Die Implementierung für \lstinline{mismatch} wurde erfolgreich verifiziert.
-\end{figure}
-
 Invarianten in ACSL und VeriFast funktionieren bis auf kleinere syntaktische Unterschiede nach dem gleichen Prinzip.
 Wie schon von den Spezifikationen bekannt, ist es auch hier in VeriFast wieder notwendig die Invarianten in nur
 einer einzigen Annotation auszudrücken. Außerdem kann der Schleifenkörper nur auf Heap-Chunks zurückgreifen, die
@@ -154,11 +143,10 @@ in der Invariante explizit angegeben werden. VeriFast entfernt vor dem Schleifen
 und stellt diese nach dem Austritt aus der Schleife wieder her. Der Schleifenkörper verhält sich also
 wie eine eigenständige Funktion.
 
-\begin{figure}[H]
+\pagebreak
 Nachfolgend ist die Implementation von oben nochmal gezeigt, an der Stelle aber mit Invarianten für VeriFast.
 
 \lstinputlisting[language=C, caption=Implementierung für \lstinline{mismatch} mit VeriFast-Annotationen]{codes/mismatch_VeriFast.c}
-\end{figure} 
 
 Wie in der dazugehörigen Spezifikation (siehe Listing 3.10) wird die Funktion \lstinline{take} genutzt,
 um die ersten \lstinline{i} Elemente der Liste \lstinline{al} und \lstinline{bl} zu vergleichen.
@@ -175,10 +163,11 @@ Im Unterschied zu VeriFast ist es nicht notwendig und auch nicht möglich Schrei
 als auch schreibend.
 
 Versucht man die Implementierung mit VeriFast nun zu beweisen, erhält man einen Fehler: Die Schleifeninvariante
-konnte nicht bewiesen werden. 
+konnte nicht bewiesen werden.
+
 Das liegt daran, dass das Werkzeug aus dem Schleifenkörper allein nicht folgern kann, dass in der nächsten Iteration 
-die Länge der gleichen Listen um eins gewachsen ist. Der Fehler tritt darum beim \lstinline{==} der Invariante auf.
-Zur Lösung wird ein Lemma benötigt, welchen diesen Schritt für VeriFast nachvollziehbar macht.
+die Länge der gleichen Listen um eins gewachsen ist. Der Fehler tritt darum an der Position des Vergleichsoperators in
+der Invariante auf. Zur Lösung wird ein Lemma benötigt, welchen diesen Schritt für VeriFast nachvollziehbar macht.
 
 
 
@@ -192,28 +181,32 @@ in einem Ghost-Command per Annotation statt:
 
 \lstset{frame=none}                      
 \begin{lstlisting}
-//@ ghost take_plus_one(i, al);
+//@ take_plus_one(i, al);
 \end{lstlisting}
 \lstset{frame=single}    
 Das Lemma \lstinline{take_plus_one} sorgt dafür, dass VeriFast den Ausdruck \lstinline{take(i + 1, al)}
 versteht und die Invariante (siehe Listing 4.4 oben) vollständig beweisen kann. Es ist wie folgt
-definiert (in der von VeriFast mitgelieferten listex.gh):
-\begin{figure}[H]
-\lstinputlisting[language=C, caption=Lemma \lstinline{take_plus_one}]{codes/take_plus_one.c}
-\end{figure}
+definiert:
+
+\lstinputlisting[language=C, caption=Lemma \lstinline{take_plus_one} (aus listex.gh aus VeriFast-Distribution) ]{codes/take_plus_one.c}
+
 Wird dieses Lemma in obiger Schleife (nach dem if-Block) aufgerufen, so kann VeriFast
-die Invariante \lstinline{take(i, al) == take(i, bl)} nach dem Induktionsschritt \lstinline{i++}
-beweisen. Der folgende Code zeigt den Aufruf des Lemmas innerhalb der Schleife plus weitere Assertions:
-\begin{itemize}
-\item Zeile 8 folgt aus der Invariante selbst
-\item Zeile 9 ist die Schlussfolgerung aus der vorangegangenen if-Anweisung
-\item Zeilen 10 und 11 wenden das Lemma auf die Listen \lstinline{al} und \lstinline{bl} an
-\item Zeilen 12 und 13 beschreiben den Effekt (die Nachbedingung) des Lemmas
-\item Zeile 14 inkremniert die Schleifenvariable (verschoben aus Schleifenkopf, da ansonsten die folgende Zusicherung nicht im Code platziert werden kann)
-\item Zeile 15 stellt die nun bewiesene Invariante dar
-\end{itemize}
+die Invariante \lstinline{take(i, al) == take(i, bl)} nach dem Induktionsschritt \lstinline{i++}\footnote{Das 
+\lstinline{i++} musste in den Schleifenkörper verschoben werden, da es keine  Möglichkeit gibt die Zusicherung 
+innerhalb des for-Konstrukts zu positionieren.}
+beweisen. Der folgende Code zeigt den Aufruf des Lemmas mit zusätzlichen Zusicherungen.
 
 \lstinputlisting[language=C, firstline=3, lastline=18, caption=Aufruf Lemma \lstinline{take_plus_one} in Schleife]{codes/mismatch_VeriFast_2.c}
+
+Die einzelnen Aufrufe im Ghost-Code sind nachfolgend erklärt:
+\begin{itemize}
+\item Die erste Zusicherung folgt aus der Invariante selbst.
+\item Die zweite ist die Schlussfolgerung (Hoare-Regel) aus der vorangegangenen if-Anweisung.
+\item Die zwei folgenden Aufrufe wenden das Lemma auf die Listen \lstinline{al} und \lstinline{bl} an.
+\item Die weiteren zwei Zusicherungen beschreiben den Effekt (die Nachbedingung) des Lemmas.
+\item Danach folgt die Inkrementierung der Schleifenvariablen.
+\item Die letzte Zusicherung beinhaltet bereits die zu beweisende Nachbedingung.
+\end{itemize}
 
 Es besteht in VeriFast auch die Möglichkeit ein Lemma mit dem Schlüsselwort \lstinline{lemma_auto} zu deklarieren.
 Damit muss es nicht mehr explizit aufgerufen werden, sondern wird automatisch genutzt, wie die von 
@@ -244,111 +237,51 @@ der Länge der Listen entspricht.
 Analog zu den Axiomen in ACSL ist es auch in VeriFast nicht notwendig einen Beweis der Lemmata anzugeben -
 das Werkzeug vertraut den Angaben blind. Dort wo es jedoch möglich ist, sollte man einen Beweis anführen,
 damit die Verifizierung keine Schwachstellen besitzt.
+
 Der Beweis wird als Funktionskörper definiert und automatisch geprüft. VeriFast testet außerdem die
 Terminierung der Lemmafunkton. 
-Dabei muss darauf geachtet werden, dass das Werkzeug die Induktion auch 
-erkennen kann. Für die Induktion über eine Liste ist es beispielsweise notwendig den Beweis mit einer 
+Dabei muss darauf geachtet werden, dass das Werkzeug die Induktion auch erkennen kann. Für die Induktion 
+über eine Liste ist es beispielsweise notwendig den Beweis mit einer 
 \texttt{switch}-Anweisung zu beginnen. Eine semantisch äquivalente Form mit \texttt{if}-Anweisungen wird 
-nicht unterstützt\cite{jacobs-tutorial}{Seite 15].
-\begin{figure}[H]
+nicht unterstützt\cite{jacobs-tutorial}[Seite 15].
+
 Der folgende Ghost-Code zeigt den Beweis des entsprechenden Lemmas. Um das Verstehen zu erleichtern,
 wurden Assertions eingefügt.
 \lstinputlisting[language=C, caption=Beweis des Lemmas \lstinline{take_one_plus}]{codes/take_plus_one_proof.c}
-\end{figure} 
+
 Für viele in VeriFast enthaltene Lemmata gibt es bereits Beweise. Diese befinden sich jedoch in einer separaten
 Datei, damit das Werkzeug nicht bei jeder Verifizierung all diese nachprüfen muss.
 
+
 \section{Terminierung}
 
-Um die totale Korrektheit zu beweisen, ist es notwendig die Terminierung der Implementierung zu
-verifizieren. Im Falle von Schleifen, muss eine sogenannte Variante ergänzt werden, die
-in jeder Iteration kleiner wird und in endlich Schritten zu einem kleinstem Element führt.
-
-Beide Verifikationswerkzeuge erlauben die Notation und Verifizierung einer solchen Variante analog zur
-Schleifeninvariante. Die folgende Schleife (aus der \texttt{equal}-Implementierung) wurde mit einer Variante 
-in ACSL-Syntax angereichert. Dieselbe Variante für VeriFast würde genauso lauten, allerdings
-mit dem Schlüsselwort \texttt{decreases} eingeleitet werden.
-\begin{figure}[H]
-\lstinputlisting[language=C, caption=Schleifenvariante in ACSL]{codes/loop_variant_acsl.c}
-\end{figure}
-
-Tatsächlich kann bereits ein kleiner Tippfehler dafür sorgen, dass die Implementierung
-nicht terminiert. Das Werkzeug VeriFast beweist die funktionale Korrektheit aber trotzdem
-(siehe Screenshot). Frama-C dagegen warnt wenn eine Variante fehlt und generiert selbstständig
-eine Dummy-Variante. So fällt zumindest auf, dass die Terminierung noch nicht bewiesen ist.
+Bereits ein kleiner Tippfehler kann dazu führen, dass eine Implementierung in eine Endlosschleife läuft. Der folgende
+Screenshot zeigt, wie wichtig deshalb, der Nachweis der Terminierung ist.
 
 \begin{figure}[H]
 	\centering
-\includegraphics[width=1.0\textwidth]{images/VeriFast-partial-correctness.png}
-\caption{Tippfehler beim \texttt{i++} in der Implementierung}
+\includegraphics[width=1.0\textwidth]{images/frama-c-partial-correctness.png}
+\caption{Frama-C beweist den Algorithmus trotz Tippfehler (\texttt{i} statt \texttt{i++})}
 \end{figure}
 
-Das Beispiel zeigt, dass automatische Tests an dieser Stelle einen wichtigen Beitrag leisten
-können. Denn ein einfacher Unit-Test würde reichen, um den Tippfehler aufzudecken. In allen
-Fällen in denen die Terminierung nur sehr schwierig oder gar nicht zu beweisen ist, bieten
-Unit-Tests außerdem eine einfachere bzw. überhaupt eine Lösung. Auch wenn damit natürlich
+Um solche Fehler zu vermeiden, muss die totale Korrektheit bewiesen werden. Dazu muss im Falle von Schleifen 
+eine sogenannte Variante ergänzt werden, die in jeder Iteration kleiner wird und in endlich Schritten zu einem 
+kleinstem Element führt (siehe dazu das Kapitel 2.2).
+
+Beide Verifikationswerkzeuge erlauben die Notation und Verifizierung einer solchen Variante analog zur
+Schleifeninvariante. Die folgende Schleife (aus der \texttt{equal}-Implementierung) wurde mit einer Variante 
+in ACSL-Syntax angereichert. Die Notation in VeriFast unterscheidet sich nur darin, dass das einleitende
+Schlüsselwort \texttt{decreases} lautet.
+
+\lstinputlisting[language=C, caption=Schleifenvariante in ACSL]{codes/loop_variant_acsl.c}
+
+Da der Nachweis der Terminierung aber nicht immer so einfach möglich ist, stellt die Kombination
+der Verfizierung mit automatisierten Modultests (engl. unit tests) eine sinnvolle Alternative bzw. Ergänzung dar.
+Schon ein einziger Test würde ausreichen, um den Tippfehler aus dem Screenshot aufzudecken. 
+
+In allen Fällen in denen die Terminierung nur sehr schwierig oder gar nicht zu beweisen ist, bieten
+Tests außerdem eine einfachere bzw. überhaupt eine Lösung. Auch wenn damit natürlich
 kein Beweis der totalen Korrektheit zu erbringen ist.
 
 ACSL kann darüber hinaus auch die Terminierung von rekursiven Funktionen prüfen, was in
 VeriFast derzeit nicht möglich ist.
-
-
-\section{Arbeit mit den Werkzeugen}
-\todo{section ggf. in anderes kapitel auslagern und überarbeiten}
-Im Gegensatz zu VeriFast bezeichnet ACSL nicht ein vollständiges Werkzeug, sondern ausschließlich
-die Annotationssprache. Die Verarbeitung übernimmt eine Kombination aus Frama-C, Why\footnote{
-\url{http://why.lri.fr/}} und daran angeschlossene Beweiser wie Alt-Ergo\footnote{\url{http://alt-ergo.lri.fr/}}
-oder Z3\footnote{\url{http://research.microsoft.com/en-us/um/redmond/projects/z3/}}. Das ermöglicht 
-eine voneinander unabhängige Weiterentwicklung der Sprache und des Verifizierungs-Backends. Beispielsweise 
-können für spezielle Probleme somit auch spezialisierte Beweiser eingesetzt werden. Im Extremfall kann
-dann die Verifizierung einer Implementierung nicht durch einen, sondern nur durch die Summe aller
-Beweiser gelingen.
-
-\begin{figure}[H]
-	\centering
-\includegraphics[width=1.0\textwidth]{images/why-multiple-provers.png}
-\caption{Verifizierung mit mehreren Beweisern auf der Why-Plattform}
-\end{figure}
-
-In VeriFast hingegen sind die Sprache und die Verifizierung in einer Software zusammen gefasst,
-es ist nicht möglich den integrierten Z3 Beweiser auszutauschen. Dafür ermöglicht VeriFast das
-einfacherere Nachvollziehen der Verifizierung direkt im Quellcode. Insbesondere die Möglichkeit
-Haltepunkte zu setzen, erleichtert die Arbeit enorm, da der Zustand der symbolischen Ausführung
-inspizierbar ist und schnell erkennen lässt an welcher Stelle es noch hakt.
-
-Mit ACSL ist so etwas nicht denkbar, da die Verifizierung auf einem anderem Prinzip beruht. Die
-in Why gezeigten \todo{screenshot einfügen?}Ausgaben der Formeln sind zwar hilfreich, aber längst nicht so einfach nachvollziehbar und
-verständlich wie der Zustand in VeriFast.
-
-Für beide Werkzeuge aber gilt, dass sie leider nur alleine lauffähig sind und nicht im Rahmen
-einer Entwicklungsumgebung wie Eclipse\footnote{\url{www.eclipse.org}} genutzt werden können. 
-Für die Verifizierung muss also der Arbeitsfluss unterbrochen werden. Denn auch wenn die Verifizierung
-nicht vom Entwickler durchgeführt werden sollte, wäre es hilfreich in einer einzigen integrierten Umgebung
-den Code auszuführen, zu testen, zu debuggen und verifizieren zu können.
-
-Mindestens genauso wichtig aber ist die Unterstützung für die Kommandozeile, die beide Werkzeuge
-mitbringen. Damit ist die Verifizierung auch automatisiert möglich und die Einbettung in eine
-Continous Integration\footnote{\url{http://de.wikipedia.org/wiki/Kontinuierliche_Integration}}-Umgebung möglich.
-
-Ein wichtiger Unterschied der beiden Untersuchungsobjekte ist die unterschiedliche Verifizierungs-Geschwindigkeit
-in der Praxis. Denn VeriFast ist um ein Vielfaches schneller\cite[Kap. 3]{jac10-1} als Frama-C. 
-
-Daraus lässt sich jedoch keine Schlussfolgerung bzgl. der Qualität der Werkzeuge ziehen. Das unterschiedliche Tempo ist 
-vielmehr ein Resultat der unterschiedlichen Ansätze: VeriFast erwartet mehr Einsatz von der verifizierenden Person, da
-die logischen Folgerungen des Werkzeugs eher klein sind und darum viele Annotationen in der Implementierung nötig sind.
-Frama-C hingegen kann auch komplexere Berechnungen ausführen, kommt mit weniger Annotationen aus, ist daher aber auch
-wesentlich langsamer.
-
-- frama c gui lässt kein bearbeiten des codes zu
-
-
-
-\section{Arithmetische Überläufe}
-\label{sec:implementation:overflows}
-
-in frama-c stellen gut erkennbar
-
-in VeriFast lemma limits
-
- Im Werkzeug VeriFast
-ist es eine Option, die für die Verifizierung an - oder ausgeschaltet werden kann. In Frama-C ... \todo{testen}

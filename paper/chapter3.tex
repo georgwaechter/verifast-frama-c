@@ -67,15 +67,15 @@ gültig ist, erfordert das oben erwähnte \lstinline{integer}-Prädikat. Der zwe
 Aussage über den Speicherinhalt zu treffen. Da dies in diesem Kontext nicht notwendig ist, wird eine anonyme Variable
 \lstinline{_} eingesetzt, da die Angabe des Parameters zwingend notwendig ist.
 
-Die einzelnen Aussagen werden mit der Konjunktion \lstinline{&*&} verknüpft\footnote{Der \lstinline{&&} Operator 
-existiert zusätzlich für logische Verknüpfungen.}, was dafür sorgt, dass die entsprechenden
-Speicherbereiche disjunkt sind (siehe dazu auch Abschnitt \ref{sec:theorie:seperation-logic}). In dem Fall wird also bereits
-durch die Syntax klar, dass \lstinline{start} und \lstinline{start + 1} nicht überlappen. 
-\todo{memory chunk. speicherzugriffsrech nicht nur heap}
-Ein solches Prädikat
-mit Angaben zu Speicherinhalten wird auch als Heap-Chunk bezeichnet und beschreibt das Recht diesen zu
-manipulieren\footnote{Die Lese/Schreibrechte eines Heap-Chunks können in VeriFast über einen Koeffizienten
-(engl. fractional permissions) gesteuert werden. Darauf wird in dieser Arbeit jedoch nicht weiter eingegangen.}.
+Die einzelnen Aussagen werden mit der Konjunktion \lstinline{&*&} verknüpft, was dafür sorgt, dass die entsprechenden
+Speicherbereiche disjunkt sind (siehe dazu \ref{sec:theorie:seperation-logic} über die Separierungslogik)\footnote{Die einfache
+Konjunktion als \lstinline{&&} Operator existiert ebenfalls.}. In dem Fall wird also bereits durch die Syntax klar, dass 
+\lstinline{start} und \lstinline{start + 1} nicht überlappen. 
+
+Ein solches Prädikat mit Angaben zu Speicherinhalten wird von VeriFast auch als Heap-Chunk bezeichnet und beschreibt das
+Recht diesen zu manipulieren\footnote{Die Lese/Schreibrechte eines Heap-Chunks können in VeriFast über einen Koeffizienten
+(engl. fractional permissions) gesteuert werden. Darauf wird in dieser Arbeit jedoch nicht weiter eingegangen.}. Der Name
+Speicherzugriffsrecht wäre allerdings treffender, da die Prädikate nicht nur den dynamischen Speicher meinen, sondern beliebigen.
 
 In dieser Form ist das Prädikat nun semantisch äquivalent zum \lstinline{\valid} aus ACSL. Die Vorbedingung für die
 Variable \lstinline{a} aus der \texttt{equal}-Spezifikation kann in VeriFast damit nun als \lstinline{int_array(a, n)}
@@ -271,7 +271,7 @@ Länge der beiden Arrays bezeichnet.
 \lstinputlisting[language=C, caption=Minimaler Kontrakt für \texttt{equal}]{codes/chapter3/equal_robust_contract_acsl.c}
 
 Die Verfizierung des korrekten Speichermanagements wird derzeit nur von VeriFast unterstützt\footnote{Die ACSL-Spezifikation
-definiert Prädikate zum Beschreiben von Speicherallokationen, Frama-C unterstützt diese allerdings derzeit nicht}. Die Grundlage dafür
+definiert Prädikate zum Beschreiben von Speicherallokationen, Frama-C unterstützt diese allerdings derzeit noch nicht}. Die Grundlage dafür
 sind die bereits in \ref{sec:design-by-contract:predicates} eingeführten Heap Chunks, die den Zugriff auf disjunkte 
 Speicherbereiche steuern.
 
@@ -281,7 +281,7 @@ per malloc allokierte Bereiche einen zusätzlichen zweiten Chunk an, damit eine 
 Heap möglich ist. Somit kann z.B. auch ein fehlerhafter free-Aufruf erkannt werden, der Teile des Stacks löschen würde.
 
 \lstinputlisting[language=C, caption=Kontrakt für \texttt{strdup} (String duplizieren) in VeriFast]{codes/chapter3/strdup_contract_verifast.c}
-\todo{fresh in acsl}
+
 Aus dem Kontrakt für \texttt{strdup} in Listing 3.12 lässt sich nun auslesen, dass die Implementierung neuen Speicher
 erzeugt. Der zusätzliche Heap-Chunk \lstinline{malloc_bloc_chars} ist außerdem die Voraussetzung dafür, dass der Speicherbereich
 an einer anderen Stelle per \texttt{delete} wieder entfernt werden kann.
