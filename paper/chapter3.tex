@@ -3,7 +3,7 @@
 
 Dieses Kapitel vergleicht die Sprachkonstrukte aus ACSL und VeriFast für die Beschreibung von Funktionskontrakten.
 
-Nutzerdefinierte Prädikate und induktive Listen werden an Hand des einfachen \texttt{equal}-Algorithmus vorgestellt.
+Nutzerdefinierte Prädikate und Listen werden an Hand des einfachen \texttt{equal}-Algorithmus vorgestellt.
 Daraufhin wird eine weitere Strukturierungsmöglichkeit für Kontrakte in ACSL diskutiert und bei der anschließenden
 Formalisierung von \texttt{mismatch} verwendet. Die VeriFast-Variante wird vorgestellt und auf die Unterschiede
 der beiden Umsetzungen eingegangen. 
@@ -14,8 +14,8 @@ Abschließend wird die Verwendung formaler Spezifikationen in Hinblick auf siche
 \section{ACSL-Spezifikation für \texttt{equal}}
 \label{sec:design-by-contract:acsl-spezifikation}
 
-Das folgende Codebeispiel zeigt einen formalen Funktionskontrakt für die C-Funktion \texttt{equal}. Es wird
-spezifiziert, dass zwei Ganzzahl-Arrays genau dann gleich sind, wenn alle Elemente des Arrays identisch sind.
+Das folgende Codebeispiel zeigt einen formalen Funktionskontrakt für die C-Funktion \texttt{equal}. Sie soll
+genau dann \lstinline{true} zurückliefern, wenn alle \lstinline{n} Elemente der Ganzzahl-Arrays identisch sind.
 
 \lstinputlisting[language=C, caption=Formale Spezifikation von \lstinline{equal} mit ACSL]{codes/chapter3/equal_contract_acsl.c}
 
@@ -36,6 +36,8 @@ Der Rückgabewert - als \lstinline{\result} in der Nachbedingung bezeichnet - is
 Prädikatenformel zur Beschreibung dieses Sachverhalts:
 \[result \equiv \forall(i) (0 \leq i < n \rightarrow a[i] = b[i])\]
 
+
+
 \section{Nutzerdefinierte Prädikate in ACSL und VeriFast}
 \label{sec:design-by-contract:predicates}
 
@@ -49,7 +51,8 @@ Prädikatenname \texttt{IsEqual} steht.
 
 \lstinputlisting[language=C, caption=Formale Spezifikation von \texttt{equal} mit Hilfe des \lstinline{IsEqual} Prädikats]{codes/chapter3/equal_contract_predicate_acsl.c}
 
-Die Definition dieses nutzerdefinierten Prädikates geschieht in einem eigenem Annotationsblock wie folgt:
+Die Definition dieses nutzerdefinierten Prädikates geschieht in einem eigenem Annotationsblock und muss vor
+dem Kontrakt eingebunden werden:
 
 \lstinputlisting[language=C, caption=Prädikat \lstinline{IsEqual} formuliert in ACSL]{codes/equal_predicate_acsl.c}
 
@@ -62,20 +65,21 @@ Datenstrukturen beschreiben. Der nachfolgende Annotationsblock zeigt ein solches
 
 \lstinputlisting[language=C, caption=Nutzerdefiniertes Prädikat \lstinline{int_array} in VeriFast]{codes/chapter3/int_array_verifast.c}
 
-Das Prädikat ruft sich solange selbst auf bis \lstinline{count <= 0}. Dass jede Speicherstelle des Arrays \lstinline{start}
-gültig ist, erfordert das oben erwähnte \lstinline{integer}-Prädikat. Der zweite Parameter dieses Prädikats erlaubt es eine
+Das Prädikat ruft sich solange selbst auf bis die Abbruchbedingung \lstinline{count <= 0} erfüllt ist. Dass jede Speicherstelle des Arrays \lstinline{start}
+gültig ist, erzwingt das oben erwähnte \lstinline{integer}-Prädikat. Der zweite Parameter dieses Prädikats erlaubt es eine
 Aussage über den Speicherinhalt zu treffen. Da dies in diesem Kontext nicht notwendig ist, wird eine anonyme Variable
-\lstinline{_} eingesetzt, da die Angabe des Parameters zwingend notwendig ist.
+(Unterstrich) eingesetzt, da die Angabe des Parameters syntaktisch zwingend notwendig ist.
 
-Die einzelnen Aussagen werden mit der Konjunktion \lstinline{&*&} verknüpft, was dafür sorgt, dass die entsprechenden
-Speicherbereiche disjunkt sind (siehe dazu \ref{sec:theorie:seperation-logic} über die Separierungslogik)\footnote{Die einfache
+Die einzelnen Aussagen werden mit der separierenden Konjunktion \lstinline{&*&} verknüpft, was dafür sorgt, dass die entsprechenden
+Speicherbereiche disjunkt sind (siehe dazu den Abschnitt \ref{sec:theorie:seperation-logic} über die Separierungslogik)\footnote{Die einfache
 Konjunktion als \lstinline{&&} Operator existiert ebenfalls.}. In dem Fall wird also bereits durch die Syntax klar, dass 
 \lstinline{start} und \lstinline{start + 1} nicht überlappen. 
 
 Ein solches Prädikat mit Angaben zu Speicherinhalten wird von VeriFast auch als Heap-Chunk bezeichnet und beschreibt das
 Recht diesen zu manipulieren\footnote{Die Lese/Schreibrechte eines Heap-Chunks können in VeriFast über einen Koeffizienten
 (engl. fractional permissions) gesteuert werden. Darauf wird in dieser Arbeit jedoch nicht weiter eingegangen.}. Der Name
-Speicherzugriffsrecht wäre allerdings treffender, da die Prädikate nicht nur den dynamischen Speicher meinen, sondern beliebigen.
+Speicherzugriffsrecht wäre allerdings treffender, da die Prädikate für beliebige Speicherbereiche verwendet werden und nicht
+nur für dynamischen allokierten Speicher, so wie es der Name impliziert.
 
 In dieser Form ist das Prädikat nun semantisch äquivalent zum \lstinline{\valid} aus ACSL. Die Vorbedingung für die
 Variable \lstinline{a} aus der \texttt{equal}-Spezifikation kann in VeriFast damit nun als \lstinline{int_array(a, n)}
@@ -87,18 +91,18 @@ mitgeliefert und teilweise sogar automatisch eingebunden\footnote{prelude.h wird
 Header-Dateien können per \\ \lstinline{//@ #include "listex.gh"} eingebunden werden}.
 
 
-\section{Nutzung von induktiven Listen in VeriFast}
+\section{Nutzung von Listen in VeriFast}
 \label{sec:induktive-listen}
 
-Da VeriFast keine Quantoren aus der Prädikatenlogik unterstützt, ist es nicht möglich die \texttt{equal}-Funktion
-auf die gleiche Weise wie in ACSL (siehe Listing 3.1) zu beschreiben. Geeignet dafür wären die oben eingeführten
-rekursiven Prädikate. Ein noch besserer und flexiblerer Ansatz ist hingegen die Verwendung von induktiven Listen.
+Da VeriFast keine Quantoren aus der Prädikatenlogik unterstützt, ist es nicht möglich den Inhalt von
+Arrays auf die gleiche Weise wie in ACSL (siehe Listing 3.1) zu beschreiben. Geeignet dafür wären die bereits eingeführten
+rekursiven Prädikate. Ein noch besserer sowie flexiblerer Ansatz ist die Verwendung von Listen.
 
 Für dessen Verwendung sprechen mehrere Gründe: Listen lassen sich in VeriFast mit dem \lstinline{==} Operator vergleichen,
 was sich für die Formalisierung von \texttt{equal} sehr anbietet. Außerdem bringt VeriFast etliche rekursive Prädikate
 mit, die aus einem Array eine Liste konstruieren.
 
-\lstinputlisting[language=C, caption=Definition des generischen Listentyps (übernommen aus list.gh)]{codes/chapter3/inductive_list_verifast.c}
+\lstinputlisting[language=C, caption=Induktive Definition des Listentyps (t bezeichnet den Typ der Werte)]{codes/chapter3/inductive_list_verifast.c}
 
 Ein solches Prädikat lautet \lstinline{ints} und ist eine erweiterte Version des oben vorgestellten Prädikats
 \lstinline{int_array}. Zusätzlich zum Zeiger und der Größe des Arrays wird dort ein dritter Parameter angegeben, der
@@ -194,7 +198,7 @@ nicht durch einen ineffizenten Einsatz der Sprachmittel unnötig erschwert wird.
 In ACSL gibt es die Möglichkeit mehrere Fälle (engl. behavior) innerhalb einer Spezifikation getrennt voneinander zu
 notieren. Das kann die Lesbarkeit erheblich erleichtern, da man für jeden Fall die Vor- und Nachbedingungen
 einzeln lesen und verstehen kann.
-
+\newpage
 Die folgende Spezifikation für \texttt{equal} ist eine solche Variante ohne Verwendung des 
 \lstinline{IsEqual}-Prädikats:
 
@@ -218,7 +222,7 @@ Formel geschrieben werden:
 Mit dem Wissen über Prädikate und induktive Listen ist es nun möglich eine formale Spezifikation für \lstinline{mismatch} mit VeriFast
 zu definieren (für das Verstehen der folgenden Erklärungen ist die informelle Spezifikation aus 
 \ref{sec:aufgabenstellung} sehr hilfreich):
-
+\newpage
 \lstinputlisting[language=C, caption=Formale Spezifikation für \lstinline{mismatch} mit VeriFast]{codes/chapter3/mismatch_specification_verifast.c}
 
 Die Nachbedingung behandelt die zwei möglichen Fälle: Entweder ist mindestens ein Element ungleich
@@ -233,10 +237,8 @@ Die Fallunterscheidung ist erst am Ende der Nachbedingung sichtbar, innerhalb de
 Intuitiv möchte man an der Stelle \((result < n) \rightarrow al[result] \neq  bl[result]\)
 schreiben, kann es aber ohne Implikation in VeriFast nicht anders ausdrücken.
 
-\begin{figure}[H]
 Die ACSL-Umsetzung verwendet die eben eingeführten Behaviors und ist dementsprechend wesentlich länger:
 \lstinputlisting[language=C, caption=ACSL-Variante der Spezifikation für \lstinline{mismatch}]{codes/chapter3/mismatch_specification_acsl.c}
-\end{figure}
 
 Die zwei Fälle sind in diesem Kontrakt besser sichtbar, sinnvoll benannt und damit auch verständlicher, 
 da die Spezifikation aus kleineren Teilen besteht. Sie ist lesbarer, mit dem Nachteil viel Platz einzunehmen.

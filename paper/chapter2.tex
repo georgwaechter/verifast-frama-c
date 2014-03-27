@@ -6,7 +6,7 @@ auf ausführliche Formalismen verzichtet, diese können in den Quellen bei Bedar
 
 Als erstes wird das Hoare-Kalkül beschrieben - die Grundlage der Softwareverifikation von Frama-C als auch VeriFast.
 Anschließend werden die Begriffe der partiellen und totalen Korrekheit im Zusammenhang mit der Terminierung eines Programms
-eingeführt. Der letzte Abschnitt widmet sich der Separierungslogik als die theoretische Basis für die Verifizierung
+eingeführt. Der letzte Abschnitt widmet sich der Separierungslogik - der theoretischen Basis für die Verifizierung
 mit VeriFast.
 
 \section{Hoare-Kalkül}
@@ -26,21 +26,21 @@ zwei aufeinander folgenden Programmabschnitten aufgestellt werden:
 Die Regel besagt, dass das unter dem Strich stehende Tripel wahr ist, wenn die über dem Strich
 stehenden Tripel beide wahr sind.
 
-Weitergehende Formalien sind für das Verstehen dieser Arbeit nicht notwendig. Da die im Fokus stehenden
-Algorithmen mit Schleifen arbeiten, sei hier noch die Iterationsregel gezeigt, die auf While-Schleifen
+Da die im Fokus stehenden Algorithmen mit Schleifen arbeiten, sei hier noch die Iterationsregel gezeigt, die auf While-Schleifen
 bzw. auf For-Schleifen im C-Code angewendet wird: 
 \begin{displaymath}
 \frac{\{I \land B\} \:S\: \{I\}}{\{I\}\: while(B)\: S\: \{I \land \neg B\}}
 \end{displaymath}
 I bezeichnet die Schleifeninvariante, S den Schleifenkörper und B die Eintrittsbedingung. Kann nachgewiesen werden,
-dass S die Invariante erhält und vor der Ausführung B wahr ist, dann gilt die unter dem Strich stehende Aussage.
-B und S sind direkt aus dem Quellcode entnommen, die Schleifeninvariante hingegen muss bei der Verifizierung 
-manuell angegeben werden (siehe dazu den Abschnitt über Schleifeninvarianten im Kapitel 4).
+dass S die Invariante erhält und vor der Ausführung B und I wahr sind, dann gilt die unter dem Strich stehende Aussage: Nachdem
+die Schleife durchlaufen ist, gilt nicht B und weiterhin die Invariante. B und S sind direkt aus dem Quellcode entnommen, 
+die Schleifeninvariante hingegen muss bei der Verifizierung  manuell angegeben werden (siehe dazu den Abschnitt über 
+Schleifeninvarianten im Kapitel 4).
 
 Für die Verifizierung müssen nun alle Regeln auf den Quellcode angewendet werden. Eine von Frama-C verwendete Variation des Hoare-Kalküls
 stellt das System der schwächsten Vorbedingungen (engl. weakest preconditions) dar. Dabei findet eine Rückwärtsanalyse
 ders Quellcodes statt. Begonnen wird mit der gegebenen Nachbedingungen. In jedem Schritt wird dann die schwächste Vorbedingung
-abgeleitet, sodass am Ende zu beweisen ist, dass die als letztes berechnete Vorbedingung aus der gegebenen Vorbedingung folgt.
+abgeleitet, sodass am Ende zu beweisen ist, dass die als letztes berechnete Vorbedingung aus der Vorbedingung des Kontrakts folgt.
 Ist dieses Vorgehen erfolgreich, so erfüllt der Quellcode die gegebene Spezifikation aus Vor- und Nachbedingung.
 
 \section{Terminierung}
@@ -49,7 +49,7 @@ Mit Hilfe des Hoare-Kalküls lässt sich nicht nachweisen, dass ein Programm ter
 beendet ist. Man spricht deshalb von der partiellen Korrektheit, da das Programm nur dann das gewünschte 
 Verhalten zeigt, wenn es auch tatsächlich zum Ende kommt.
 
-Die oben gezeigte Iterationsregel lässt sich z.B. auch dann anwenden, wenn es sich um eine Endlosschleife handelt. Der Nachweis,
+Die Iterationsregel lässt sich z.B. auch dann anwenden, wenn es sich um eine Endlosschleife handelt. Der Nachweis,
 dass die Schleife tatsächlich terminiert, ist zusätzlich zu erbringen. 
 
 Die folgende erweiterte Iterationsregel erbringt bei Anwendung genau diesen Beweis. Für die entsprechende Schleife ist damit, die
@@ -79,7 +79,7 @@ allokiert wurde\cite{reynolds-2002}[Kapitel 4].
 Außerdem wird die von Hoare definierte zugrunde liegende Programmiersprache erweitert, um Befehle zum Anfordern (engl. allocate), 
 Löschen, Manipulieren und Auslesen des Speichers. Der Ausführungszustand wird um zwei neue Komponenten erweitert, damit 
 diese Aktionen abgebildet werden können: Der dynamische Speicherbereich (engl. heap) verknüpft Adressen mit ihren
-Werten; die lokalen Variablen (engl. store/stack) assozieren die Namen der Variablen mit ihren Inhalten. 
+Werten; die lokalen Variablen (engl. store/stack) assoziieren die Namen der Variablen mit ihren Inhalten. 
 
 Die neu eingeführten Konstrukte sind bewusst stark angelehnt an die maschinennahen Konzepte der Zeigerarithmetik sowie des
 Stapelspeichers. Somit ist die Anwendung der Logik auf C-Programme leicht möglich.
@@ -105,10 +105,13 @@ formuliert und demonstriert die Semantik des Konjunktions-Operators.
 & \text{*a = *a + *b;} \\
 & \{a \to 10 \ast b \to 5\}
 \end{align*}
-Würde man stattdessen eine einfache logische Konjunktion in die Aussagen einsetzen, wäre das Tripel nicht mehr 
-gültig. Denn es wäre möglich, dass a und b auf dieselbe Speicheradresse zeigen.
+Dieses Tripel wäre ungültig, wenn man eine einfache logische Konjunktion wie aus der Aussagenlogik einsetzen würde. Dann
+wäre nicht auszuschließen, dass die Variablen \lstinline{a} und \lstinline{b} dieselbe Speicheradresse meinen.
 
 VeriFast unterstützt außerdem das Konzept der geteilten Speicherzugriffe (engl. fractional persmissions). Das
 ist eine Ergänzung zur Separierungslogik mit der das Aufsplitten von Lesezugriffen für Speicherbereiche möglich ist\cite{concurrent}.
-Damit ist auch das Formalisieren und Beweisen konkurrierender Programme möglich.  
+Damit ist auch das Formalisieren und Beweisen paralleler Programme möglich.  
 
+Der Funktionsumfang der Annotationssprache für VeriFast ist also nicht deckungsgleich mit dem aus der Arbeit von Reynolds.
+Teilweise wurde die Sprache reduziert und an anderen Stellen erweitert, die Nutzung von Quantoren ist in VeriFast beispielsweise
+nicht erlaubt.

@@ -1,28 +1,21 @@
 ﻿\chapter{Fazit}
 
-verifast fühlt sich sehr funktional an?
+Abschließend lässt sich sagen, dass beide Werkzeuge sehr gut geeignet sind, um die funktionalen Eigenschaften von
+Algorithmen nachzuweisen. Für die einfachen Beispiele in dieser Arbeit ist Frama-C jedoch etwas passender, da die
+entsprechenden Kontrakte einfacher zu schreiben sowie zu lesen sind.
 
-Doku, Lernkurve, 
+VeriFast spielt seine Stärken bei komplizierten Datenstrukturen aus und dann wenn es neben den funktionalen Eigenschaften
+auch oder ausschließlich um die Robustheit des Codes geht. Aktuell ist von den beiden Werkzeugen nur VeriFast in der Lage
+eine korrekte Speicherverwaltung nachzuweisen.
 
-geschwindigkeit der tools - geschmackssache ob man eher mehr annotationen mag oder geschwindigkeit, beides geht nicht
+Die beiden Werkzeuge verfolgen einen unterschiedlichen Ansatz. VeriFast hat eine intuitive Oberfläche, welche die Verifizierung
+erleichtert - erwartet aber mehr Annotationen im Quellcode. Das liegt daran, dass der Beweiser bei der Arbeit mit Listen
+nicht so mächtig ist wie die Frama-C-Beweiser beim Schlussfolgern im Zusammenspiel mit Quantoren aus der Prädikatenlogik.
+Die mit VeriFast geschriebenen Kontrakte ähneln wegen der Nutzung von Listen und den dazugehörigen Fixpunktfunktionen
+oft Programmen aus einer funktionalen Sprache wie Haskell. Personen mit einem solchen Hintergrund finden darum einen leichten Zugang zu
+VeriFast. Wer aber bereits die Prädikatenlogik kennt oder auch interaktive Beweiser wie Coq, wird sich mit
+dem WP-Plugin von Frama-C besser zurecht finden.
 
-
-kleinere unterschiede in der unterstützung der c-sprach-features
-	verifast unterstützt gotos, acsl kann das nicht
-	verifast unterstützt keine mehrdimensionalen arrays
-	verifast unterstützt kein long, float?
-	
-dokumentation unterschiedlich?
-
-verifasts beweiser ist nicht sehr mächtig, selbst das triviale take plus one muss bewiesen werden
-	
-beide werkzeuge eignen sich auch für die verifizierung größerer software, da die verifizierung modular stattfindet
-
-industrieeinsatz, siehe case study
-
-Die Definition der möglichen Seiteneffekte ist in den Sprachen unterschiedlich gelöst. In ACSL
-ist an Hand der \lstinline{assigns \nothing} Klausel sofort ersichtlich, dass keine Speichermanipulation
-erfolgt. Dieser Aspekt ist in Verifast hingegen nicht so schnell zu erfassen.
 
 \begin{thebibliography}{}
 \bibitem[jac12]{jacobs-tutorial} Bart Jacobs, Jan Smans, Frank Piessens: The VeriFast Program Verifier: A Tutorial, Dezember 2012

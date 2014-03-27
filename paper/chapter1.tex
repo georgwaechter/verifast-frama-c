@@ -2,15 +2,15 @@
 
 \section{Aufgabenstellung und Durchführung}
 \label{sec:aufgabenstellung}
-Diese Arbeit vergleicht die statischen Verifikationswerkzeuge VeriFast\footnote{
-\url{http://people.cs.kuleuven.be/~bart.jacobs/VeriFast/}} und Frama-C\footnote{\url{http://frama-c.com}} in Kombination
-mit der Annotationssprache ACSL (ANSI/ISO C Specification Langage)\footnote{\url{http://frama-c.com/acsl.html}} 
-Der Fokus liegt dabei auf einfachen Algorithmen, die mit Arrays arbeiten ohne sie zu verändern.
-Dabei wird die Lesbarkeit, Ausdrucksstärke sowie der notwendige manuelle Aufwand der Verifikation betrachtet.
-Für den praktischen Einsatz wichtige Faktoren werden ebenso untersucht. Das sind insbesondere die verfügbare 
-Dokumentation, die Integration in den Entwicklungsprozess und die Geschwindigkeit der Werkzeuge.
-\newline
-\newline
+Diese Arbeit vergleicht die Verifikationswerkzeuge VeriFast\footnote{
+\url{http://people.cs.kuleuven.be/~bart.jacobs/VeriFast/}} und Frama-C\footnote{\url{http://frama-c.com}}.
+Der Fokus liegt dabei auf einfachen Algorithmen, die mit Arrays arbeiten ohne diese zu verändern.
+Dabei werden die verwendeten Sprachen mit ihren jeweiligen Konzepten betrachtet und verglichen. Außerdem
+wird die Lesbarkeit bewertet und die Arbeit mit den Werkzeugen untersucht. 
+
+Schlussendlich wird die daraus resultierende Lernkurve bei der Verfizierung beschrieben und geschlussfolgert
+welches Werkzeug sich am besten für die beschriebenen Algorithmen eignet.
+
 Als durchgängiges Beispiel dient in dieser Arbeit der standardisierte mismatch-Algorithmus\footnote{siehe
 \url{http://msdn.microsoft.com/de-de/library/f0bsxbk9.aspx}} aus
 der C++ Standard-Bibliothek. Die Grundlage für spätere Formalisierungen ist die folgende vereinfachte\footnote{es
@@ -24,12 +24,6 @@ die dazugehörige informelle Spezifikation:
 \noindent \emph{Vergleicht die Elemente der beiden Arrays beginnend bei 0 bis einschließlich size - 1 und gibt den
 Index der ersten Elemente zurück, die sich unterscheiden. Sind alle Elemente gleich, gibt der Algorithmus
 size - die Länge der Liste - zurück.}
-\newline
-\newline
-Auf Grund des einfachen Beispiels hat der Vergleich nur eine begrenzte Aussagekraft, denn es werden nicht alle
-Spracheigenschaften von VeriFast bzw. ACSL gezeigt und verglichen. Zudem kommt hinzu, dass sich beide Werkzeuge
-kontinuierlich - in ihre jeweils eigene Richtung - weiterentwickeln. Es wird darum immer Anwendungsfälle geben,
-in denen ein Werkzeug dem anderen überlegen ist oder sogar alternativlos ist.
 
 
 \section{Frama-C}
@@ -42,7 +36,7 @@ analysiert, transformiert oder verifiziert werden kann.
 
 In dieser Arbeit wird ausschließlich das WP-Plugin\footnote{WP steht für Weakest Precondition, siehe
 \url{http://frama-c.com/wp.html}} für die deduktive Verifikation betrachtet. Um es zu verwenden, müssen die zu beweisenden 
-Eigenschaften als ACSL-Annotationen zum Quellcode hinzugefügt werden, woraus Frama-C dann die 
+Eigenschaften als ACSL-Annotationen (ANSI/ISO C Specification Langage)\footnote{\url{http://frama-c.com/acsl.html}} zum Quellcode hinzugefügt werden, woraus Frama-C dann die 
 Beweispflichten (engl. proof obligations) in Form von prädikatenlogischen Formeln generiert. Angebundene automatische oder 
 interaktive Beweiser wie Alt-Ergo\footnote{\url{http://alt-ergo.lri.fr/}} oder Coq\footnote{\url{http://coq.inria.fr/}}
 versuchen diese dann zu lösen.
@@ -57,7 +51,7 @@ Computerprogrammen bewiesen werden kann.
 
 VeriFast ist ein statisches Verifizierungswerkzeug für Java und C entwickelt an der KU Leuven in den Niederlanden.
 Wie Frama-C unterstützt es die Verifikation von Spezifikationen, die in den Quellcode annotiert wurden. Die verwendete
-Annotationssprache hat keinen eigenen Namen, darum ist mit \glqq VeriFast\grqq abhängig vom Kontext entweder die Sprache oder das
+Annotationssprache hat keinen eigenen Namen, darum ist mit \glqq VeriFast\grqq{} abhängig vom Kontext entweder die Sprache oder das
 Werkzeug als solches gemeint.
 
 Die Annotationen werden nicht über deduktive Verifikation, sondern mittels symbolischer Ausführung bewiesen. Das Austauschen

@@ -1,71 +1,69 @@
-﻿\chapter{Vergleich weiterer Aspekte}
+﻿\chapter{Vergleich der Werkzeuge}
 
-
-\section{Arithmetische Überläufe}
-\label{sec:implementation:overflows}
-
-in frama-c stellen gut erkennbar
-
-in VeriFast lemma limits
-
- Im Werkzeug VeriFast
-ist es eine Option, die für die Verifizierung an - oder ausgeschaltet werden kann. In Frama-C ... \todo{testen}
-
-\section{Aliasing}
-
-copy oder move zeigen und unterschied zwischen acsl und verifast
-
-memmove kontrakt
-
-\lstinline{\seperated}
-
-
+In diesem Kapitel stehen die Werkzeuge im Fokus des Vergleichs. Neben der konkreten Arbeit mit der
+Oberfläche wird auch die Integration in den Entwicklungsprozess betrachtet sowie die Lernkurve für
+die erfolgreiche Verifizierung eigener Software.
 
 \section{Arbeit mit den Werkzeugen}
-\todo{section ggf. in anderes kapitel auslagern und überarbeiten}
-Im Gegensatz zu VeriFast bezeichnet ACSL nicht ein vollständiges Werkzeug, sondern ausschließlich
-die Annotationssprache. Die Verarbeitung übernimmt eine Kombination aus Frama-C, Why\footnote{
-\url{http://why.lri.fr/}} und daran angeschlossene Beweiser wie Alt-Ergo\footnote{\url{http://alt-ergo.lri.fr/}}
-oder Z3\footnote{\url{http://research.microsoft.com/en-us/um/redmond/projects/z3/}}. Das ermöglicht 
-eine voneinander unabhängige Weiterentwicklung der Sprache und des Verifizierungs-Backends. Beispielsweise 
-können für spezielle Probleme somit auch spezialisierte Beweiser eingesetzt werden. Im Extremfall kann
-dann die Verifizierung einer Implementierung nicht durch einen, sondern nur durch die Summe aller
-Beweiser gelingen.
 
-\begin{figure}[H]
-	\centering
-\includegraphics[width=1.0\textwidth]{images/why-multiple-provers.png}
-\caption{Verifizierung mit mehreren Beweisern auf der Why-Plattform}
-\end{figure}
+Die Arbeit mit den beiden Werkzeugen unterscheidet sich stark voneinander, da die Systeme
+neben dem unterschiedlichem Verifizierungsansatz auch eine andere Architektur aufweisen.
+VeriFast setzt auf die symbolische Ausführung des Codes und kommt ohne ein modulares Konzept aus.
+Die einzelnen Bestandteile der Software sind fest verbaut und können nicht ausgetauscht werden.
+Frama-C hingegen ist aus mehreren Modulen bzw. Plugins aufgebaut, die an verschiedenen Stellen des
+Verfizierungsprozesses zum Einsatz kommen. Das hat auch einen Einfluss auf die Möglichkeiten, welche
+die entsprechenden Oberflächen anbieten können.
 
-In VeriFast hingegen sind die Sprache und die Verifizierung in einer Software zusammen gefasst,
-es ist nicht möglich den integrierten Z3 Beweiser auszutauschen. Dafür ermöglicht VeriFast das
-einfacherere Nachvollziehen der Verifizierung direkt im Quellcode. Insbesondere die Möglichkeit
-Haltepunkte zu setzen, erleichtert die Arbeit enorm, da der Zustand der symbolischen Ausführung
-inspizierbar ist und schnell erkennen lässt an welcher Stelle es noch hakt.
+Das WP-Plugin von Frama-C konstruiert aus dem annotiertem Quellcode die Beweisziele und gibt diese an 
+entsprechende installierte Beweiser weiter. Das hat den Vorteil, dass für einzelne Aussagen die Stärken
+spezieller Beweiser genutzt werden könnten. Falls notwendig, kann sogar manuell nachgeholfen werden, in
+dem man den interaktiven Coq-Beweiser nutzt.
 
-Mit ACSL ist so etwas nicht denkbar, da die Verifizierung auf einem anderem Prinzip beruht. Die
-in Why gezeigten \todo{screenshot einfügen?}Ausgaben der Formeln sind zwar hilfreich, aber längst nicht so einfach nachvollziehbar und
-verständlich wie der Zustand in VeriFast.
+In VeriFast besteht diese Möglichkeit nicht. Dafür findet der Beweisvorgang mit Hilfe der symbolischen
+Ausführung wesentlich transparenter statt, denn jeder Schritt ist nachvollziehbar und es ist schnell ersichtlich,
+wieso ein Beweis fehl schlägt. In Frama-C hingegen verhalten sich die Beweiser wie eine Black Box, da
+bei nicht erfolgreicher Verifizierung unklar ist wieso der Beweis einer einzelnen Annotation
+fehlgeschlagen ist.
 
-Für beide Werkzeuge aber gilt, dass sie leider nur alleine lauffähig sind und nicht im Rahmen
+Die Arbeit an den Annotationen fällt mit VeriFast wesentlich leichter als mit Frama-C, da die
+Oberfläche das direkte Bearbeiten der Quellen erlaubt. Zudem findet die Verifizierung in VeriFast
+schneller statt. Das liegt daran, dass der Beweisvorgang selber nicht sehr rechenaufwendig und damit auch schneller\cite[Kap. 3]{jac10-1}
+ist. Der Preis dafür ist die Notwendigkeit weitere detaillierte Annotationen zu ergänzen, die in ACSL nicht erforderlich
+sind.
+
+
+\section{Integration in den Entwicklungsprozess}
+
+Für beide Werkzeuge gilt, dass sie nur alleine lauffähig sind und nicht im Rahmen
 einer Entwicklungsumgebung wie Eclipse\footnote{\url{www.eclipse.org}} genutzt werden können. 
 Für die Verifizierung muss also der Arbeitsfluss unterbrochen werden. Denn auch wenn die Verifizierung
-nicht vom Entwickler durchgeführt werden sollte, wäre es hilfreich in einer einzigen integrierten Umgebung
+nicht vom Entwickler durchgeführt werden sollte, wäre es hilfreich in einer einheitlichen integrierten Umgebung
 den Code auszuführen, zu testen, zu debuggen und verifizieren zu können.
 
-Mindestens genauso wichtig aber ist die Unterstützung für die Kommandozeile, die beide Werkzeuge
-mitbringen. Damit ist die Verifizierung auch automatisiert möglich und die Einbettung in eine
-Continous Integration\footnote{\url{http://de.wikipedia.org/wiki/Kontinuierliche_Integration}}-Umgebung möglich.
+Die Integration in einen automatisieren Build-Prozess ist mit beiden Werkzeugen möglich, da die Verifizierung nicht nur
+über die Oberfläche, sondern auch per Kommandozeile möglich ist. Damit ist auch die Einbettung in eine
+Continous-Integration-Umgebung\footnote{\url{http://de.wikipedia.org/wiki/Kontinuierliche_Integration}} denkbar,
+in der die Verifizierung automatisiert nach jeder Änderung erneut ausgeführt wird, um Regressionsfehler zu entdecken.
 
-Ein wichtiger Unterschied der beiden Untersuchungsobjekte ist die unterschiedliche Verifizierungs-Geschwindigkeit
-in der Praxis. Denn VeriFast ist um ein Vielfaches schneller\cite[Kap. 3]{jac10-1} als Frama-C. 
 
-Daraus lässt sich jedoch keine Schlussfolgerung bzgl. der Qualität der Werkzeuge ziehen. Das unterschiedliche Tempo ist 
-vielmehr ein Resultat der unterschiedlichen Ansätze: VeriFast erwartet mehr Einsatz von der verifizierenden Person, da
-die logischen Folgerungen des Werkzeugs eher klein sind und darum viele Annotationen in der Implementierung nötig sind.
-Frama-C hingegen kann auch komplexere Berechnungen ausführen, kommt mit weniger Annotationen aus, ist daher aber auch
-wesentlich langsamer.
+\section{Lernkurve}
 
-- frama c gui lässt kein bearbeiten des codes zu
+Die Lernkurve bei der Arbeit mit den Werkzeugen sieht unterschiedlich aus, was bereits aus der Gliederung dieser
+Arbeit ersichtlich wird. Im Kapitel drei wurde der Vergleich der Kontrakte mit ACSL eingeleitet, da zur
+Spezifizierung von \texttt{equal} keine fortgeschrittenen Konzepte benötigt wurden. Die Variante mit VeriFast
+hingegen benötigt induktive Listen, rekursive Prädikate sowie Mustererkennung. Selbst für ein so einfaches Beispiel
+wird in VeriFast also gleich ein Großteil der Sprachmittel benötigt. Frama-C ist da einsteigerfreundlicher, so
+wie es die Website mit dem Spruch \glqq Simple things should be simple, complex things should be possible\grqq{} verspricht.
 
+Dies setzt sich bei der Verifizierung der Implementierung fort. Wie in Kapitel vier ersichtlich, benötigt VeriFast
+zusätzlich zu einer Schleifeninvarianten einen Lemma-Aufruf, um \texttt{mismatch} zu verifizieren. ACSL kommt ohne aus,
+da die angeschlossenen Beweiser mächtiger sind. Auch in diesem Fall ist es also bei der Arbeit mit Frama-C nicht
+notwendig weitergehende Konzepte wie Axiome bzw. Lemmata zu verstehen und einzusetzen.
+
+Für die in dieser Arbeit gezeigten Algorithmen ist also die Verizierung mit Frama-C schneller erlernbar. Für komplizierte
+Anwendungen hingegen ist zu vermuten, dass sich der Lernaufwand recht schnell angleicht, da dann in beiden Sprachen
+alle verfügbaren Sprachkonstrukte verstanden und genutzt werden müssen. Tatsächlich sollte die Lernkurve bei der Nutzung
+von VeriFast sogar schneller an ihre Grenze stoßen als bei Frama-C. Das liegt daran, dass die Verifizierung mit dem WP-Plugin
+von Frama-C nicht bei der Anwendung von ACSL enden muss. Es kann durchaus notwendig sein einen interaktiven Beweiser wie Coq
+zu verstehen und zu nutzen. Da ist VeriFast mit seinem transparenten Beweisvorgang im Vorteil, insbesondere
+dank der einfach zu verstehenden Oberfläche.

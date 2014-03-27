@@ -1,7 +1,7 @@
 ﻿\chapter{Vergleich der Annotationen für die Implementierung}
 
 Nachdem im vorigen Kapitel die Spezifikationen und darin verwendete Sprachmittel verglichen wurden,
-geht es nun darum zu verifizieren, dass die Implementierungen diese tatsächlich erfüllen.
+geht es nun um die Verifizierung der Implementierungen.
 Die Werkzeuge VeriFast bzw. Frama-C führen dazu eigene Berechnungen durch, benötigen aber dennoch
 zusätzliche Annotationen im Quellcode, damit die korrekten logische Schlüsse gezogen 
 werden können. Beispielsweise müssen Schleifeninvarianten ergänzt werden oder sogenannte
@@ -10,10 +10,10 @@ Ghost-Commands, die Prädikate oder weitere logische Beweise mit einbeziehen.
 
 \section{Symbolische Ausführung in VeriFast}
 
-Die Verifizierung von Implementierungs-Code findet in VeriFast über eine symbolische Ausführung statt:
-Gestartet wird mit den Vorbedingungen des Methodenvertrags, der Code wird dann wie bei der tatsächlichen
+Die Verifizierung des Implementierungs-Codes findet in VeriFast mit Hilfe einer symbolischen Ausführung statt:
+Begonnen wird mit den Vorbedingungen des Methodenvertrags, der Code wird dann wie bei der tatsächlichen
 Ausführung von oben nach unten verarbeitet. Jedoch nicht mit konkreten, sondern mit 
-abrakten Werten. Diese werden durch logische Formeln repräsentiert, welche die möglichen Variablen-Werte 
+abstrakten Werten. Diese werden durch logische Formeln repräsentiert, welche die möglichen Variablen-Werte 
 beschreiben. Am Ende der Ausführung sind dann bei erfolgreicher Verifizierung alle Voraussetzungen
 erfüllt, um die Nachbedingungen direkt abzuleiten.
 
@@ -41,22 +41,23 @@ Beim Verstehen der einzelnen Schritte ist die VeriFast-Oberfläche sehr hilfreic
 Zustand für einen beliebigen Haltepunkt anzeigen kann. Die folgende Situation zeigt die Ausführung
 einer \lstinline{mismatch}-Implementierung bis zum gesetzten Haltepunkt (gelb hervorgehoben).
 
-\begin{center}
+\begin{figure}[ht]
+\centering
 \includegraphics[width=1.0\textwidth]{images/VeriFast-state-after-precondition.png}
-\end{center}
+\caption{VeriFast-Oberfläche, symbolische Ausführung bis zum gesetzten Haltepunkt}
+\end{figure}
 
 Gut zu erkennen ist, dass logische Ausdrücke wie \(n >= 0\) in die Liste der Pfadbedingungen 
-(im Bild als \glqq Assumptions\grqq betitelt) aufgenommen wurden. Die \lstinline{ints}-Prädikate hingegen
+(im Bild als \glqq Assumptions\grqq{} betitelt) aufgenommen wurden. Die \lstinline{ints}-Prädikate hingegen
 wurden zum Heap hinzugefügt. Diesen Prozess nennt VeriFast \glqq Producing assertion\grqq, wobei sich das Verb
-\glqq Producing\grqq auf das Hinzufügen von Elementen zum aktuellen Zustand der symbolischen Ausführung
+\glqq Producing\grqq{} auf das Hinzufügen von Elementen zum aktuellen Zustand der symbolischen Ausführung
 bezieht.
 
-Das Gegenteil - \glqq Consuming assertion\grqq - findet z.B. beim Verifizieren der Nachbedingungen statt.
+Das Gegenteil - \glqq Consuming assertion\grqq{} - findet z.B. beim Verifizieren der Nachbedingungen statt.
 VeriFast versucht dann alle erforderlichen Aussagen in der Liste der Annahmen bzw. im Heap zu finden
-und diese, wenn sie denn passen, zu entfernen. Zusätzlich dazu wird am Ende einer Funktion - beim 
-\glqq Leak check\grqq - auch überprüft, dass der Heap (der aktuellen Funktion) leer ist. Ist das nicht 
-der Fall so wurde der entsprechende Speicher nicht korrekt bereinigt oder zumindest war VeriFast nicht 
-in der Lage das Gegenteil zu beweisen.
+und diese, wenn sie denn passen, zu entfernen. Zusätzlich dazu wird am Ende einer Funktion überprüft, 
+dass der Heap (der aktuellen Funktion) leer ist. Ist das nicht der Fall so wurde der entsprechende Speicher 
+nicht korrekt bereinigt oder zumindest war VeriFast nicht in der Lage das Gegenteil zu beweisen.
 
 In dem Fall von mismatch würde VeriFast die Heap chunks \lstinline{ints(a, n, al)} sowie
 \lstinline{ints(b, n, bl)} beim Konsumieren der Nachbedingung auf dem Heap finden, entfernen und
@@ -67,16 +68,14 @@ somit erfolgreich verifizieren können, dass der Speicher so wie vor dem Aufruf 
 \section{Assertions und Ghost-Commands}
 
 Zusicherungen (engl. assertions) und Ghost-Commands sind Annotationen, die direkt in den Implementierungs-Code
-geschrieben werden. Assertions stellen sicher, dass der enthaltene Ausdruck wahr ist und sind ein nützliches Hilfsmittel, 
-um die Verifizierung besser nachzuvollziehen als auch verständlicher zu machen. Insbesondere dann, wenn das Verifikationswerkzeug 
-nicht triviale Schlüsse zieht, ist es von Vorteil Assertions zu ergänzen und im Code zu belassen.
+eingefügt werden. Assertions stellen sicher, dass der enthaltene Ausdruck wahr ist und sind ein nützliches Hilfsmittel, 
+um die Verifizierung besser nachzuvollziehbar und verständlich zu machen. Insbesondere bei 
+nicht trivialen Schlussfolgerungen, ist es von Vorteil sie zu ergänzen und im Code zu belassen. Ghost-Commands hingegen 
+enthalten Anweisungen für die Verifizierung, z.B. das Verwenden weiterer Definitionen oder Sätze. Sie helfen dem Werkzeug 
+beim Ziehen logischer Schlüsse.
 
-Ghost-Commands hingegen enthalten Anweisungen für die Verifizierung, z.B. das Aufrufen anderer Sprachkonstrukte 
-(z.B. Lemmata oder Fixpointfunktionen, siehe \ref{verifizierung:lemma}). Sie helfen dem Werkzeug logische Schlüsse 
-zu ziehen, die es alleine nicht tun kann.
-
-Der folgende Quellcode zeigt einen Ausschnitt aus einer rekursiven Implementierung für \lstinline{equal} und dient
-hier als Anschauungsmaterial für die Erklärung der oben genannten Annotationstypen:
+Der folgende Quellcode zeigt einen Ausschnitt einer rekursiven Implementierung für \lstinline{equal} und dient
+als Anschauungsmaterial für die Erklärung der zwei Annotationstypen:
 
 \lstinputlisting[language=C, caption=Rekursive Implementierung für \lstinline{equal} mit VeriFast]{codes/equal_recursive_VeriFast.c}
 
@@ -133,8 +132,8 @@ Variablen-Manipulationen für die Schleife explizit angegeben werden (siehe Zeil
 nun die beiden Fälle aus den Nachbedingungen beweisen.
 
 Hier erweist es sich auch wieder als vorteilhaft, dass für die Spezifikation bereits das Prädikat
-\lstinline{IsEqual} definiert wurde, denn in der Schleifeninvariante kann dieses wiederverwendet werden. Damit
-ist auch für den Leser schneller ersichtlich, dass die Invariante beim Beweis der Spezifikation hilft.
+\lstinline{IsEqual} definiert wurde, denn in der Schleifeninvariante kann dieses wiederverwendet werden. Somit
+ist auch für den Leser schnell ersichtlich, dass Nachbedingung direkt aus der Invariante folgt.
 
 Invarianten in ACSL und VeriFast funktionieren bis auf kleinere syntaktische Unterschiede nach dem gleichen Prinzip.
 Wie schon von den Spezifikationen bekannt, ist es auch hier in VeriFast wieder notwendig die Invarianten in nur
@@ -260,7 +259,7 @@ Screenshot zeigt, wie wichtig deshalb, der Nachweis der Terminierung ist.
 
 \begin{figure}[H]
 	\centering
-\includegraphics[width=1.0\textwidth]{images/frama-c-partial-correctness.png}
+\includegraphics[width=0.9\textwidth]{images/frama-c-partial-correctness.png}
 \caption{Frama-C beweist den Algorithmus trotz Tippfehler (\texttt{i} statt \texttt{i++})}
 \end{figure}
 
@@ -285,3 +284,18 @@ kein Beweis der totalen Korrektheit zu erbringen ist.
 
 ACSL kann darüber hinaus auch die Terminierung von rekursiven Funktionen prüfen, was in
 VeriFast derzeit nicht möglich ist.
+
+
+\section{Arithmetische Überläufe}
+\label{sec:implementation:overflows}
+
+Die beiden Werkzeuge können arithmetische Überläufe ganzer Zahlen erkennen, wobei diese Überprüfung
+in VeriFast optional ist\footnote{Die Überprüfung kann an der Oberfläche deaktiviert werden}.
+
+Zur Vermeidung der Überläufe muss im Kontrakt oder in entsprechenden Ghostbefehlen der Wertebereich
+der Variablen entsprechend eingeschränkt werden. Für diesen Zweck liefert VeriFast entsprechende Lemmas
+wie \lstinline{integer_limits} mit. Solange bei der Verifizierung jedoch kein Überlauf erkannt wird,
+ist in VeriFast nicht einsehbar an welchen Stellen eine Prüfung stattfindet. Frama-C ist in diesem Fall
+transparenter, jede potenzielle Stelle wird erkenntlich gemacht.
+
+
