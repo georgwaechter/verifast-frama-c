@@ -1,11 +1,11 @@
 ﻿\chapter{Vergleich der Annotationen für die Implementierung}
 
-Nachdem im vorigen Kapitel die Spezifikationen und darin verwendete Sprachmittel verglichen wurden,
-geht es nun um die Verifizierung der Implementierungen.
+Nachdem bereits die Spezifikationen und darin verwendete Sprachmittel verglichen wurden,
+behandelt dieses Kapitel nun die Verifizierung der Implementierungen.
 Die Werkzeuge VeriFast bzw. Frama-C führen dazu eigene Berechnungen durch, benötigen aber dennoch
 zusätzliche Annotationen im Quellcode, damit die korrekten logische Schlüsse gezogen 
-werden können. Beispielsweise müssen Schleifeninvarianten ergänzt werden oder sogenannte
-Ghost-Commands, die Prädikate oder weitere logische Beweise mit einbeziehen.
+werden können. Beispielsweise müssen Schleifeninvarianten oder sogenannte
+Ghost-Commands ergänzt werden, die Prädikate oder weitere logische Beweise mit einbeziehen.
 
 
 \section{Symbolische Ausführung in VeriFast}
@@ -82,7 +82,7 @@ als Anschauungsmaterial für die Erklärung der zwei Annotationstypen:
 Diese Implementierung zeigt nur die Abbruchbedingung der Rekursion - ist \lstinline{n == 0}, so sind die
 leeren Listen gleich und die Berechnung terminiert. 
 
-Die Zeilen 9 und 10 sind Assertions, die formal beschreiben, dass die induktiven Listen \lstinline{al} und
+Die Zeilen 9 und 10 sind Zusicherungen, die formal beschreiben, dass die induktiven Listen \lstinline{al} und
 \lstinline{bl} die Länge 0 haben müssen und somit gleich lang sind. Damit VeriFast in der Lage ist das zu
 beweisen sind die zwei Ghost-Commands in Zeile 5 und 6 notwendig. Sie öffnen das \lstinline{ints}-Prädikat
 und bringen somit dessen Inhalt in die Liste der Annahmen. Erst dadurch ist für VeriFast ersichtlich, dass 
@@ -96,7 +96,7 @@ dass diese beim Produzieren der Nachbedingung fehlen. Sie müssen also vor der \
 wieder geschlossen werden (Zeile 11 und 12), damit sie dann wieder an den Aufrufer zurückgegeben werden können 
 - so wie es die Nachbedingung verlangt.
 
-Das Schreiben dieser \(close\)-Annotation ist jedoch oft nicht notwendig, da VeriFast sie automatisch
+Das Schreiben dieser \texttt{close}-Annotation ist jedoch oft nicht notwendig, da VeriFast sie automatisch
 einführt, wenn es sich um ein sogenanntes präzises Prädikat handelt. Darunter versteht VeriFast Prädikate mit 
 eingehenden und ausgehenden Parametern, die exakt die gleiche Speicherregion repräsentieren. 
 
@@ -112,8 +112,7 @@ nicht zwingend notwendig.
 Assertions in ACSL werden genauso notiert wie in VeriFast. Ghost-Commands hingegen werden
 mit dem Schlüsseltwort \lstinline{ghost} eingeleitet, sind aber generell nicht so oft wie in
 VeriFast notwendig. Das kommt daher, dass Frama-C aufwendigere Berechnungen durchführt, um
-entsprechende logische Schlüsse zu ziehen. Das ist jedoch auch spürbar, wenn man die
-Geschwindigkeit der Werkzeuge vergleicht.
+entsprechende logische Schlüsse zu ziehen. 
 
 
 \section{Schleifeninvarianten}
@@ -126,20 +125,20 @@ Der folgende Quellcode zeigt eine ACSL-Implementierung für \lstinline{mismatch}
 (Spezifikation siehe Listing 3.11):
 \lstinputlisting[language=C, caption=Implementierung für \lstinline{mismatch} mit ACSL-Annotationen]{codes/mismatch_acsl.c}
 
-Die Invariante in Zeile 4 beschreibt den Gültigkeitsbereich der Variable \lstinline{i}, in Zeile 5 wird definiert, 
+Die erste Invariante beschreibt den Gültigkeitsbereich der Variable \lstinline{i}, in der folgenden Zeile wird definiert, 
 dass alle Elemente \lstinline{< i } der beiden Arrays gleich sind. Außerdem verlangt ACSL, dass alle
-Variablen-Manipulationen für die Schleife explizit angegeben werden (siehe Zeile 6). Damit kann das Werkzeug
+Variablen-Manipulationen für die Schleife explizit angegeben werden (siehe \texttt{loop assigns}). Damit kann das Werkzeug
 nun die beiden Fälle aus den Nachbedingungen beweisen.
 
 Hier erweist es sich auch wieder als vorteilhaft, dass für die Spezifikation bereits das Prädikat
 \lstinline{IsEqual} definiert wurde, denn in der Schleifeninvariante kann dieses wiederverwendet werden. Somit
-ist auch für den Leser schnell ersichtlich, dass Nachbedingung direkt aus der Invariante folgt.
+ist auch für den Leser schnell ersichtlich, dass die Nachbedingung direkt aus der Invariante folgt.
 
-Invarianten in ACSL und VeriFast funktionieren bis auf kleinere syntaktische Unterschiede nach dem gleichen Prinzip.
-Wie schon von den Spezifikationen bekannt, ist es auch hier in VeriFast wieder notwendig die Invarianten in nur
-einer einzigen Annotation auszudrücken. Außerdem kann der Schleifenkörper nur auf Heap-Chunks zurückgreifen, die
+Invarianten in ACSL und VeriFast arbeiten bis auf kleinere syntaktische Unterschiede nach dem gleichen Prinzip.
+Wie bereits von den Spezifikationen bekannt, ist es auch hier in VeriFast wieder notwendig die Invarianten in 
+einer einzigen Annotation auszudrücken. Außerdem darf der Schleifenkörper nur auf Heap-Chunks zurückgreifen, die
 in der Invariante explizit angegeben werden. VeriFast entfernt vor dem Schleifenbeginn alle aktuellen Chunks
-und stellt diese nach dem Austritt aus der Schleife wieder her. Der Schleifenkörper verhält sich also
+und stellt diese nach dem Austritt aus der Schleife wieder her. Der Schleifenkörper verhält sich daher
 wie eine eigenständige Funktion.
 
 \pagebreak
@@ -193,7 +192,7 @@ Wird dieses Lemma in obiger Schleife (nach dem if-Block) aufgerufen, so kann Ver
 die Invariante \lstinline{take(i, al) == take(i, bl)} nach dem Induktionsschritt \lstinline{i++}\footnote{Das 
 \lstinline{i++} musste in den Schleifenkörper verschoben werden, da es keine  Möglichkeit gibt die Zusicherung 
 innerhalb des for-Konstrukts zu positionieren.}
-beweisen. Der folgende Code zeigt den Aufruf des Lemmas mit zusätzlichen Zusicherungen.
+beweisen. Der folgende Code zeigt den Aufruf des Lemmas mit zusätzlichen erklärenden Zusicherungen.
 
 \lstinputlisting[language=C, firstline=3, lastline=18, caption=Aufruf Lemma \lstinline{take_plus_one} in Schleife]{codes/mismatch_VeriFast_2.c}
 
@@ -220,9 +219,9 @@ Schritte des symbolischen Ausführungspfades auf der Oberfläche inspiziert.
 
 Ein sinnvoller Einsatz der automatischen Lemmata sind globale Invarianten, z.B. die Eigenschaften von Datenstrukturen
 im C- oder Ghostcode. In ACSL gibt es für diese Fälle die sogenannten Typ-Invarianten, die entweder zu jeder Zeit oder
-nur beim Ein- und Austritt in eine Methode gelten müssen. Letztere werden als schwachte Invarianten bezeichnet.
+nur beim Ein- und Austritt in eine Methode gelten müssen. Letztere werden als schwache Invarianten bezeichnet.
 
-Tatsächlich wurde bei der Verifizierung der gezeigten Implementierungungen bereits eine solche
+Tatsächlich wurde bei der Verifizierung der gezeigten Implementierungen bereits eine solche
 globale Invariante - formuliert als Lemma - automatisch genutzt. Die Funktion \lstinline{ints_inv}
 (definiert in prelude.h) beschreibt den Zusammenhang zwischen der Fixpunktfunktion \texttt{length}
 (Länge einer Liste) und dem \lstinline{ints}-Prädikat.
@@ -290,12 +289,12 @@ VeriFast derzeit nicht möglich ist.
 \label{sec:implementation:overflows}
 
 Die beiden Werkzeuge können arithmetische Überläufe ganzer Zahlen erkennen, wobei diese Überprüfung
-in VeriFast optional ist\footnote{Die Überprüfung kann an der Oberfläche deaktiviert werden}.
+in VeriFast optional ist\footnote{Die Überprüfung kann an der Oberfläche deaktiviert werden.}.
 
 Zur Vermeidung der Überläufe muss im Kontrakt oder in entsprechenden Ghostbefehlen der Wertebereich
 der Variablen entsprechend eingeschränkt werden. Für diesen Zweck liefert VeriFast entsprechende Lemmas
 wie \lstinline{integer_limits} mit. Solange bei der Verifizierung jedoch kein Überlauf erkannt wird,
-ist in VeriFast nicht einsehbar an welchen Stellen eine Prüfung stattfindet. Frama-C ist in diesem Fall
+ist nicht einsehbar an welchen Stellen eine Prüfung stattfindet. Frama-C ist in diesem Fall
 transparenter, jede potenzielle Stelle wird erkenntlich gemacht.
 
 

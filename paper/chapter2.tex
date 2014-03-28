@@ -23,8 +23,8 @@ zwei aufeinander folgenden Programmabschnitten aufgestellt werden:
 \begin{displaymath}
 \frac{\{P\} \:S\: \{R\} \:, \: \{R\} \: T \: \{Q\}}{\{P\}\: S; T \: \{Q\}}
 \end{displaymath}
-Die Regel besagt, dass das unter dem Strich stehende Tripel wahr ist, wenn die über dem Strich
-stehenden Tripel beide wahr sind.
+Die Regeln besagen, dass die unter dem Strich stehende Aussage aus der über dem Strich notierten Aussage folgt. In diesem
+Fall beschreibt die Regel die Verkettung zweier Tripel.
 
 Da die im Fokus stehenden Algorithmen mit Schleifen arbeiten, sei hier noch die Iterationsregel gezeigt, die auf While-Schleifen
 bzw. auf For-Schleifen im C-Code angewendet wird: 
@@ -39,8 +39,8 @@ Schleifeninvarianten im Kapitel 4).
 
 Für die Verifizierung müssen nun alle Regeln auf den Quellcode angewendet werden. Eine von Frama-C verwendete Variation des Hoare-Kalküls
 stellt das System der schwächsten Vorbedingungen (engl. weakest preconditions) dar. Dabei findet eine Rückwärtsanalyse
-ders Quellcodes statt. Begonnen wird mit der gegebenen Nachbedingungen. In jedem Schritt wird dann die schwächste Vorbedingung
-abgeleitet, sodass am Ende zu beweisen ist, dass die als letztes berechnete Vorbedingung aus der Vorbedingung des Kontrakts folgt.
+des Quellcodes statt. Begonnen wird mit den zu beweisenden Nachbedingungen. In jedem Schritt wird dann die schwächste Vorbedingung
+abgeleitet, sodass am Ende zu beweisen ist, dass die zuletzt berechnete Vorbedingung aus der Vorbedingung des Kontrakts folgt.
 Ist dieses Vorgehen erfolgreich, so erfüllt der Quellcode die gegebene Spezifikation aus Vor- und Nachbedingung.
 
 \section{Terminierung}
