@@ -5,14 +5,14 @@
 Diese Arbeit vergleicht die Verifikationswerkzeuge VeriFast\footnote{
 \url{http://people.cs.kuleuven.be/~bart.jacobs/VeriFast/}} und Frama-C\footnote{\url{http://frama-c.com}}.
 Der Fokus liegt auf einfachen Algorithmen, die mit Arrays arbeiten, ohne diese zu verändern.
-Dabei werden die verwendeten Sprachen mit ihren jeweiligen Konzepten betrachtet und verglichen. Außerdem
+Dabei werden die verwendeten Spezifikationssprachen mit ihren jeweiligen Konzepten betrachtet und verglichen. Außerdem
 wird die Lesbarkeit bewertet und die Arbeit mit den Werkzeugen untersucht. 
 
 Schlussendlich wird die daraus resultierende Lernkurve bei der Verfizierung beschrieben und geschlussfolgert
 welches Werkzeug sich am ehesten für die beschriebenen Algorithmen eignet.
 
 Als durchgängiges Beispiel dient in dieser Arbeit der standardisierte mismatch-Algorithmus\footnote{siehe
-\url{http://msdn.microsoft.com/de-de/library/f0bsxbk9.aspx}} aus
+\url{https://www.sgi.com/tech/stl/mismatch.html}} aus
 der C++ Standard-Bibliothek. Die Grundlage für spätere Formalisierungen ist die folgende vereinfachte\footnote{es
 wird auf Iteratoren und eine selbst definierte Vergleichsfunktion verzichtet} Signatur und 
 die dazugehörige informelle Spezifikation:
@@ -37,7 +37,7 @@ analysiert, transformiert oder verifiziert werden kann.
 In dieser Arbeit wird ausschließlich das WP-Plugin\footnote{WP steht für Weakest Precondition, siehe
 \url{http://frama-c.com/wp.html}} für die deduktive Verifikation betrachtet. Um es zu verwenden, müssen die zu beweisenden 
 Eigenschaften als ACSL-Annotationen (ANSI/ISO C Specification Langage)\footnote{\url{http://frama-c.com/acsl.html}} zum Quellcode hinzugefügt werden, woraus Frama-C dann die 
-Beweispflichten (engl. proof obligations) in Form von prädikatenlogischen Formeln generiert. Angebundene automatische oder 
+Beweisverpflichten (engl. proof obligations) in Form von prädikatenlogischen Formeln generiert. Angebundene automatische oder 
 interaktive Beweiser wie Alt-Ergo\footnote{\url{http://alt-ergo.lri.fr/}} oder Coq\footnote{\url{http://coq.inria.fr/}}
 versuchen diese dann zu lösen.
 
@@ -55,8 +55,8 @@ Annotationssprache hat keinen eigenen Namen, darum ist mit \glqq VeriFast\grqq{}
 Werkzeug als solches gemeint.
 
 Die Annotationen werden nicht über deduktive Verifikation, sondern mittels symbolischer Ausführung bewiesen. Das Austauschen
-des Beweisers so wie in Frama-C ist außerdem nicht möglich\footnote{VeriFast nutzt den Z3-Beweiser von Microsoft Research,
-\url{http://z3.codeplex.com/}}, da es sich um eine geschlossene Software handelt.
+des Beweisers so wie in Frama-C ist außerdem nicht vorgesehen\footnote{VeriFast nutzt den Z3-Beweiser von Microsoft Research,
+\url{http://z3.codeplex.com/}}.
 
 Das Programm versteht Quellcode-Annotationen geschrieben in der Separierungslogik, die 2002 von John C. Reynolds publiziert
 wurde\cite{reynolds-2002}. Dabei handelt es sich um eine Erweiterung der Hoarelogik, die zusätzliche Aussagen über den Speicher
